@@ -22,6 +22,10 @@ Import URL pattern after GitHub Pages:
 - [Ground Beef Taco Skillet](ground-beef-taco-skillet.html)
 - [Honey-Garlic Pork Tenderloin Skillet](honey-garlic-pork-tenderloin-skillet.html)
 
+## Game day
+
+- [Ain't No Thing Butta Chicken Wings](aint-no-thing-butta-chicken-wings.html)
+
 ## Dessert
 
 - [Strawberry Strudel Skillet Cookie](strawberry-strudel-skillet-cookie.html)
