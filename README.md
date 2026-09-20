@@ -11,6 +11,7 @@ Import URL pattern after GitHub Pages:
 - [Smoked Chicken Thighs with Alabama White Sauce](smoked-chicken-thighs-alabama-white-sauce.html)
 - [Lowcountry Shrimp and Grits](lowcountry-shrimp-and-grits.html)
 - [Sunday Chuck Roast with Vegetables](sunday-chuck-roast.html)
+- [Sunday Chuck Roast (PossibleCooker Pro)](sunday-chuck-roast-possiblecooker.html)
 - [Peach-Bourbon Cast-Iron Pork Chops](peach-bourbon-cast-iron-pork-chops.html)
 
 ## Weekday dinners
