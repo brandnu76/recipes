@@ -1,6 +1,8 @@
 # Recipes
 
-Public recipe pages marked up with Schema.org Recipe (JSON-LD + microdata) and hRecipe so AnyList can import them from the web.
+Public recipe pages for the Council of Chefs. Smokehouse-styled for sharing; Schema.org Recipe (JSON-LD + microdata) and hRecipe kept for AnyList import.
+
+Browse: [index.html](index.html)
 
 Import URL pattern after GitHub Pages:
 
