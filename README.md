@@ -25,6 +25,7 @@ Import URL pattern after GitHub Pages:
 - [Ground Beef Taco Skillet](ground-beef-taco-skillet.html)
 - [Honey-Garlic Pork Tenderloin Skillet](honey-garlic-pork-tenderloin-skillet.html)
 - [Mongolian Beef and Noodles](mongolian-beef-noodles.html)
+- [The Supreme Pacific Jasmine Musubi](supreme-pacific-jasmine-musubi.html)
 
 ## Game day
 
