@@ -36,6 +36,7 @@ Import URL pattern after GitHub Pages:
 - [Lemon Skillet Cookie](lemon-skillet-cookie.html)
 - [Cinnamon Toast Crunch Cheesecake](cinnamon-toast-crunch-cheesecake.html)
 - [White Chocolate Strawberry Cloud Cake](white-chocolate-strawberry-cloud-cake.html)
+- [Reese's Peanut Butter Cup Skillet Cookie](reeses-peanut-butter-cup-skillet-cookie.html)
 
 
 ## Legal
