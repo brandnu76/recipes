@@ -12,6 +12,8 @@
   <meta property="og:description" content="No-bake white chocolate cream-cheese mousse on a Golden Oreo crust, finished with a glossy strawberry compote crown. Soft, tall, and fully chilled.">
   <meta property="og:type" content="article">
   <meta name="copyright" content="© 2026 Brandon Carroll">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 <body>
   <header class="site-header">
@@ -26,6 +28,15 @@
       <a class="jump-link" href="#ingredients">Ingredients</a>
       <a class="jump-link" href="#instructions">Steps</a>
       <button type="button" class="toolbar-btn" data-action="copy-ingredients">Copy ingredients</button>
+      <button type="button" class="toolbar-btn" data-action="cook-mode">Cook mode</button>
+      <button type="button" class="toolbar-btn" data-action="share">Share</button>
+      <button type="button" class="toolbar-btn" data-action="print">Print</button>
+    </div>
+    <div class="servings-control" aria-label="Adjust servings">
+      <button type="button" data-servings="-1" aria-label="Fewer servings">−</button>
+      <div class="servings-readout"><span data-servings-value>12</span> servings</div>
+      <button type="button" data-servings="1" aria-label="More servings">+</button>
+      <span class="servings-hint" data-servings-base></span>
     </div>
     <p>By <span class="author p-author" itemprop="author" itemscope itemtype="https://schema.org/Person"><span itemprop="name">Brandon Carroll</span></span>
       <meta itemprop="datePublished" content="2026-09-20">
@@ -69,6 +80,17 @@
     </ol>
   </article>
   </main>
+    <div class="cook-panel" hidden>
+    <div class="cook-panel-inner">
+      <div class="cook-meta" data-cook-meta>Step</div>
+      <div class="cook-step-text" data-cook-step></div>
+      <div class="cook-actions">
+        <button type="button" data-action="cook-prev">Back</button>
+        <button type="button" data-action="cook-next">Next</button>
+        <button type="button" data-action="exit-cook">Exit cook mode</button>
+      </div>
+    </div>
+  </div>
   <a class="back-top" href="#" aria-label="Back to top">↑</a>
   <footer class="site-footer">
     <p class="footer-copy">© 2026 Brandon Carroll. All rights reserved.</p>
