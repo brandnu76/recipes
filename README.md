@@ -1,6 +1,6 @@
 # Recipes
 
-Public recipe pages for the Council of Chefs. Smokehouse-styled for sharing; Schema.org Recipe (JSON-LD + microdata) and hRecipe kept for AnyList import.
+Public recipe pages for the Brandon Carroll. Smokehouse-styled for sharing; Schema.org Recipe (JSON-LD + microdata) and hRecipe kept for AnyList import.
 
 Browse: [index.html](index.html)
 
