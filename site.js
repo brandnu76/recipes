@@ -21,7 +21,7 @@
     });
     if (meta) {
       meta.textContent = q
-        ? shown + " recipe" + (shown === 1 ? "" : "s") + " match " + input.value.trim() + ""
+        ? shown + " recipe" + (shown === 1 ? "" : "s") + " match “" + input.value.trim() + "”"
         : cards.length + " recipes";
     }
   };
