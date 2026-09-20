@@ -10,8 +10,10 @@
   <meta property="og:type" content="website">
   <meta name="theme-color" content="#120f0d">
   <meta name="color-scheme" content="dark">
-  <link rel="stylesheet" href="styles.css">
   <meta name="copyright" content="© 2026 Brandon Carroll">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 <body>
   <header class="site-header">
@@ -25,43 +27,50 @@
       <div class="search-wrap">
         <label for="recipe-search">Search recipes</label>
         <input id="recipe-search" type="search" placeholder="Try lemon, skillet, roast…" autocomplete="off">
+        <div class="filter-row" role="toolbar" aria-label="Filter by category">
+        <button type="button" class="filter-chip is-active" data-filter-cat="all">All</button>
+        <button type="button" class="filter-chip" data-filter-cat="Weekend dinners">Weekend dinners</button>
+        <button type="button" class="filter-chip" data-filter-cat="Weekday dinners">Weekday dinners</button>
+        <button type="button" class="filter-chip" data-filter-cat="Game day">Game day</button>
+        <button type="button" class="filter-chip" data-filter-cat="Dessert">Dessert</button>
+        </div>
         <div class="search-meta" id="search-meta"></div>
       </div>
     </div>
-  <section class="book-section">
+  <section class="book-section" data-section="weekend dinners">
     <h2>Weekend dinners</h2>
     <ul class="book-list">
-      <li><a href="smoked-chicken-thighs-alabama-white-sauce.html" data-search="smoked chicken thighs with alabama white sauce weekend dinners"><span class="card-cat">Weekend dinners</span><span class="card-title">Smoked Chicken Thighs with Alabama White Sauce</span></a></li>
-      <li><a href="lowcountry-shrimp-and-grits.html" data-search="lowcountry shrimp and grits weekend dinners"><span class="card-cat">Weekend dinners</span><span class="card-title">Lowcountry Shrimp and Grits</span></a></li>
-      <li><a href="sunday-chuck-roast.html" data-search="sunday chuck roast with vegetables weekend dinners"><span class="card-cat">Weekend dinners</span><span class="card-title">Sunday Chuck Roast with Vegetables</span></a></li>
-      <li><a href="sunday-chuck-roast-possiblecooker.html" data-search="sunday chuck roast (possiblecooker pro) weekend dinners"><span class="card-cat">Weekend dinners</span><span class="card-title">Sunday Chuck Roast (PossibleCooker Pro)</span></a></li>
-      <li><a href="peach-bourbon-cast-iron-pork-chops.html" data-search="peach-bourbon cast-iron pork chops weekend dinners"><span class="card-cat">Weekend dinners</span><span class="card-title">Peach-Bourbon Cast-Iron Pork Chops</span></a></li>
+      <li><a href="smoked-chicken-thighs-alabama-white-sauce.html" data-cat="weekend dinners" data-search="smoked chicken thighs with alabama white sauce weekend dinners"><span class="card-cat">Weekend dinners</span><span class="card-title">Smoked Chicken Thighs with Alabama White Sauce</span></a></li>
+      <li><a href="lowcountry-shrimp-and-grits.html" data-cat="weekend dinners" data-search="lowcountry shrimp and grits weekend dinners"><span class="card-cat">Weekend dinners</span><span class="card-title">Lowcountry Shrimp and Grits</span></a></li>
+      <li><a href="sunday-chuck-roast.html" data-cat="weekend dinners" data-search="sunday chuck roast with vegetables weekend dinners"><span class="card-cat">Weekend dinners</span><span class="card-title">Sunday Chuck Roast with Vegetables</span></a></li>
+      <li><a href="sunday-chuck-roast-possiblecooker.html" data-cat="weekend dinners" data-search="sunday chuck roast (possiblecooker pro) weekend dinners"><span class="card-cat">Weekend dinners</span><span class="card-title">Sunday Chuck Roast (PossibleCooker Pro)</span></a></li>
+      <li><a href="peach-bourbon-cast-iron-pork-chops.html" data-cat="weekend dinners" data-search="peach-bourbon cast-iron pork chops weekend dinners"><span class="card-cat">Weekend dinners</span><span class="card-title">Peach-Bourbon Cast-Iron Pork Chops</span></a></li>
     </ul>
   </section>
-  <section class="book-section">
+  <section class="book-section" data-section="weekday dinners">
     <h2>Weekday dinners</h2>
     <ul class="book-list">
-      <li><a href="sheet-pan-lemon-garlic-chicken.html" data-search="sheet-pan lemon-garlic chicken and vegetables weekday dinners"><span class="card-cat">Weekday dinners</span><span class="card-title">Sheet-Pan Lemon-Garlic Chicken and Vegetables</span></a></li>
-      <li><a href="skillet-creamy-tuscan-chicken.html" data-search="skillet creamy tuscan chicken weekday dinners"><span class="card-cat">Weekday dinners</span><span class="card-title">Skillet Creamy Tuscan Chicken</span></a></li>
-      <li><a href="one-pot-sausage-peppers-rice.html" data-search="one-pot sausage, peppers, and rice weekday dinners"><span class="card-cat">Weekday dinners</span><span class="card-title">One-Pot Sausage, Peppers, and Rice</span></a></li>
-      <li><a href="sheet-pan-salmon-sweet-potato.html" data-search="sheet-pan salmon with sweet potatoes and green beans weekday dinners"><span class="card-cat">Weekday dinners</span><span class="card-title">Sheet-Pan Salmon with Sweet Potatoes and Green Beans</span></a></li>
-      <li><a href="ground-beef-taco-skillet.html" data-search="ground beef taco skillet weekday dinners"><span class="card-cat">Weekday dinners</span><span class="card-title">Ground Beef Taco Skillet</span></a></li>
-      <li><a href="honey-garlic-pork-tenderloin-skillet.html" data-search="honey-garlic pork tenderloin skillet weekday dinners"><span class="card-cat">Weekday dinners</span><span class="card-title">Honey-Garlic Pork Tenderloin Skillet</span></a></li>
+      <li><a href="sheet-pan-lemon-garlic-chicken.html" data-cat="weekday dinners" data-search="sheet-pan lemon-garlic chicken and vegetables weekday dinners"><span class="card-cat">Weekday dinners</span><span class="card-title">Sheet-Pan Lemon-Garlic Chicken and Vegetables</span></a></li>
+      <li><a href="skillet-creamy-tuscan-chicken.html" data-cat="weekday dinners" data-search="skillet creamy tuscan chicken weekday dinners"><span class="card-cat">Weekday dinners</span><span class="card-title">Skillet Creamy Tuscan Chicken</span></a></li>
+      <li><a href="one-pot-sausage-peppers-rice.html" data-cat="weekday dinners" data-search="one-pot sausage, peppers, and rice weekday dinners"><span class="card-cat">Weekday dinners</span><span class="card-title">One-Pot Sausage, Peppers, and Rice</span></a></li>
+      <li><a href="sheet-pan-salmon-sweet-potato.html" data-cat="weekday dinners" data-search="sheet-pan salmon with sweet potatoes and green beans weekday dinners"><span class="card-cat">Weekday dinners</span><span class="card-title">Sheet-Pan Salmon with Sweet Potatoes and Green Beans</span></a></li>
+      <li><a href="ground-beef-taco-skillet.html" data-cat="weekday dinners" data-search="ground beef taco skillet weekday dinners"><span class="card-cat">Weekday dinners</span><span class="card-title">Ground Beef Taco Skillet</span></a></li>
+      <li><a href="honey-garlic-pork-tenderloin-skillet.html" data-cat="weekday dinners" data-search="honey-garlic pork tenderloin skillet weekday dinners"><span class="card-cat">Weekday dinners</span><span class="card-title">Honey-Garlic Pork Tenderloin Skillet</span></a></li>
     </ul>
   </section>
-  <section class="book-section">
+  <section class="book-section" data-section="game day">
     <h2>Game day</h2>
     <ul class="book-list">
-      <li><a href="aint-no-thing-butta-chicken-wings.html" data-search="ain&#x27;t no thing butta chicken wings game day"><span class="card-cat">Game day</span><span class="card-title">Ain&#x27;t No Thing Butta Chicken Wings</span></a></li>
+      <li><a href="aint-no-thing-butta-chicken-wings.html" data-cat="game day" data-search="ain&#x27;t no thing butta chicken wings game day"><span class="card-cat">Game day</span><span class="card-title">Ain&#x27;t No Thing Butta Chicken Wings</span></a></li>
     </ul>
   </section>
-  <section class="book-section">
+  <section class="book-section" data-section="dessert">
     <h2>Dessert</h2>
     <ul class="book-list">
-      <li><a href="strawberry-strudel-skillet-cookie.html" data-search="strawberry strudel skillet cookie dessert"><span class="card-cat">Dessert</span><span class="card-title">Strawberry Strudel Skillet Cookie</span></a></li>
-      <li><a href="lemon-skillet-cookie.html" data-search="lemon skillet cookie dessert"><span class="card-cat">Dessert</span><span class="card-title">Lemon Skillet Cookie</span></a></li>
-      <li><a href="cinnamon-toast-crunch-cheesecake.html" data-search="cinnamon toast crunch cheesecake dessert"><span class="card-cat">Dessert</span><span class="card-title">Cinnamon Toast Crunch Cheesecake</span></a></li>
-      <li><a href="white-chocolate-strawberry-cloud-cake.html" data-search="white chocolate strawberry cloud cake dessert"><span class="card-cat">Dessert</span><span class="card-title">White Chocolate Strawberry Cloud Cake</span></a></li>
+      <li><a href="strawberry-strudel-skillet-cookie.html" data-cat="dessert" data-search="strawberry strudel skillet cookie dessert"><span class="card-cat">Dessert</span><span class="card-title">Strawberry Strudel Skillet Cookie</span></a></li>
+      <li><a href="lemon-skillet-cookie.html" data-cat="dessert" data-search="lemon skillet cookie dessert"><span class="card-cat">Dessert</span><span class="card-title">Lemon Skillet Cookie</span></a></li>
+      <li><a href="cinnamon-toast-crunch-cheesecake.html" data-cat="dessert" data-search="cinnamon toast crunch cheesecake dessert"><span class="card-cat">Dessert</span><span class="card-title">Cinnamon Toast Crunch Cheesecake</span></a></li>
+      <li><a href="white-chocolate-strawberry-cloud-cake.html" data-cat="dessert" data-search="white chocolate strawberry cloud cake dessert"><span class="card-cat">Dessert</span><span class="card-title">White Chocolate Strawberry Cloud Cake</span></a></li>
     </ul>
   </section>
   </main>
