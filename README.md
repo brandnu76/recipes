@@ -34,3 +34,4 @@ Import URL pattern after GitHub Pages:
 - [Strawberry Strudel Skillet Cookie](strawberry-strudel-skillet-cookie.html)
 - [Lemon Skillet Cookie](lemon-skillet-cookie.html)
 - [Cinnamon Toast Crunch Cheesecake](cinnamon-toast-crunch-cheesecake.html)
+- [White Chocolate Strawberry Cloud Cake](white-chocolate-strawberry-cloud-cake.html)
