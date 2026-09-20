@@ -35,3 +35,8 @@ Import URL pattern after GitHub Pages:
 - [Lemon Skillet Cookie](lemon-skillet-cookie.html)
 - [Cinnamon Toast Crunch Cheesecake](cinnamon-toast-crunch-cheesecake.html)
 - [White Chocolate Strawberry Cloud Cake](white-chocolate-strawberry-cloud-cake.html)
+
+
+## Legal
+
+© 2026 Brandon Carroll. All rights reserved. See [copyright.html](copyright.html) and [COPYRIGHT.md](COPYRIGHT.md).

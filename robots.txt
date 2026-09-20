@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Site content © 2026 Brandon Carroll. All rights reserved.
+# See /recipes/copyright.html
