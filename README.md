@@ -35,6 +35,7 @@ Import URL pattern after GitHub Pages:
 
 - [Antipasto Pasta Salad](antipasto-pasta-salad.html)
 - [Seared Steak Salad](seared-steak-salad.html)
+- [Southern Baked Beans](southern-baked-beans.html)
 
 ## Dessert
 
