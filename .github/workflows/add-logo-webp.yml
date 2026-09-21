@@ -1,0 +1,26 @@
+name: Add logo.webp
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  add-logo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Decode logo.webp from base64
+        run: base64 -d logo_webp.b64 > logo.webp
+      - name: Verify webp magic
+        run: |
+          python3 - <<'PY'
+          d=open("logo.webp","rb").read(12)
+          assert d[:4]==b"RIFF" and d[8:12]==b"WEBP", d
+          print("ok", len(open("logo.webp","rb").read()))
+          PY
+      - name: Commit and push logo.webp
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add logo.webp
+          git commit -m "Add Carroll Smokehouse logo.webp binary"
+          git push
