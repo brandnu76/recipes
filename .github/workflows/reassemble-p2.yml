@@ -1,0 +1,30 @@
+name: Reassemble logo_webp.p2.b64
+on:
+  workflow_dispatch:
+jobs:
+  reassemble:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cat L00-L31 into logo_webp.p2.b64
+        run: |
+          cat logo_webp.p2.L00 logo_webp.p2.L01 logo_webp.p2.L02 logo_webp.p2.L03 \
+              logo_webp.p2.L04 logo_webp.p2.L05 logo_webp.p2.L06 logo_webp.p2.L07 \
+              logo_webp.p2.L08 logo_webp.p2.L09 logo_webp.p2.L10 logo_webp.p2.L11 \
+              logo_webp.p2.L12 logo_webp.p2.L13 logo_webp.p2.L14 logo_webp.p2.L15 \
+              logo_webp.p2.L16 logo_webp.p2.L17 logo_webp.p2.L18 logo_webp.p2.L19 \
+              logo_webp.p2.L20 logo_webp.p2.L21 logo_webp.p2.L22 logo_webp.p2.L23 \
+              logo_webp.p2.L24 logo_webp.p2.L25 logo_webp.p2.L26 logo_webp.p2.L27 \
+              logo_webp.p2.L28 logo_webp.p2.L29 logo_webp.p2.L30 logo_webp.p2.L31 \
+            > logo_webp.p2.b64
+          wc -c logo_webp.p2.b64
+          python3 -c "import hashlib;c=open('logo_webp.p2.b64').read();print(len(c),c[:12],c[-12:],hashlib.md5(c.encode()).hexdigest())"
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add logo_webp.p2.b64
+          git commit -m "Reassemble logo_webp.p2.b64 from L00-L31" || exit 0
+          git push
