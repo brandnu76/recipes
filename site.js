@@ -1,4 +1,12 @@
 (function () {
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("./sw.js").catch(function () {});
+    });
+  }
+})();
+
+(function () {
   const input = document.querySelector("#recipe-search");
   const meta = document.querySelector("#search-meta");
   const chips = Array.from(document.querySelectorAll("[data-filter-cat]"));
@@ -27,9 +35,9 @@
     if (meta) {
       const bits = [];
       if (activeCat !== "all") bits.push(activeCat);
-      if (q) bits.push("“" + (input?.value || "").trim() + "”");
+      if (q) bits.push("\u201c" + (input?.value || "").trim() + "\u201d");
       meta.textContent = bits.length
-        ? shown + " recipe" + (shown === 1 ? "" : "s") + " · " + bits.join(" · ")
+        ? shown + " recipe" + (shown === 1 ? "" : "s") + " \u00b7 " + bits.join(" \u00b7 ")
         : cards.length + " recipes";
     }
   };
