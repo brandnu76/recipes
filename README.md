@@ -43,6 +43,7 @@ Import URL pattern after GitHub Pages:
 - [Cinnamon Toast Crunch Cheesecake](cinnamon-toast-crunch-cheesecake.html)
 - [White Chocolate Strawberry Cloud Cake](white-chocolate-strawberry-cloud-cake.html)
 - [No-Bake White Chocolate Pumpkin Cheesecake](no-bake-white-chocolate-pumpkin-cheesecake.html)
+- [White Chocolate & Gingersnap Cheesecake](white-chocolate-gingersnap-cheesecake.html)
 - [Reese's Peanut Butter Cup Skillet Cookie](reeses-peanut-butter-cup-skillet-cookie.html)
 
 
