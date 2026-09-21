@@ -31,6 +31,10 @@ Import URL pattern after GitHub Pages:
 
 - [Ain't No Thing Butta Chicken Wings](aint-no-thing-butta-chicken-wings.html)
 
+## Sides & salads
+
+- [Antipasto Pasta Salad](antipasto-pasta-salad.html)
+
 ## Dessert
 
 - [Strawberry Strudel Skillet Cookie](strawberry-strudel-skillet-cookie.html)
