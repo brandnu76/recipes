@@ -1,7 +1,7 @@
 {
-  "name": "Carroll Smokehouse",
-  "short_name": "Smokehouse",
-  "description": "Coastal Georgia smokehouse recipes from Brandon Carroll.",
+  "name": "Carroll Lowcountry Table",
+  "short_name": "Lowcountry",
+  "description": "Coastal Georgia kitchen recipes from Brandon Carroll.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
