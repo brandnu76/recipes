@@ -1,0 +1,14 @@
+/* Text brand until Lowcountry logo.webp is installed */
+.site-brand .site-logo,
+.hero-logo,
+.splash-logo {
+  display: none !important;
+}
+.site-brand .brand-mark {
+  display: block !important;
+}
+.site-brand {
+  gap: 0.7rem !important;
+  font-size: inherit !important;
+  color: var(--cream) !important;
+}
