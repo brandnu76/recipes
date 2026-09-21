@@ -1,4 +1,12 @@
 (function () {
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("./sw.js").catch(function () {});
+    });
+  }
+})();
+
+(function () {
   const article = document.querySelector(".hrecipe, .h-recipe");
   if (!article) return;
 
