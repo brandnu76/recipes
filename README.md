@@ -1,6 +1,6 @@
 # Recipes
 
-Public recipe pages for Carroll Smokehouse (Brandon Carroll). Smokehouse-styled for sharing; Schema.org Recipe (JSON-LD + microdata) and hRecipe kept for AnyList import.
+Public recipe pages for Carroll Lowcountry Table (Brandon Carroll). Lowcountry Table-styled for sharing; Schema.org Recipe (JSON-LD + microdata) and hRecipe kept for AnyList import.
 
 Home (splash): [index.html](index.html)
 
