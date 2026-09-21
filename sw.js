@@ -1,5 +1,5 @@
-/* Carroll Smokehouse — offline cache for kitchen use on GitHub Pages */
-const CACHE = "carroll-smokehouse-v2";
+/* Carroll Lowcountry Table — offline cache for kitchen use on GitHub Pages */
+const CACHE = "carroll-lowcountry-v1";
 const SHELL = [
   "./",
   "./index.html",
