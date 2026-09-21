@@ -1,0 +1,22 @@
+name: fix-text-brand-css
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch styles.css
+        run: python3 _fix_text_brand.py
+      - name: Commit and cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -f _fix_text_brand.py
+          git add styles.css
+          git add -u _fix_text_brand.py || true
+          if git diff --cached --quiet; then echo "no change"; exit 0; fi
+          git commit -m "Show text brand; hide smokehouse logo backgrounds"
+          git push
