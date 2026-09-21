@@ -1,8 +1,9 @@
 /* Carroll Smokehouse — offline cache for kitchen use on GitHub Pages */
-const CACHE = "carroll-smokehouse-v1";
+const CACHE = "carroll-smokehouse-v2";
 const SHELL = [
   "./",
   "./index.html",
+  "./recipes.html",
   "./styles.css",
   "./recipe.js",
   "./site.js",
@@ -11,6 +12,11 @@ const SHELL = [
   "./manifest.webmanifest",
   "./copyright.html",
   "./sw.js",
+  "./category-weekend-dinners.html",
+  "./category-weekday-dinners.html",
+  "./category-game-day.html",
+  "./category-sides-salads.html",
+  "./category-dessert.html",
 ];
 
 async function addAllSafe(cache, urls) {
@@ -23,9 +29,9 @@ async function addAllSafe(cache, urls) {
   );
 }
 
-async function recipeUrlsFromIndex() {
+async function htmlHrefs(path) {
   try {
-    const res = await fetch("./index.html", { cache: "no-cache" });
+    const res = await fetch(path, { cache: "no-cache" });
     if (!res.ok) return [];
     const html = await res.text();
     const found = new Set();
@@ -35,7 +41,6 @@ async function recipeUrlsFromIndex() {
       const href = m[1];
       if (/^https?:/i.test(href)) continue;
       const clean = href.replace(/^\.\//, "");
-      if (clean === "index.html") continue;
       found.add("./" + clean);
     }
     return Array.from(found);
@@ -49,8 +54,10 @@ self.addEventListener("install", (event) => {
     (async () => {
       const cache = await caches.open(CACHE);
       await addAllSafe(cache, SHELL);
-      const recipes = await recipeUrlsFromIndex();
-      await addAllSafe(cache, recipes);
+      const fromSplash = await htmlHrefs("./index.html");
+      const fromBook = await htmlHrefs("./recipes.html");
+      const all = Array.from(new Set([...fromSplash, ...fromBook]));
+      await addAllSafe(cache, all);
       self.skipWaiting();
     })()
   );
