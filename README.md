@@ -1,8 +1,10 @@
 # Recipes
 
-Public recipe pages for the Brandon Carroll. Smokehouse-styled for sharing; Schema.org Recipe (JSON-LD + microdata) and hRecipe kept for AnyList import.
+Public recipe pages for Carroll Smokehouse (Brandon Carroll). Smokehouse-styled for sharing; Schema.org Recipe (JSON-LD + microdata) and hRecipe kept for AnyList import.
 
-Browse: [index.html](index.html)
+Home (splash): [index.html](index.html)
+
+All recipes: [recipes.html](recipes.html)
 
 Import URL pattern after GitHub Pages:
 
