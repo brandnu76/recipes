@@ -1,1 +1,34 @@
-PLACEHOLDER
+name: install-lowcountry-logo
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Decode logos and clean probes
+        run: |
+          set -euo pipefail
+          test -f logo.webp.b64
+          test -f logo-header.webp.b64
+          base64 -d < logo.webp.b64 > logo.webp
+          base64 -d < logo-header.webp.b64 > logo-header.webp
+          python3 - <<'PY'
+          for p in ("logo.webp","logo-header.webp"):
+              b=open(p,"rb").read()
+              assert b[:4]==b"RIFF" and b[8:12]==b"WEBP", (p, b[:16])
+              print(p, "ok", len(b))
+          PY
+          rm -f logo.webp.b64 logo-header.webp.b64 _encoding_probe.bin
+      - name: Commit binary logos
+        run: |
+          set -euo pipefail
+          git config user.name "brandnu76"
+          git config user.email "bccarroll30@gmail.com"
+          git add -A
+          git status
+          git diff --cached --stat
+          git commit -m "Install Carroll Lowcountry Table logo.webp (binary)" || exit 0
+          git push
