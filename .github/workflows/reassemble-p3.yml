@@ -1,0 +1,30 @@
+name: Reassemble logo_webp.p3.b64
+on:
+  workflow_dispatch:
+jobs:
+  reassemble:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cat L00-L31 into logo_webp.p3.b64
+        run: |
+          cat logo_webp.p3.L00 logo_webp.p3.L01 logo_webp.p3.L02 logo_webp.p3.L03 \
+              logo_webp.p3.L04 logo_webp.p3.L05 logo_webp.p3.L06 logo_webp.p3.L07 \
+              logo_webp.p3.L08 logo_webp.p3.L09 logo_webp.p3.L10 logo_webp.p3.L11 \
+              logo_webp.p3.L12 logo_webp.p3.L13 logo_webp.p3.L14 logo_webp.p3.L15 \
+              logo_webp.p3.L16 logo_webp.p3.L17 logo_webp.p3.L18 logo_webp.p3.L19 \
+              logo_webp.p3.L20 logo_webp.p3.L21 logo_webp.p3.L22 logo_webp.p3.L23 \
+              logo_webp.p3.L24 logo_webp.p3.L25 logo_webp.p3.L26 logo_webp.p3.L27 \
+              logo_webp.p3.L28 logo_webp.p3.L29 logo_webp.p3.L30 logo_webp.p3.L31 \
+            > logo_webp.p3.b64
+          wc -c logo_webp.p3.b64
+          python3 -c "import hashlib;c=open('logo_webp.p3.b64').read();print(len(c),c[:12],c[-12:],hashlib.md5(c.encode()).hexdigest())"
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add logo_webp.p3.b64
+          git commit -m "Reassemble logo_webp.p3.b64 from L00-L31" || exit 0
+          git push
