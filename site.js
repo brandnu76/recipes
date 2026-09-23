@@ -1,4 +1,15 @@
 (function () {
+  const header = document.querySelector(".site-header");
+  const below = document.querySelector(".splash-below");
+  if (!header || !below) return;
+  const onScroll = () => {
+    header.classList.toggle("is-solid", below.getBoundingClientRect().top <= header.offsetHeight + 1);
+  };
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+})();
+
+(function () {
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function () {
       navigator.serviceWorker.register("./sw.js").catch(function () {});

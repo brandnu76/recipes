@@ -1,11 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Brandon Carroll Recipes">
-  <rect width="128" height="128" rx="28" fill="#120f0d"/>
-  <circle cx="64" cy="64" r="28" fill="url(#g)"/>
-  <defs>
-    <radialGradient id="g" cx="35%" cy="35%" r="70%">
-      <stop offset="0%" stop-color="#ffd3a8"/>
-      <stop offset="55%" stop-color="#e85d04"/>
-      <stop offset="100%" stop-color="#9a3412"/>
-    </radialGradient>
-  </defs>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Carroll Lowcountry Table">
+  <rect width="128" height="128" rx="28" fill="#f3efe4"/>
+  <circle cx="64" cy="64" r="46" fill="#f7f4ea" stroke="#5a6844" stroke-width="3"/>
+  <path d="M28 70c14-8 22-8 36 0s22 8 36 0" fill="none" stroke="#8a9078" stroke-width="1.4"/>
+  <path d="M46 58c2-10 6-16 8-16 1 6 2 12 0 18M58 54c2-12 7-18 9-18 1 7 2 14 0 20" fill="none" stroke="#5a6844" stroke-width="1.6" stroke-linecap="round"/>
+  <circle cx="78" cy="46" r="3.5" fill="#c4b48a"/>
 </svg>

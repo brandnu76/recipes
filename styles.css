@@ -1,6 +1,6 @@
 /* Brandon Carroll recipes — coastal kitchen theme */
 
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Pinyon+Script&family=Source+Sans+3:wght@400;600;700&display=swap");
 
 :root {
   --bg: #120f0d;
@@ -16,7 +16,9 @@
   --shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
   --radius: 16px;
   --max: 48rem;
-  --header-h: 3.5rem;
+  --header-h: 4.35rem;
+  --paper: #f3efe4;
+  --ink: #2c3824;
   --font-display: "Fraunces", Georgia, "Times New Roman", serif;
   --font-body: "Source Sans 3", system-ui, -apple-system, sans-serif;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -85,30 +87,46 @@ a:hover { color: var(--cream); }
   letter-spacing: 0.01em;
 }
 
-.site-brand:hover { color: var(--fire-soft); }
+.site-brand:hover { color: var(--cream); }
+.site-brand:hover .site-brand-name { color: var(--fire-soft); }
 
-.brand-mark {
-  width: 0.75rem;
-  height: 0.75rem;
-  border-radius: 999px;
-  background: radial-gradient(circle at 35% 35%, #c5d4b0, var(--fire) 55%, var(--ember));
-  box-shadow: 0 0 0 3px rgba(79, 100, 60, 0.2), 0 0 18px rgba(79, 100, 60, 0.35);
+.site-logo {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--paper);
+  box-shadow: 0 0 0 1px rgba(246, 239, 230, 0.18);
 }
 
-/* Text brand until new logo.webp is installed */
-.site-brand .site-logo,
-.hero-logo,
-.splash-logo {
-  display: none !important;
+.site-brand-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+  min-width: 0;
 }
-.site-brand .brand-mark {
-  display: block;
-}
-.site-brand {
-  gap: 0.7rem;
-  font-size: inherit;
+
+.site-brand-name {
+  font-family: "Pinyon Script", "Segoe Script", cursive;
+  font-size: 1.72rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
   color: var(--cream);
 }
+
+.site-brand-sub {
+  margin-top: 0.08rem;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cream-muted);
+}
+
+.brand-mark { display: none; }
 
 
 
@@ -565,6 +583,9 @@ h2 {
 
 @media (max-width: 640px) {
   .site-header { padding: 0.7rem 1rem; }
+  .site-logo { width: 40px; height: 40px; }
+  .site-brand-name { font-size: 1.45rem; }
+  .site-brand-sub { font-size: 0.58rem; letter-spacing: 0.13em; }
   .recipe-toolbar { gap: 0.4rem; }
   .hrecipe ol li.is-done::after { display: none; }
 }
@@ -840,13 +861,211 @@ body.cook-mode .cook-panel {
 }
 
 
-/* Splash */
-.splash-page .site-header { border-bottom-color: transparent; }
-.splash {
-  width: min(100% - 2rem, 40rem);
-  margin: 0 auto 3.5rem;
-  animation: rise 0.55s var(--ease) both;
+/* Splash — animated Lowcountry lockup on its paper ground */
+.splash-page {
+  background: var(--paper);
+  color: var(--ink);
 }
+html:has(body.splash-page) { color-scheme: light; }
+
+.splash-page .site-header {
+  border-bottom-color: rgba(44, 56, 36, 0.12);
+  background: rgba(243, 239, 228, 0.92);
+  transition: background 0.35s var(--ease), border-color 0.35s var(--ease);
+}
+.splash-page .site-brand-name { color: var(--ink); }
+.splash-page .site-brand-sub,
+.splash-page .site-nav { color: #5c564c; }
+.splash-page .site-nav:hover { color: var(--ink); background: rgba(44, 56, 36, 0.05); }
+.splash-page .site-brand:hover .site-brand-name { color: #4f643c; }
+.splash-page .site-logo { box-shadow: 0 0 0 1px rgba(44, 56, 36, 0.18); }
+
+.splash-page .site-header.is-solid {
+  border-bottom-color: var(--line);
+  background: rgba(18, 15, 13, 0.9);
+}
+.splash-page .site-header.is-solid .site-brand-name { color: var(--cream); }
+.splash-page .site-header.is-solid .site-brand-sub,
+.splash-page .site-header.is-solid .site-nav { color: var(--cream-muted); }
+.splash-page .site-header.is-solid .site-nav:hover { color: var(--cream); background: rgba(246, 239, 230, 0.04); }
+.splash-page .site-header.is-solid .site-brand:hover .site-brand-name { color: var(--fire-soft); }
+.splash-page .site-header.is-solid .site-logo { box-shadow: 0 0 0 1px rgba(246, 239, 230, 0.18); }
+
+.logo-splash {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: calc(100svh - var(--header-h));
+  padding: 0.5rem 1rem 2.25rem;
+  overflow: hidden;
+}
+.logo-splash::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 42%, transparent 42%, rgba(90, 74, 48, 0.07) 100%);
+}
+
+.logo-lockup {
+  position: relative;
+  z-index: 1;
+  width: min(92vw, 420px);
+  aspect-ratio: 935 / 1284;
+}
+.logo-layer,
+.logo-ring,
+.sun-glow,
+.water-glint {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.logo-layer {
+  object-fit: fill;
+  pointer-events: none;
+}
+.logo-food,
+.logo-type,
+.logo-ring,
+.sun-glow,
+.water-glint { opacity: 0; }
+
+.sun-glow,
+.water-glint { pointer-events: none; }
+.sun-glow {
+  inset: auto;
+  left: 49.7%;
+  top: 21%;
+  width: 18%;
+  height: 12%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255, 220, 150, 0.95), rgba(255, 220, 150, 0) 68%);
+  mix-blend-mode: multiply;
+}
+.water-glint {
+  inset: auto;
+  left: 18%;
+  top: 30%;
+  width: 64%;
+  height: 14%;
+  border-radius: 50%;
+  background: linear-gradient(100deg, transparent 28%, rgba(255, 252, 242, 0.8) 50%, transparent 70%);
+  mix-blend-mode: soft-light;
+}
+.logo-ring {
+  overflow: visible;
+  pointer-events: none;
+}
+.logo-ring ellipse {
+  fill: none;
+  stroke: #5a6844;
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.logo-splash .splash-lead,
+.logo-splash .splash-actions { position: relative; z-index: 1; }
+.logo-splash .splash-lead {
+  margin-top: 0.35rem;
+  text-align: center;
+  color: #5c564c;
+}
+.logo-splash .splash-btn {
+  color: var(--ink);
+  background: transparent;
+  border-color: rgba(44, 56, 36, 0.28);
+}
+.logo-splash .splash-btn:hover { color: var(--ink); border-color: rgba(79, 100, 60, 0.7); }
+.logo-splash .splash-btn-primary {
+  color: #f6f1e6;
+  background: #3f4a32;
+  border-color: transparent;
+}
+.logo-splash .splash-btn-primary:hover { color: #f6f1e6; filter: brightness(1.08); }
+
+.splash-below {
+  background: var(--bg);
+  color: var(--cream);
+  color-scheme: dark;
+  padding: 2.4rem 0 2rem;
+}
+.splash-below .splash-categories,
+.splash-below .site-footer {
+  width: min(100% - 2rem, 40rem);
+  margin-left: auto;
+  margin-right: auto;
+}
+.splash-below .site-footer { padding-top: 0.5rem; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .logo-scene {
+    clip-path: ellipse(33.2% 24.4% at 49.73% 27.65%);
+    animation: iris 1.7s var(--ease) both;
+  }
+  .logo-food {
+    clip-path: inset(42% 0 29% 0);
+    -webkit-mask-image: radial-gradient(ellipse 36% 27% at 49.73% 27.65%, transparent 68%, #000 80%);
+    mask-image: radial-gradient(ellipse 36% 27% at 49.73% 27.65%, transparent 68%, #000 80%);
+    animation: fade-in 1.05s var(--ease) 1.05s both;
+  }
+  .logo-type {
+    clip-path: inset(69% 0 0 0);
+    animation: rise-in 1.15s var(--ease) 1.7s both;
+  }
+  .logo-ring { animation: ring-life 2.6s ease 0.25s both; }
+  .logo-ring ellipse {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: draw-ring 1.7s var(--ease) 0.35s forwards;
+  }
+  .sun-glow { animation: sun-pulse 4.8s ease-in-out 1.5s infinite; }
+  .water-glint { animation: water-glint 6.5s ease-in-out 2s infinite; }
+  .logo-splash .splash-lead,
+  .logo-splash .splash-actions { animation: splash-in 0.7s var(--ease) 2.35s both; }
+}
+
+@keyframes splash-in {
+  0% { opacity: 0; transform: translateY(10px); visibility: hidden; }
+  30% { visibility: visible; }
+  100% { opacity: 1; transform: none; visibility: visible; }
+}
+@keyframes iris {
+  0% { clip-path: ellipse(0% 0% at 49.73% 21%); opacity: 0; }
+  16% { opacity: 1; }
+  100% { clip-path: ellipse(33.2% 24.4% at 49.73% 27.65%); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes draw-ring {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes ring-life {
+  0% { opacity: 0; }
+  18% { opacity: 1; }
+  68% { opacity: 0.85; }
+  100% { opacity: 0; }
+}
+@keyframes sun-pulse {
+  0%, 100% { opacity: 0.28; transform: translate(-50%, -50%) scale(0.92); }
+  50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.12); }
+}
+@keyframes water-glint {
+  0%, 100% { opacity: 0; transform: translateX(-14%); }
+  35% { opacity: 0.75; }
+  70% { opacity: 0; transform: translateX(16%); }
+}
+
 .splash-hero {
   text-align: center;
   padding: clamp(2rem, 6vw, 3.5rem) 1rem 2rem;

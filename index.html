@@ -8,9 +8,13 @@
   <meta property="og:title" content="Carroll Lowcountry Table">
   <meta property="og:description" content="Coastal Georgia kitchen recipes. Cast iron, weeknight plates, weekend cooks.">
   <meta property="og:type" content="website">
-  <meta name="theme-color" content="#120f0d">
-  <meta name="color-scheme" content="dark">
+  <meta property="og:image" content="https://brandnu76.github.io/recipes/logo.jpg">
+  <meta name="theme-color" content="#f3efe4">
+  <meta name="color-scheme" content="light">
   <meta name="copyright" content="© 2026 Brandon Carroll">
+  <link rel="icon" href="favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="preload" as="image" href="logo.webp" type="image/webp">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="brand-override.css">
   <link rel="manifest" href="manifest.webmanifest">
@@ -18,32 +22,45 @@
 </head>
 <body class="splash-page">
   <header class="site-header">
-    <a class="site-brand" href="index.html"><span class="brand-mark" aria-hidden="true"></span>Carroll Lowcountry Table</a>
+    <a class="site-brand" href="index.html"><img class="site-logo" src="logo-mark.webp" width="46" height="46" alt=""><span class="site-brand-text"><span class="site-brand-name">Carroll</span><span class="site-brand-sub">Lowcountry Table</span></span></a>
     <a class="site-nav" href="recipes.html">All recipes</a>
   </header>
-  <main class="splash">
-    <div class="splash-hero">
-      <h1 class="splash-title">Carroll Lowcountry Table</h1>
-      <p class="splash-tagline">Recipes from our Lowcountry table.</p>
+  <main>
+    <section class="logo-splash" aria-labelledby="splash-title">
+      <h1 id="splash-title" class="visually-hidden">Carroll Lowcountry Table</h1>
+      <div class="logo-lockup">
+        <img class="logo-layer logo-scene" src="logo.webp" width="935" height="1284" alt="Carroll Lowcountry Table. Recipes from our Lowcountry table.">
+        <img class="logo-layer logo-food" src="logo.webp" width="935" height="1284" alt="" aria-hidden="true">
+        <img class="logo-layer logo-type" src="logo.webp" width="935" height="1284" alt="" aria-hidden="true">
+        <svg class="logo-ring" viewBox="0 0 935 1284" aria-hidden="true">
+          <ellipse cx="465" cy="355" rx="299" ry="299" pathLength="100"></ellipse>
+        </svg>
+        <div class="sun-glow" aria-hidden="true"></div>
+        <div class="water-glint" aria-hidden="true"></div>
+      </div>
       <p class="splash-lead">Coastal Georgia kitchen — cast iron, weeknight plates, and weekend cooks.</p>
       <div class="splash-actions">
         <a class="splash-btn splash-btn-primary" href="recipes.html">Browse all recipes</a>
+        <a class="splash-btn" href="#categories">Categories</a>
       </div>
-    </div>
-    <section class="splash-categories" aria-label="Recipe categories">
-      <h2>Categories</h2>
-      <ul class="book-list splash-cat-list">
-      <li><a class="splash-cat" href="category-weekend-dinners.html"><span class="card-cat">Weekend dinners</span><span class="card-title">6 recipes</span></a></li>
-      <li><a class="splash-cat" href="category-weekday-dinners.html"><span class="card-cat">Weekday dinners</span><span class="card-title">8 recipes</span></a></li>
-      <li><a class="splash-cat" href="category-game-day.html"><span class="card-cat">Game day</span><span class="card-title">1 recipe</span></a></li>
-      <li><a class="splash-cat" href="category-sides-salads.html"><span class="card-cat">Sides &amp; salads</span><span class="card-title">3 recipes</span></a></li>
-      <li><a class="splash-cat" href="category-dessert.html"><span class="card-cat">Dessert</span><span class="card-title">7 recipes</span></a></li>
-      </ul>
     </section>
+    <div class="splash-below">
+      <section class="splash-categories" id="categories" aria-label="Recipe categories">
+        <h2>Categories</h2>
+        <ul class="book-list splash-cat-list">
+          <li><a class="splash-cat" href="category-weekend-dinners.html"><span class="card-cat">Weekend dinners</span><span class="card-title">6 recipes</span></a></li>
+          <li><a class="splash-cat" href="category-weekday-dinners.html"><span class="card-cat">Weekday dinners</span><span class="card-title">8 recipes</span></a></li>
+          <li><a class="splash-cat" href="category-game-day.html"><span class="card-cat">Game day</span><span class="card-title">1 recipe</span></a></li>
+          <li><a class="splash-cat" href="category-sides-salads.html"><span class="card-cat">Sides &amp; salads</span><span class="card-title">3 recipes</span></a></li>
+          <li><a class="splash-cat" href="category-dessert.html"><span class="card-cat">Dessert</span><span class="card-title">7 recipes</span></a></li>
+        </ul>
+      </section>
+      <footer class="site-footer">
+        <p class="footer-copy">© 2026 Brandon Carroll. All rights reserved.</p>
+        <p class="footer-links"><a href="copyright.html">Copyright &amp; use</a> · Carroll Lowcountry Table</p>
+      </footer>
+    </div>
   </main>
-  <footer class="site-footer">
-    <p class="footer-copy">© 2026 Brandon Carroll. All rights reserved.</p>
-    <p class="footer-links"><a href="copyright.html">Copyright &amp; use</a> · Carroll Lowcountry Table</p>
-  </footer>
+  <script src="site.js" defer></script>
 </body>
 </html>
