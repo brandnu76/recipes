@@ -26,6 +26,7 @@
   const cards = Array.from(document.querySelectorAll(".book-list a"));
   const sections = Array.from(document.querySelectorAll(".book-section"));
   let activeCat = "all";
+  let activeLabel = "";
 
   const update = () => {
     const q = (input?.value || "").trim().toLowerCase();
@@ -45,7 +46,7 @@
     });
     if (meta) {
       const bits = [];
-      if (activeCat !== "all") bits.push(activeCat);
+      if (activeLabel) bits.push(activeLabel);
       if (q) bits.push("\u201c" + (input?.value || "").trim() + "\u201d");
       meta.textContent = bits.length
         ? shown + " recipe" + (shown === 1 ? "" : "s") + " \u00b7 " + bits.join(" \u00b7 ")
@@ -56,7 +57,8 @@
   input?.addEventListener("input", update);
   chips.forEach((chip) => {
     chip.addEventListener("click", () => {
-      activeCat = chip.getAttribute("data-filter-cat") || "all";
+      activeCat = (chip.getAttribute("data-filter-cat") || "all").toLowerCase();
+      activeLabel = activeCat === "all" ? "" : chip.textContent.trim();
       chips.forEach((c) => c.classList.toggle("is-active", c === chip));
       update();
     });
