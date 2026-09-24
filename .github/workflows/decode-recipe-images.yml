@@ -1,0 +1,50 @@
+name: decode-recipe-images
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "images/_packs/**"
+      - ".github/workflows/decode-recipe-images.yml"
+permissions:
+  contents: write
+jobs:
+  decode:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Decode image packs to images/*.webp
+        run: |
+          set -euo pipefail
+          mkdir -p images
+          shopt -s nullglob
+          packs=(images/_packs/pack*.tar.b64)
+          if [ ${#packs[@]} -eq 0 ]; then
+            echo "No packs yet"
+            exit 0
+          fi
+          for f in "${packs[@]}"; do
+            echo "decoding $f"
+            base64 -d "$f" | tar -x -C images
+          done
+          python3 - <<'PY'
+          from pathlib import Path
+          files = sorted(Path("images").glob("*.webp"))
+          assert files, "no webp decoded"
+          for p in files:
+              b = p.read_bytes()
+              assert b[:4] == b"RIFF" and b[8:12] == b"WEBP", p
+              print(p.name, len(b))
+          print("count", len(files))
+          PY
+      - name: Commit decoded images
+        run: |
+          set -euo pipefail
+          git config user.name "brandnu76"
+          git config user.email "bccarroll30@gmail.com"
+          git add images/*.webp
+          if git diff --cached --quiet; then
+            echo "No image changes"
+            exit 0
+          fi
+          git commit -m "Add decoded recipe hero images (webp)"
+          git push
