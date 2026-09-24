@@ -6,3 +6,43 @@
 .site-brand .brand-mark {
   display: none !important;
 }
+
+/* Recipe hero + listing photos */
+.recipe-hero {
+  margin: 0 0 1.25rem;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--bg-inset);
+}
+.recipe-hero img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+body.cook-mode .recipe-hero { display: none; }
+
+.book-list a {
+  padding: 0 0 0.95rem;
+  overflow: hidden;
+}
+.book-list a .card-photo {
+  display: block;
+  width: 100%;
+  height: 9.2rem;
+  object-fit: cover;
+  background: var(--bg-inset);
+  border-bottom: 1px solid var(--line);
+}
+.book-list a .card-cat,
+.book-list a .card-title {
+  padding-left: 1.1rem;
+  padding-right: 1.1rem;
+}
+.book-list a .card-cat { padding-top: 0.75rem; }
+
+@media print {
+  .recipe-hero { border: none; }
+}
