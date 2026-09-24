@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "images/_packs/**"
+      - "tools/inject_recipe_images.py"
       - ".github/workflows/decode-recipe-images.yml"
 permissions:
   contents: write
@@ -36,15 +37,17 @@ jobs:
               print(p.name, len(b))
           print("count", len(files))
           PY
-      - name: Commit decoded images
+      - name: Inject hero and card markup
+        run: python3 tools/inject_recipe_images.py
+      - name: Commit images and page updates
         run: |
           set -euo pipefail
           git config user.name "brandnu76"
           git config user.email "bccarroll30@gmail.com"
-          git add images/*.webp
+          git add images/*.webp *.html category-*.html recipes.html
           if git diff --cached --quiet; then
-            echo "No image changes"
+            echo "No changes"
             exit 0
           fi
-          git commit -m "Add decoded recipe hero images (webp)"
+          git commit -m "Add recipe hero images and wire them into pages"
           git push
