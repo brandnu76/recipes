@@ -13,51 +13,37 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install recipe-accurate antipasto hero
+      - name: Decode base64 image packs
         run: |
           set -euo pipefail
           mkdir -p images
-          curl -fsSL "https://litter.catbox.moe/qo3ae7.webp" -o images/antipasto-pasta-salad-v3.webp
           python3 - <<'PY'
           from pathlib import Path
-          import shutil
-          p = Path('images/antipasto-pasta-salad-v3.webp')
-          b = p.read_bytes()
-          assert b[:4] == b'RIFF' and b[8:12] == b'WEBP', b[:16]
-          print(p.name, len(b))
-          shutil.copyfile(p, 'images/antipasto-pasta-salad.webp')
-          shutil.copyfile(p, 'images/antipasto-pasta-salad-v2.webp')
-          replacements = [
-              ('images/antipasto-pasta-salad-v2.webp', 'images/antipasto-pasta-salad-v3.webp'),
-              ('images/antipasto-pasta-salad.webp', 'images/antipasto-pasta-salad-v3.webp'),
-              ('https://brandnu76.github.io/recipes/images/antipasto-pasta-salad-v2.webp', 'https://brandnu76.github.io/recipes/images/antipasto-pasta-salad-v3.webp'),
-              ('https://brandnu76.github.io/recipes/images/antipasto-pasta-salad.webp', 'https://brandnu76.github.io/recipes/images/antipasto-pasta-salad-v3.webp'),
-          ]
-          alt_old = 'alt="Antipasto pasta salad"'
-          alt_mid = 'alt="Rainbow rotini antipasto pasta salad with salami, mini pepperoni, and Asiago"'
-          alt_new = 'alt="Rainbow rotini antipasto pasta salad with Genoa salami, mini pepperoni, Asiago cubes, sliced olives, diced peppers, and tomatoes"'
-          for path in Path('.').glob('*.html'):
-              t = path.read_text()
-              orig = t
-              for a, b_ in replacements:
-                  t = t.replace(a, b_)
-              t = t.replace(alt_old, alt_new).replace(alt_mid, alt_new)
-              if t != orig:
-                  path.write_text(t)
-                  print('patched', path.name)
-          sw = Path('sw.js')
-          sw.write_text(sw.read_text().replace('carroll-lowcountry-v4', 'carroll-lowcountry-v5'))
-          print('sw bumped')
+          import base64
+          pack_dir = Path('images/_packs')
+          if not pack_dir.exists():
+              print('no packs')
+              raise SystemExit(0)
+          for p in sorted(pack_dir.glob('*.b64')):
+              name = p.name[:-4]
+              raw = p.read_text().strip()
+              if not raw or raw.startswith('PLACEHOLDER'):
+                  print('skip', p.name)
+                  continue
+              out = Path('images') / name
+              data = base64.b64decode(raw)
+              out.write_bytes(data)
+              print('decoded', out, len(data))
           PY
-      - name: Commit antipasto hero v3
+      - name: Commit decoded images
         run: |
           set -euo pipefail
           git config user.name "brandnu76"
           git config user.email "bccarroll30@gmail.com"
-          git add images/antipasto-pasta-salad.webp images/antipasto-pasta-salad-v2.webp images/antipasto-pasta-salad-v3.webp *.html sw.js
+          git add images/*.webp || true
           if git diff --cached --quiet; then
             echo "No changes"
             exit 0
           fi
-          git commit -m "Replace antipasto hero with recipe-accurate rotini, salami, mini pepperoni, Asiago"
+          git commit -m "Decode recipe image packs"
           git push
