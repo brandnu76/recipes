@@ -26,7 +26,7 @@ ALTS = {
     "supreme-pacific-jasmine-musubi": "Spam musubi on jasmine rice",
     "baked-cinnamon-apple-butter-french-toast": "Baked cinnamon apple butter French toast",
     "aint-no-thing-butta-chicken-wings": "Crispy hot-sauce butter chicken wings",
-    "antipasto-pasta-salad": "Antipasto pasta salad",
+    "antipasto-pasta-salad": "Rainbow rotini antipasto pasta salad with Genoa salami, mini pepperoni, Asiago cubes, sliced olives, diced peppers, and tomatoes",
     "seared-steak-salad": "Seared steak salad",
     "southern-baked-beans": "Southern baked beans",
     "apple-fritter-popcorn": "Apple fritter caramel popcorn",
