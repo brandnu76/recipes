@@ -29,6 +29,10 @@ Import URL pattern after GitHub Pages:
 - [Mongolian Beef and Noodles](mongolian-beef-noodles.html)
 - [The Supreme Pacific Jasmine Musubi](supreme-pacific-jasmine-musubi.html)
 
+## Breakfast & brunch
+
+- [Baked Cinnamon Apple Butter French Toast](baked-cinnamon-apple-butter-french-toast.html)
+
 ## Game day
 
 - [Ain't No Thing Butta Chicken Wings](aint-no-thing-butta-chicken-wings.html)
