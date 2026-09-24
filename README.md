@@ -12,6 +12,7 @@ Import URL pattern after GitHub Pages:
 
 ## Weekend dinners
 
+- [Sheet-Pan Salmon with Sweet Potatoes and Green Beans (10-lb Side)](sheet-pan-salmon-sweet-potato-10lb.html)
 - [Smoked Chicken Thighs with Alabama White Sauce](smoked-chicken-thighs-alabama-white-sauce.html)
 - [Lowcountry Shrimp and Grits](lowcountry-shrimp-and-grits.html)
 - [Sunday Chuck Roast with Vegetables](sunday-chuck-roast.html)
