@@ -3,9 +3,8 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - "images/_packs/**"
-      - "tools/inject_recipe_images.py"
       - ".github/workflows/decode-recipe-images.yml"
+      - "tools/inject_recipe_images.py"
 permissions:
   contents: write
 jobs:
@@ -13,30 +12,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Decode image packs to images/*.webp
+      - name: Download and extract recipe hero images
         run: |
           set -euo pipefail
           mkdir -p images
-          shopt -s nullglob
-          packs=(images/_packs/*.webp.b64)
-          if [ ${#packs[@]} -eq 0 ]; then
-            echo "No packs yet"
-            exit 0
-          fi
-          for f in "${packs[@]}"; do
-            name=$(basename "$f" .b64)
-            echo "decoding $name"
-            base64 -d "$f" > "images/$name"
-          done
+          curl -fsSL -o /tmp/recipe-heroes.tar.gz https://litter.catbox.moe/ozvtrz.gz
           python3 - <<'PY'
+          import gzip, tarfile
           from pathlib import Path
-          files = sorted(Path("images").glob("*.webp"))
-          assert files, "no webp decoded"
+          src = Path('/tmp/recipe-heroes.tar.gz')
+          assert src.stat().st_size > 1_000_000, src.stat().st_size
+          out = Path('images')
+          with gzip.open(src, 'rb') as gz, tarfile.open(fileobj=gz, mode='r:') as tar:
+              tar.extractall(out)
+          files = sorted(out.glob('*.webp'))
+          assert len(files) >= 27, len(files)
           for p in files:
               b = p.read_bytes()
-              assert b[:4] == b"RIFF" and b[8:12] == b"WEBP", p
+              assert b[:4] == b'RIFF' and b[8:12] == b'WEBP', p.name
               print(p.name, len(b))
-          print("count", len(files))
+          print('count', len(files))
           PY
       - name: Inject hero and card markup
         run: python3 tools/inject_recipe_images.py
