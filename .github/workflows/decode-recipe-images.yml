@@ -5,6 +5,7 @@ on:
     paths:
       - "images/_packs/**"
       - "tools/inject_recipe_images.py"
+      - ".github/workflows/decode-recipe-images.yml"
 permissions:
   contents: write
 jobs:
@@ -12,43 +13,45 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Decode any new image packs to images/*.webp
+      - name: Install rainbow-rotini antipasto hero
         run: |
           set -euo pipefail
           mkdir -p images
-          shopt -s nullglob
-          packs=(images/_packs/*.webp.b64)
-          if [ ${#packs[@]} -eq 0 ]; then
-            echo "No new packs"
-            ls images/*.webp | wc -l
-            exit 0
-          fi
-          for f in "${packs[@]}"; do
-            name=$(basename "$f" .b64)
-            echo "decoding $name"
-            base64 -d "$f" > "images/$name"
-          done
+          curl -fsSL "https://litter.catbox.moe/ehcjyf.webp" -o images/antipasto-pasta-salad-v2.webp
           python3 - <<'PY'
           from pathlib import Path
-          files = sorted(Path('images').glob('*.webp'))
-          assert files, 'no webp decoded'
-          for p in files:
-              b = p.read_bytes()
-              assert b[:4] == b'RIFF' and b[8:12] == b'WEBP', p
-              print(p.name, len(b))
-          print('count', len(files))
+          p = Path('images/antipasto-pasta-salad-v2.webp')
+          b = p.read_bytes()
+          assert b[:4] == b'RIFF' and b[8:12] == b'WEBP', b[:16]
+          print(p.name, len(b))
+          old = 'images/antipasto-pasta-salad.webp'
+          new = 'images/antipasto-pasta-salad-v2.webp'
+          abs_old = 'https://brandnu76.github.io/recipes/' + old
+          abs_new = 'https://brandnu76.github.io/recipes/' + new
+          for path in Path('.').glob('*.html'):
+              t = path.read_text()
+              if old not in t and abs_old not in t:
+                  continue
+              t = t.replace(abs_old, abs_new).replace(old, new)
+              t = t.replace(
+                  'alt="Antipasto pasta salad"',
+                  'alt="Rainbow rotini antipasto pasta salad with salami, mini pepperoni, and Asiago"',
+              )
+              path.write_text(t)
+              print('patched', path.name)
+          sw = Path('sw.js')
+          sw.write_text(sw.read_text().replace('carroll-lowcountry-v3', 'carroll-lowcountry-v4'))
+          print('sw bumped')
           PY
-      - name: Inject hero and card markup
-        run: python3 tools/inject_recipe_images.py
-      - name: Commit images and page updates
+      - name: Commit antipasto hero
         run: |
           set -euo pipefail
           git config user.name "brandnu76"
           git config user.email "bccarroll30@gmail.com"
-          git add images/*.webp *.html
+          git add images/antipasto-pasta-salad-v2.webp *.html sw.js
           if git diff --cached --quiet; then
             echo "No changes"
             exit 0
           fi
-          git commit -m "Add recipe hero images and wire them into pages"
+          git commit -m "Replace antipasto salad hero with rainbow rotini photo"
           git push
