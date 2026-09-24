@@ -18,14 +18,15 @@ jobs:
           set -euo pipefail
           mkdir -p images
           shopt -s nullglob
-          packs=(images/_packs/pack*.tar.b64)
+          packs=(images/_packs/*.webp.b64)
           if [ ${#packs[@]} -eq 0 ]; then
             echo "No packs yet"
             exit 0
           fi
           for f in "${packs[@]}"; do
-            echo "decoding $f"
-            base64 -d "$f" | tar -x -C images
+            name=$(basename "$f" .b64)
+            echo "decoding $name"
+            base64 -d "$f" > "images/$name"
           done
           python3 - <<'PY'
           from pathlib import Path
@@ -44,7 +45,7 @@ jobs:
           set -euo pipefail
           git config user.name "brandnu76"
           git config user.email "bccarroll30@gmail.com"
-          git add images/*.webp *.html category-*.html recipes.html
+          git add images/*.webp *.html
           if git diff --cached --quiet; then
             echo "No changes"
             exit 0
