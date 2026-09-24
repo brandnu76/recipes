@@ -5,6 +5,7 @@ on:
     paths:
       - "images/_packs/**"
       - "tools/inject_recipe_images.py"
+      - ".github/workflows/decode-recipe-images.yml"
 permissions:
   contents: write
 jobs:
@@ -12,43 +13,41 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Decode any new image packs to images/*.webp
+      - name: Publish cache-busted gingersnap hero
         run: |
           set -euo pipefail
-          mkdir -p images
-          shopt -s nullglob
-          packs=(images/_packs/*.webp.b64)
-          if [ ${#packs[@]} -eq 0 ]; then
-            echo "No new packs"
-            ls images/*.webp | wc -l
-            exit 0
-          fi
-          for f in "${packs[@]}"; do
-            name=$(basename "$f" .b64)
-            echo "decoding $name"
-            base64 -d "$f" > "images/$name"
-          done
+          src=images/white-chocolate-gingersnap-cheesecake.webp
+          dest=images/white-chocolate-gingersnap-cheesecake-v2.webp
+          test -f "$src"
+          cp "$src" "$dest"
           python3 - <<'PY'
           from pathlib import Path
-          files = sorted(Path('images').glob('*.webp'))
-          assert files, 'no webp decoded'
-          for p in files:
-              b = p.read_bytes()
-              assert b[:4] == b'RIFF' and b[8:12] == b'WEBP', p
-              print(p.name, len(b))
-          print('count', len(files))
+          old = "images/white-chocolate-gingersnap-cheesecake.webp"
+          new = "images/white-chocolate-gingersnap-cheesecake-v2.webp"
+          abs_old = "https://brandnu76.github.io/recipes/" + old
+          abs_new = "https://brandnu76.github.io/recipes/" + new
+          for p in Path('.').glob('*.html'):
+              t = p.read_text()
+              if old not in t and abs_old not in t:
+                  continue
+              t = t.replace(abs_old, abs_new).replace(old, new)
+              p.write_text(t)
+              print('patched', p.name)
+          sw = Path('sw.js')
+          t = sw.read_text()
+          t = t.replace('carroll-lowcountry-v2', 'carroll-lowcountry-v3')
+          sw.write_text(t)
+          print('sw cache bumped')
           PY
-      - name: Inject hero and card markup
-        run: python3 tools/inject_recipe_images.py
-      - name: Commit images and page updates
+      - name: Commit cache-bust
         run: |
           set -euo pipefail
           git config user.name "brandnu76"
           git config user.email "bccarroll30@gmail.com"
-          git add images/*.webp *.html
+          git add images/white-chocolate-gingersnap-cheesecake-v2.webp *.html sw.js
           if git diff --cached --quiet; then
             echo "No changes"
             exit 0
           fi
-          git commit -m "Add recipe hero images and wire them into pages"
+          git commit -m "Cache-bust gingersnap cheesecake photo URL"
           git push
