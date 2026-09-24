@@ -5,6 +5,7 @@ on:
     paths:
       - "images/_packs/**"
       - "tools/inject_recipe_images.py"
+      - ".github/workflows/decode-recipe-images.yml"
 permissions:
   contents: write
 jobs:
@@ -12,43 +13,47 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Decode any new image packs to images/*.webp
+      - name: Replace white chocolate strawberry cloud cake hero
         run: |
           set -euo pipefail
           mkdir -p images
+          curl -fsSL "https://litter.catbox.moe/bmuq46.webp" -o images/white-chocolate-strawberry-cloud-cake.webp
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('images/white-chocolate-strawberry-cloud-cake.webp')
+          b = p.read_bytes()
+          assert b[:4] == b'RIFF' and b[8:12] == b'WEBP', b[:16]
+          print(p.name, len(b))
+          PY
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('white-chocolate-strawberry-cloud-cake.html')
+          t = p.read_text()
+          t = t.replace(
+              'alt="White chocolate strawberry cloud cake"',
+              'alt="No-bake white chocolate strawberry cheesecake with glossy strawberry compote"',
+          )
+          p.write_text(t)
+          PY
+      - name: Decode any leftover packs
+        run: |
+          set -euo pipefail
           shopt -s nullglob
           packs=(images/_packs/*.webp.b64)
-          if [ ${#packs[@]} -eq 0 ]; then
-            echo "No new packs"
-            ls images/*.webp | wc -l
-            exit 0
-          fi
           for f in "${packs[@]}"; do
             name=$(basename "$f" .b64)
             echo "decoding $name"
             base64 -d "$f" > "images/$name"
           done
-          python3 - <<'PY'
-          from pathlib import Path
-          files = sorted(Path('images').glob('*.webp'))
-          assert files, 'no webp decoded'
-          for p in files:
-              b = p.read_bytes()
-              assert b[:4] == b'RIFF' and b[8:12] == b'WEBP', p
-              print(p.name, len(b))
-          print('count', len(files))
-          PY
-      - name: Inject hero and card markup
-        run: python3 tools/inject_recipe_images.py
-      - name: Commit images and page updates
+      - name: Commit replacement hero
         run: |
           set -euo pipefail
           git config user.name "brandnu76"
           git config user.email "bccarroll30@gmail.com"
-          git add images/*.webp *.html
+          git add images/white-chocolate-strawberry-cloud-cake.webp white-chocolate-strawberry-cloud-cake.html
           if git diff --cached --quiet; then
             echo "No changes"
             exit 0
           fi
-          git commit -m "Add recipe hero images and wire them into pages"
+          git commit -m "Replace cloud cake hero with no-bake cheesecake photo"
           git push
