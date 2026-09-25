@@ -12,6 +12,7 @@ Import URL pattern after GitHub Pages:
 
 ## Weekend dinners
 
+- [Seared Ribeye on the Pellet Grill](seared-ribeye-pellet-grill.html)
 - [Texas Smoked Brisket](texas-smoked-brisket.html)
 - [Sheet-Pan Salmon with Sweet Potatoes and Green Beans (10-lb Fillet)](sheet-pan-salmon-sweet-potato-10lb.html)
 - [Smoked Chicken Thighs with Alabama White Sauce](smoked-chicken-thighs-alabama-white-sauce.html)
