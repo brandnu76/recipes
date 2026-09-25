@@ -10,6 +10,7 @@ IMAGES = ROOT / "images"
 BASE = "https://brandnu76.github.io/recipes/images"
 
 ALTS = {
+    "texas-smoked-brisket": "Sliced Texas smoked brisket with dark bark and a pink smoke ring",
     "smoked-chicken-thighs-alabama-white-sauce": "Smoked chicken thighs with Alabama white sauce",
     "lowcountry-shrimp-and-grits": "Lowcountry shrimp and grits",
     "sunday-chuck-roast": "Sunday chuck roast with vegetables",
