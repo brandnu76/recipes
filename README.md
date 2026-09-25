@@ -46,6 +46,7 @@ Import URL pattern after GitHub Pages:
 
 ## Dessert
 
+- [Blueberry Lemon Pound Cake](blueberry-lemon-pound-cake.html)
 - [Apple Fritter Popcorn](apple-fritter-popcorn.html)
 - [Strawberry Strudel Skillet Cookie](strawberry-strudel-skillet-cookie.html)
 - [Lemon Skillet Cookie](lemon-skillet-cookie.html)
