@@ -29,6 +29,13 @@ jobs:
           raw = ''.join(''.join(p.read_text().split()) for p in parts)
           data = base64.b64decode(raw)
           out = Path('images/texas-smoked-brisket.webp')
+          if len(data) < 12 or data[:4] != b'RIFF' or data[8:12] != b'WEBP':
+              raise SystemExit('decoded bytes are not a WebP; leaving the existing hero in place')
+          expected = int.from_bytes(data[4:8], 'little') + 8
+          if expected != len(data):
+              raise SystemExit(
+                  f'incomplete WebP ({len(data)} bytes, header expects {expected}); leaving the existing hero in place'
+              )
           out.parent.mkdir(exist_ok=True)
           out.write_bytes(data)
           print('wrote', out, len(data), 'from', len(parts), 'parts')
