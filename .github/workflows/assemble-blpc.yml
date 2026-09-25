@@ -1,0 +1,47 @@
+name: assemble-blpc
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "images/_packs/blpc/**"
+      - ".github/workflows/assemble-blpc.yml"
+permissions:
+  contents: write
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble and decode hero
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64
+          pack = Path('images/_packs/blpc')
+          if not pack.exists():
+              print('no pack dir')
+              raise SystemExit(0)
+          parts = sorted(pack.glob('part*.txt'))
+          if not parts:
+              print('no parts')
+              raise SystemExit(0)
+          raw = ''.join(''.join(p.read_text().split()) for p in parts)
+          data = base64.b64decode(raw)
+          out = Path('images/blueberry-lemon-pound-cake.webp')
+          out.parent.mkdir(exist_ok=True)
+          out.write_bytes(data)
+          print('wrote', out, len(data), 'from', len(parts), 'parts')
+          PY
+      - name: Commit decoded image
+        run: |
+          set -euo pipefail
+          git config user.name "brandnu76"
+          git config user.email "bccarroll30@gmail.com"
+          git add images/blueberry-lemon-pound-cake.webp
+          if git diff --cached --quiet; then
+            echo "No image change"
+            exit 0
+          fi
+          git commit -m "Add blueberry lemon pound cake hero image"
+          git push
