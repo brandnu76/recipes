@@ -29,6 +29,7 @@ ALTS = {
     "antipasto-pasta-salad": "Rainbow rotini antipasto pasta salad with Genoa salami, mini pepperoni, Asiago cubes, sliced olives, diced peppers, and tomatoes",
     "seared-steak-salad": "Seared steak salad",
     "southern-baked-beans": "Southern baked beans",
+    "blueberry-lemon-pound-cake": "Sliced blueberry lemon pound cake with lemon glaze",
     "apple-fritter-popcorn": "Apple fritter caramel popcorn",
     "strawberry-strudel-skillet-cookie": "Strawberry strudel skillet cookie",
     "lemon-skillet-cookie": "Lemon skillet cookie",
