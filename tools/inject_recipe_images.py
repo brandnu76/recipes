@@ -10,6 +10,8 @@ IMAGES = ROOT / "images"
 BASE = "https://brandnu76.github.io/recipes/images"
 
 ALTS = {
+    "seared-ribeye-pellet-grill": "Reverse-seared ribeye, sliced medium-rare, with herb butter and roasted garlic",
+    "texas-smoked-brisket": "Sliced Texas smoked brisket with dark bark and a pink smoke ring",
     "smoked-chicken-thighs-alabama-white-sauce": "Smoked chicken thighs with Alabama white sauce",
     "lowcountry-shrimp-and-grits": "Lowcountry shrimp and grits",
     "sunday-chuck-roast": "Sunday chuck roast with vegetables",
@@ -28,7 +30,9 @@ ALTS = {
     "aint-no-thing-butta-chicken-wings": "Crispy hot-sauce butter chicken wings",
     "antipasto-pasta-salad": "Rainbow rotini antipasto pasta salad with Genoa salami, mini pepperoni, Asiago cubes, sliced olives, diced peppers, and tomatoes",
     "seared-steak-salad": "Seared steak salad",
+    "garden-salad": "Garden salad with mixed greens, cherry tomatoes, cucumber, carrot, radish, and house vinaigrette",
     "southern-baked-beans": "Southern baked beans",
+    "blueberry-lemon-pound-cake": "Sliced blueberry lemon pound cake with lemon glaze",
     "apple-fritter-popcorn": "Apple fritter caramel popcorn",
     "strawberry-strudel-skillet-cookie": "Strawberry strudel skillet cookie",
     "lemon-skillet-cookie": "Lemon skillet cookie",
