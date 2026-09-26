@@ -27,6 +27,7 @@ ALTS = {
     "mongolian-beef-noodles": "Mongolian beef and noodles",
     "supreme-pacific-jasmine-musubi": "Spam musubi on jasmine rice",
     "baked-cinnamon-apple-butter-french-toast": "Baked cinnamon apple butter French toast",
+    "country-sourdough-boule": "Country sourdough boule with blistered crust and an open crumb",
     "aint-no-thing-butta-chicken-wings": "Crispy hot-sauce butter chicken wings",
     "antipasto-pasta-salad": "Rainbow rotini antipasto pasta salad with Genoa salami, mini pepperoni, Asiago cubes, sliced olives, diced peppers, and tomatoes",
     "seared-steak-salad": "Seared steak salad",

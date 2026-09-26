@@ -1,0 +1,14 @@
+name: check-recipe-images
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require a complete image for every recipe
+        run: python3 tools/check_recipe_images.py
