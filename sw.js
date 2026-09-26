@@ -23,6 +23,7 @@ const SHELL = [
   "./category-game-day.html",
   "./category-sides-salads.html",
   "./category-dessert.html",
+  "./category-breads.html",
 ];
 
 async function addAllSafe(cache, urls) {
