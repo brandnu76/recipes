@@ -50,6 +50,7 @@ Import URL pattern after GitHub Pages:
 
 ## Breads
 
+- [Pumpkin-Shaped Sourdough](pumpkin-shaped-sourdough.html)
 - [Country Sourdough Boule](country-sourdough-boule.html)
 
 ## Dessert
