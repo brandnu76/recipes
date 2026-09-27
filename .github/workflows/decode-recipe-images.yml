@@ -26,10 +26,14 @@ jobs:
               raise SystemExit(0)
           for p in sorted(pack_dir.glob('*.b64')):
               name = p.name[:-4]
-              raw = p.read_text().strip()
+              raw = ''.join(p.read_text().split())
               if not raw or raw.startswith('PLACEHOLDER'):
                   print('skip', p.name)
                   continue
+              pad = (-len(raw)) % 4
+              if pad:
+                  raw += '=' * pad
+                  print('padded', p.name, pad)
               out = Path('images') / name
               data = base64.b64decode(raw)
               out.write_bytes(data)
