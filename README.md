@@ -20,6 +20,7 @@ Import URL pattern after GitHub Pages:
 - [Sunday Chuck Roast with Vegetables](sunday-chuck-roast.html)
 - [Sunday Chuck Roast (PossibleCooker Pro)](sunday-chuck-roast-possiblecooker.html)
 - [Peach-Bourbon Cast-Iron Pork Chops](peach-bourbon-cast-iron-pork-chops.html)
+- [Peach-Bourbon Pork Chops on the Pellet Grill](peach-bourbon-pork-chops-pellet-grill.html)
 
 ## Weekday dinners
 
