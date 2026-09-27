@@ -17,6 +17,7 @@ ALTS = {
     "sunday-chuck-roast": "Sunday chuck roast with vegetables",
     "sunday-chuck-roast-possiblecooker": "Sunday chuck roast in a multi-cooker",
     "peach-bourbon-cast-iron-pork-chops": "Peach-bourbon cast-iron pork chops",
+    "peach-bourbon-pork-chops-pellet-grill": "Peach-bourbon pork chops in cast iron with glazed peaches and thyme",
     "cast-iron-flank-steak-chimichurri": "Cast-iron flank steak with herb chimichurri and roasted fingerlings",
     "sheet-pan-lemon-garlic-chicken": "Sheet-pan lemon-garlic chicken and vegetables",
     "skillet-creamy-tuscan-chicken": "Skillet creamy Tuscan chicken",
