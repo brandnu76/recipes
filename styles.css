@@ -592,7 +592,7 @@ h2 {
 
 @media print {
   body { background: white; color: black; }
-  .site-header, .site-footer, .recipe-toolbar, .back-top { display: none !important; }
+  .site-header, .site-footer, .recipe-toolbar, .back-top, .servings-control, .cook-panel { display: none !important; }
   .hrecipe, .h-recipe { box-shadow: none; border: none; background: white; color: black; }
   h2, .author, .p-author { color: #9a3412; }
   .hrecipe ul li::before { display: none; }
@@ -770,7 +770,7 @@ body.cook-mode .page {
 }
 
 body.cook-mode .hrecipe {
-  padding: 1rem 1rem 7.5rem;
+  padding: 1rem 1rem var(--cook-panel-space, 7.5rem);
 }
 
 body.cook-mode .hrecipe ul {
@@ -858,6 +858,94 @@ body.cook-mode .cook-panel {
   font-weight: 600;
   color: var(--cream-muted);
   min-height: 2.4rem;
+}
+
+.cook-timers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.cook-timers[hidden] { display: none !important; }
+
+.cook-timer-offers,
+.cook-timer-active {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.cook-timer-offers:empty,
+.cook-timer-active:empty { display: none; }
+
+.cook-timer,
+.cook-timer-stop {
+  appearance: none;
+  border: 1px solid rgba(79, 100, 60, 0.5);
+  background: rgba(79, 100, 60, 0.16);
+  color: var(--cream);
+  font: inherit;
+  font-weight: 700;
+  padding: 0.75rem 0.95rem;
+  border-radius: 12px;
+  cursor: pointer;
+  min-height: 3.1rem;
+  min-width: 4.6rem;
+  touch-action: manipulation;
+}
+
+.cook-timer:hover,
+.cook-timer-stop:hover {
+  border-color: var(--fire-soft);
+  background: rgba(79, 100, 60, 0.28);
+}
+
+.cook-timer-run {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 3.1rem;
+  padding: 0.25rem 0.3rem 0.25rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid rgba(79, 100, 60, 0.55);
+  background: rgba(79, 100, 60, 0.22);
+}
+
+.cook-timer-time {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: 0.02em;
+  min-width: 3.4rem;
+  color: var(--cream);
+}
+
+.cook-timer-stop {
+  min-width: 4.2rem;
+  background: var(--bg-inset);
+  border-color: var(--line);
+}
+
+.cook-timer-run.is-complete {
+  padding-right: 0.9rem;
+  background: rgba(122, 145, 96, 0.38);
+  border-color: var(--fire-soft);
+  animation: cook-timer-flash 0.7s var(--ease);
+}
+
+.cook-timer-run.is-complete .cook-timer-time {
+  min-width: 0;
+  letter-spacing: 0.04em;
+}
+
+@keyframes cook-timer-flash {
+  0% { box-shadow: 0 0 0 0 rgba(122, 145, 96, 0); }
+  40% { box-shadow: 0 0 0 6px rgba(122, 145, 96, 0.32); }
+  100% { box-shadow: 0 0 0 0 rgba(122, 145, 96, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cook-timer-run.is-complete { animation: none; }
 }
 
 
