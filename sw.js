@@ -1,5 +1,5 @@
 /* Carroll Lowcountry Table — offline cache for kitchen use on GitHub Pages */
-const CACHE = "carroll-lowcountry-v5";
+const CACHE = "carroll-lowcountry-v6";
 const SHELL = [
   "./",
   "./index.html",
@@ -24,6 +24,7 @@ const SHELL = [
   "./category-sides-salads.html",
   "./category-dessert.html",
   "./category-breads.html",
+  "./category-breakfast.html",
 ];
 
 async function addAllSafe(cache, urls) {

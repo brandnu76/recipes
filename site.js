@@ -20,6 +20,10 @@
 (function () {
   const input = document.querySelector("#recipe-search");
   const meta = document.querySelector("#search-meta");
+  if (meta) {
+    meta.setAttribute("aria-live", "polite");
+    meta.setAttribute("aria-atomic", "true");
+  }
   const chips = Array.from(document.querySelectorAll("[data-filter-cat]"));
   if (!input && !chips.length) return;
 
