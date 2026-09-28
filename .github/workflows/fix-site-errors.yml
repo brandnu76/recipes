@@ -1,0 +1,85 @@
+name: fix-site-errors
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch nav, category jumps, README, stub logo
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          old = '<a class="site-nav" href="index.html">All recipes</a>'
+          new = '<a class="site-nav" href="recipes.html">All recipes</a>'
+          n = 0
+          for p in Path('.').glob('*.html'):
+              t = p.read_text()
+              if old in t:
+                  p.write_text(t.replace(old, new))
+                  n += 1
+                  print('nav', p.name)
+          print('nav patched', n)
+          cats = {
+            'category-weekend-dinners.html': 'Weekend dinners',
+            'category-weekday-dinners.html': 'Weekday dinners',
+            'category-breakfast.html': 'Breakfast & brunch',
+            'category-game-day.html': 'Game day',
+            'category-sides-salads.html': 'Sides & salads',
+            'category-breads.html': 'Breads',
+            'category-dessert.html': 'Dessert',
+          }
+          chips = [
+            ('category-weekend-dinners.html', 'Weekend dinners'),
+            ('category-weekday-dinners.html', 'Weekday dinners'),
+            ('category-breakfast.html', 'Breakfast & brunch'),
+            ('category-game-day.html', 'Game day'),
+            ('category-sides-salads.html', 'Sides & salads'),
+            ('category-breads.html', 'Breads'),
+            ('category-dessert.html', 'Dessert'),
+          ]
+          for fn, active in cats.items():
+              p = Path(fn)
+              if not p.exists():
+                  continue
+              t = p.read_text()
+              lines = ['      <div class="filter-row category-jump" role="navigation" aria-label="Other categories">']
+              for href, label in chips:
+                  cls = 'filter-chip is-active' if label == active else 'filter-chip'
+                  lines.append(f'        <a class="{cls}" href="{href}">{label}</a>')
+              lines.append('      </div>')
+              block = '\n'.join(lines)
+              t2 = re.sub(r'      <div class="filter-row category-jump".*?</div>', block, t, count=1, flags=re.S)
+              if t2 != t:
+                  p.write_text(t2)
+                  print('jump', fn)
+          readme = Path('README.md')
+          t = readme.read_text()
+          if 'cast-iron-flank-steak-chimichurri.html' not in t:
+              needle = '- [Peach-Bourbon Pork Chops on the Pellet Grill](peach-bourbon-pork-chops-pellet-grill.html)\n'
+              add = needle + '- [Cast-Iron Flank Steak with Herb Chimichurri & Roasted Fingerlings](cast-iron-flank-steak-chimichurri.html)\n'
+              if needle in t:
+                  readme.write_text(t.replace(needle, add, 1))
+                  print('readme flank')
+          hdr = Path('logo-header.webp')
+          if hdr.exists() and hdr.stat().st_size < 100:
+              hdr.unlink()
+              print('removed stub logo-header.webp')
+          Path('.pages-rebuild').write_text('rebuild after site error fixes\n')
+          PY
+      - name: Commit
+        run: |
+          set -euo pipefail
+          git config user.name "brandnu76"
+          git config user.email "bccarroll30@gmail.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo No changes
+            exit 0
+          fi
+          git commit -m "Fix All recipes nav, category jumps, README, stub logo-header"
+          git push
