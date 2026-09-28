@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Patch nav, category jumps, README, stub logo
+      - name: Patch pages and add missing boule photo
         run: |
           set -euo pipefail
           python3 - <<'PY'
@@ -71,6 +71,20 @@ jobs:
               print('removed stub logo-header.webp')
           Path('.pages-rebuild').write_text('rebuild after site error fixes\n')
           PY
+          python3 -m pip install --quiet pillow
+          mkdir -p /tmp/bread images
+          curl -fsSL -A 'Mozilla/5.0' -o /tmp/bread/src.jpg 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&h=800&q=70'
+          python3 - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          src = Image.open('/tmp/bread/src.jpg').convert('RGB')
+          w, h = src.size
+          crop = src.crop((int(w*0.28), int(h*0.28), int(w*0.98), int(h*0.98)))
+          crop = crop.resize((900, 600), Image.Resampling.LANCZOS)
+          out = Path('images/country-sourdough-boule.webp')
+          crop.save(out, format='WEBP', quality=55, method=6)
+          print('wrote', out, out.stat().st_size)
+          PY
       - name: Commit
         run: |
           set -euo pipefail
@@ -81,5 +95,5 @@ jobs:
             echo No changes
             exit 0
           fi
-          git commit -m "Fix All recipes nav, category jumps, README, stub logo-header"
+          git commit -m "Fix site errors: nav, category jumps, README, boule photo"
           git push
