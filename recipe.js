@@ -10,8 +10,12 @@
   const article = document.querySelector(".hrecipe, .h-recipe");
   if (!article) return;
 
-  const ingredients = Array.from(article.querySelectorAll("ul li"));
-  const steps = Array.from(article.querySelectorAll("ol li"));
+  let ingredients = Array.from(
+    article.querySelectorAll("li.ingredient, li[itemprop='recipeIngredient']")
+  );
+  if (!ingredients.length) ingredients = Array.from(article.querySelectorAll("ul li"));
+  let steps = Array.from(article.querySelectorAll("ol.instructions li"));
+  if (!steps.length) steps = Array.from(article.querySelectorAll("ol li"));
 
   ingredients.forEach((li) => {
     if (!li.dataset.original) li.dataset.original = li.textContent.trim();
@@ -89,11 +93,26 @@
   // --- servings scaler ---
   function parseYield() {
     const el = article.querySelector(".yield, .p-yield, [itemprop='recipeYield']");
-    const raw = (el?.textContent || "8").replace(/servings?/i, "").trim();
+    const original = (el?.textContent || "8 servings").trim();
+    const raw = original.replace(/servings?/i, "").trim();
     const m = raw.match(/(\d+)(?:\s*[-–to]+\s*(\d+))?/);
-    if (!m) return { base: 8, el, displayBase: "8" };
-    const base = parseInt(m[1], 10);
-    return { base, el, displayBase: m[2] ? m[1] + "–" + m[2] : m[1] };
+    const parsed = m ? parseInt(m[1], 10) : 8;
+    // The stepper shows the amount the ingredient list is written for.
+    // Yield text like "2-4 servings" or "1 loaf (about 12 slices)" must not
+    // override that, or the first +/− click jumps to the wrong count.
+    const shown = parseInt((document.querySelector("[data-servings-value]")?.textContent || "").trim(), 10);
+    const base = Number.isFinite(shown) && shown > 0 ? shown : parsed;
+    return { base, el, original };
+  }
+
+  function renderYield(next) {
+    if (!yieldInfo.el) return;
+    const original = yieldInfo.original || "";
+    if (/\d+\s+slices/i.test(original)) {
+      yieldInfo.el.textContent = original.replace(/\d+(?=\s+slices)/i, String(next));
+      return;
+    }
+    yieldInfo.el.textContent = next + " servings";
   }
 
   function formatQty(n) {
@@ -186,9 +205,7 @@
     ingredients.forEach((li) => {
       li.textContent = scaleText(li.dataset.original, factor);
     });
-    if (yieldInfo.el) {
-      yieldInfo.el.textContent = next + " servings";
-    }
+    renderYield(next);
   }
 
   document.querySelectorAll("[data-servings]").forEach((btn) => {
