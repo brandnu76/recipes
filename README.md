@@ -21,6 +21,7 @@ Import URL pattern after GitHub Pages:
 - [Sunday Chuck Roast (PossibleCooker Pro)](sunday-chuck-roast-possiblecooker.html)
 - [Peach-Bourbon Cast-Iron Pork Chops](peach-bourbon-cast-iron-pork-chops.html)
 - [Peach-Bourbon Pork Chops on the Pellet Grill](peach-bourbon-pork-chops-pellet-grill.html)
+- [Cast-Iron Flank Steak with Herb Chimichurri & Roasted Fingerlings](cast-iron-flank-steak-chimichurri.html)
 
 ## Weekday dinners
 
