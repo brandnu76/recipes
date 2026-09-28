@@ -260,17 +260,11 @@
     return trimNum(ms / 60000) + " min";
   }
 
+  // Compound form for controls: "2 minute timer", not "2 minutes timer".
   function spokenDuration(ms, kind) {
-    if (kind === "s") {
-      const n = Math.round(ms / 1000);
-      return n + (n === 1 ? " second" : " seconds");
-    }
-    if (kind === "h") {
-      const n = Math.round((ms / 3600000) * 10) / 10;
-      return trimNum(n) + (n === 1 ? " hour" : " hours");
-    }
-    const n = Math.round((ms / 60000) * 10) / 10;
-    return trimNum(n) + (n === 1 ? " minute" : " minutes");
+    if (kind === "s") return Math.round(ms / 1000) + " second";
+    if (kind === "h") return trimNum(ms / 3600000) + " hour";
+    return trimNum(ms / 60000) + " minute";
   }
 
   function parseStepDurations(text) {
