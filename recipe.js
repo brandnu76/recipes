@@ -47,7 +47,15 @@
   const copyBtn = document.querySelector("[data-action='copy-ingredients']");
   if (copyBtn) {
     copyBtn.addEventListener("click", async () => {
-      const text = ingredients.map((li) => li.textContent.trim()).join("\n");
+      const lines = [];
+      let node = document.getElementById("ingredients");
+      node = node ? node.nextElementSibling : null;
+      while (node && node.tagName !== "H2") {
+        if (node.classList && node.classList.contains("ingredient-group")) lines.push(node.textContent.trim());
+        if (node.tagName === "UL") node.querySelectorAll("li").forEach((li) => lines.push(li.textContent.trim()));
+        node = node.nextElementSibling;
+      }
+      const text = (lines.length ? lines : ingredients.map((li) => li.textContent.trim())).join("\n");
       try {
         await navigator.clipboard.writeText(text);
         copyBtn.classList.add("is-success");

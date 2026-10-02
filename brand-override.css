@@ -46,3 +46,16 @@ body.cook-mode .recipe-hero { display: none; }
 @media print {
   .recipe-hero { border: none; }
 }
+
+/* Ingredient group headings. AnyList reads these as section labels, not shopping items. */
+.ingredient-group {
+  margin: 1.15rem 0 0.35rem;
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+}
+h2#ingredients + .ingredient-group {
+  margin-top: 0.35rem;
+}
+.ingredient-group + ul {
+  margin-top: 0.2rem;
+}
