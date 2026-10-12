@@ -10,6 +10,16 @@
   const article = document.querySelector(".hrecipe, .h-recipe");
   if (!article) return;
 
+  // Printed copies carry the page address so a paper recipe can find its way
+  // back. Hidden on screen; styles.css shows it only in print.
+  const footer = document.querySelector(".site-footer");
+  if (footer && !footer.querySelector(".print-source")) {
+    const src = document.createElement("p");
+    src.className = "print-source";
+    src.textContent = "Printed from " + location.href.replace(/[?#].*$/, "");
+    footer.insertBefore(src, footer.firstChild);
+  }
+
   const ingredients = Array.from(article.querySelectorAll("ul li"));
   const steps = Array.from(article.querySelectorAll("ol li"));
 

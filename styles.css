@@ -590,14 +590,7 @@ h2 {
   .hrecipe ol li.is-done::after { display: none; }
 }
 
-@media print {
-  body { background: white; color: black; }
-  .site-header, .site-footer, .recipe-toolbar, .back-top, .servings-control, .cook-panel { display: none !important; }
-  .hrecipe, .h-recipe { box-shadow: none; border: none; background: white; color: black; }
-  h2, .author, .p-author { color: #9a3412; }
-  .hrecipe ul li::before { display: none; }
-  .hrecipe ul li { padding-left: 0; }
-}
+/* Print rules live at the end of this file so they win over cook mode. */
 
 
 /* Legal / copyright */
@@ -1236,4 +1229,257 @@ html:has(body.splash-page) { color-scheme: light; }
   font-weight: 700;
   line-height: 1.15;
   color: var(--cream);
+}
+
+/* Source line for printed copies. recipe.js adds it to the footer; it only shows on paper. */
+.print-source { display: none; }
+
+/* Print — ink-friendly recipe card: black on white, no photo or controls,
+   two-column ingredients, steps kept whole, copyright and source URL at the foot. */
+@page { margin: 0.5in 0.55in; }
+
+@media print {
+  :root {
+    --bg: #fff;
+    --bg-raised: #fff;
+    --bg-inset: #fff;
+    --cream: #111;
+    --cream-muted: #444;
+    --fire: #3f4a32;
+    --fire-soft: #3f4a32;
+    --ember: #3f4a32;
+    --line: #c9c9c9;
+    --line-strong: #999;
+  }
+
+  html,
+  body {
+    color-scheme: light;
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  body {
+    min-height: 0;
+    font-size: 10.5pt;
+    line-height: 1.4;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-shadow: none !important;
+    text-shadow: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .site-header,
+  .recipe-toolbar,
+  .back-top,
+  .servings-control,
+  .cook-panel,
+  .recipe-hero,
+  .footer-links,
+  body.cook-mode .cook-panel,
+  body.cook-mode .recipe-hero {
+    display: none !important;
+  }
+
+  .page,
+  body.cook-mode .page {
+    width: auto;
+    margin: 0;
+    opacity: 1;
+    transform: none;
+  }
+
+  .hrecipe,
+  .h-recipe,
+  body.cook-mode .hrecipe {
+    background: none !important;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    overflow: visible;
+    color: #111;
+  }
+
+  .hrecipe::before { display: none; }
+
+  .fn,
+  .p-name,
+  h1 {
+    margin: 0 0 4pt;
+    font-size: 20pt;
+    line-height: 1.15;
+    color: #111;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .summary,
+  .p-summary,
+  body.cook-mode .summary,
+  body.cook-mode .p-summary {
+    display: block !important;
+    margin: 0 0 6pt;
+    max-width: none;
+    font-size: 10.5pt;
+    color: #333;
+  }
+
+  .hrecipe > p:has(.author),
+  .hrecipe > p:has(.p-author),
+  body.cook-mode .hrecipe > p:has(.author) {
+    display: block !important;
+    margin: 0 0 4pt;
+    font-size: 9.5pt;
+    color: #333;
+  }
+
+  .author,
+  .p-author { color: #111; }
+
+  .hrecipe > p:has(.yield),
+  .hrecipe > p:has(.preptime),
+  .hrecipe > p:has(.cooktime),
+  .hrecipe > p:has([itemprop="totalTime"]) {
+    display: inline;
+    margin: 0 1.1em 0 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    color: #111;
+    font-size: 9.5pt;
+  }
+
+  .hrecipe > p:has(.yield)::before,
+  .hrecipe > p:has(.preptime)::before,
+  .hrecipe > p:has(.cooktime)::before,
+  .hrecipe > p:has([itemprop="totalTime"])::before {
+    display: none;
+  }
+
+  h2 {
+    margin: 10pt 0 4pt;
+    padding-top: 4pt;
+    border-top: 1px solid #bbb;
+    font-size: 11pt;
+    color: #3f4a32;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  h3,
+  .ingredient-group {
+    margin: 7pt 0 2pt;
+    font-size: 10.5pt;
+    color: #111;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .hrecipe ul,
+  body.cook-mode .hrecipe ul {
+    display: block;
+    columns: 2;
+    column-gap: 0.4in;
+    font-size: 10pt;
+  }
+
+  .hrecipe ul li {
+    padding: 1.5pt 0 1.5pt 1.15em;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    color: #111;
+    text-decoration: none;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Small empty box to tick on paper; checked state from the screen is not carried over. */
+  .hrecipe ul li::before,
+  .hrecipe ul li.is-checked::before {
+    display: block;
+    left: 0;
+    top: 0.42em;
+    width: 0.62em;
+    height: 0.62em;
+    border: 1px solid #666;
+    border-radius: 2px;
+    background: none;
+    transform: none;
+  }
+
+  .hrecipe ul li.is-checked { color: #111; text-decoration: none; }
+
+  .hrecipe ol {
+    display: block;
+    font-size: 10.5pt;
+  }
+
+  .hrecipe ol li,
+  body.cook-mode .hrecipe ol li,
+  body.cook-mode .hrecipe ol li.is-cook-current {
+    margin: 0 0 4pt;
+    padding: 0 0 0 1.85em;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    color: #111;
+    opacity: 1;
+    font-size: 10.5pt;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .hrecipe ol li::before {
+    left: 0;
+    top: 0.05em;
+    width: 1.35em;
+    height: 1.35em;
+    font-size: 9pt;
+    color: #111;
+    background: none;
+    border: 1px solid #111;
+  }
+
+  .hrecipe ol li.is-done::after { display: none; }
+
+  .hrecipe p { orphans: 3; widows: 3; }
+
+  .hrecipe a { color: #111; }
+
+  .site-footer,
+  body.cook-mode .site-footer {
+    display: block !important;
+    width: auto;
+    margin: 8pt 0 0;
+    padding-top: 4pt;
+    border-top: 1px solid #bbb;
+    text-align: center;
+    font-size: 8.5pt;
+    color: #444;
+    break-before: avoid;
+    page-break-before: avoid;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .footer-copy {
+    margin: 0;
+    font-weight: 600;
+    color: #111;
+  }
+
+  .print-source {
+    display: block;
+    margin: 0 0 2pt;
+    color: #444;
+    word-break: break-all;
+  }
 }
