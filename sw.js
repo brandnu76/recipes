@@ -1,5 +1,5 @@
 /* Carroll Lowcountry Table — offline cache for kitchen use on GitHub Pages */
-const CACHE = "carroll-lowcountry-v11";
+const CACHE = "carroll-lowcountry-v12";
 const SHELL = [
   "./",
   "./index.html",
@@ -87,10 +87,22 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
 
+  const isAsset = /\.(?:css|js|webp|png|jpg|jpeg|svg|woff2?)$/i.test(url.pathname);
+
   event.respondWith(
     (async () => {
       const cache = await caches.open(CACHE);
       const cached = await cache.match(req);
+
+      // Cache-first for static assets (CSS, JS, images) — they change with the cache version.
+      if (isAsset && cached) {
+        // Refresh in background
+        fetch(req).then((fresh) => {
+          if (fresh && fresh.ok) cache.put(req, fresh.clone()).catch(() => {});
+        }).catch(() => {});
+        return cached;
+      }
+
       try {
         const fresh = await fetch(req);
         if (fresh && fresh.ok && url.protocol.startsWith("http")) {
