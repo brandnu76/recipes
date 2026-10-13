@@ -1,11 +1,8 @@
 name: decode-recipe-images
+# Manual only. Auto-push of base64 packs previously wrote truncated images.
+# Run only when complete packs are ready. The image check will still gate the result.
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - "images/_packs/**"
-      - "tools/inject_recipe_images.py"
-      - ".github/workflows/decode-recipe-images.yml"
 permissions:
   contents: write
 jobs:
@@ -34,8 +31,15 @@ jobs:
               if pad:
                   raw += '=' * pad
                   print('padded', p.name, pad)
-              out = Path('images') / name
               data = base64.b64decode(raw)
+              if len(data) < 12 or data[:4] != b'RIFF' or data[8:12] != b'WEBP':
+                  print('skip non-WebP', p.name)
+                  continue
+              expected = int.from_bytes(data[4:8], 'little') + 8
+              if expected != len(data):
+                  print(f'skip truncated {p.name}: {len(data)} vs {expected}')
+                  continue
+              out = Path('images') / name
               out.write_bytes(data)
               print('decoded', out, len(data))
           PY

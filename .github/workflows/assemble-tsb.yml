@@ -1,10 +1,8 @@
 name: assemble-tsb
+# Manual only. Auto-push of base64 packs previously overwrote good images
+# with truncated WebPs. Run only when a complete pack is ready.
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - "images/_packs/tsb/**"
-      - ".github/workflows/assemble-tsb.yml"
 permissions:
   contents: write
 jobs:
