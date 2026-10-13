@@ -53,6 +53,7 @@ Import URL pattern after GitHub Pages:
 
 ## Breads
 
+- [Popeye's-Style Honey Biscuits](popeyes-style-honey-biscuits.html)
 - [Cuisinart CBK-100 Basic White Bread](cuisinart-cbk-100-basic-white-bread.html)
 - [Pumpkin-Shaped Sourdough](pumpkin-shaped-sourdough.html)
 - [Country Sourdough Boule](country-sourdough-boule.html)
