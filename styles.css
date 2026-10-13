@@ -1549,3 +1549,60 @@ h2#ingredients + .ingredient-group {
 .ingredient-group + ul {
   margin-top: 0.2rem;
 }
+
+/* WCAG 2.2 AA — skip link, reduced motion, target size, focus */
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 100;
+  padding: 0.65rem 1rem;
+  background: var(--fire-soft);
+  color: #1a120c;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+}
+.skip-link:focus {
+  top: 0.65rem;
+  outline: 2px solid var(--cream);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Ensure interactive controls meet 24px minimum (2.5.8) */
+.toolbar-btn,
+.jump-link,
+.filter-chip,
+.servings-control button,
+.cook-actions button,
+.back-top {
+  min-height: 1.5rem; /* 24px */
+  min-width: 1.5rem;
+}
+
+.filter-chip[aria-pressed="true"],
+.filter-chip.is-active {
+  border-color: rgba(79, 100, 60, 0.7);
+}
+
+/* Stronger focus for keyboard users on dark backgrounds */
+:focus-visible {
+  outline: 2px solid var(--fire-soft);
+  outline-offset: 3px;
+}
+.site-header a:focus-visible,
+.book-list a:focus-visible {
+  outline-offset: 4px;
+}

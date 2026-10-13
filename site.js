@@ -1,4 +1,19 @@
 (function () {
+  // Skip link — WCAG 2.4.1 Bypass Blocks
+  if (!document.querySelector(".skip-link")) {
+    const main = document.querySelector("main");
+    if (main) {
+      if (!main.id) main.id = "main";
+      const a = document.createElement("a");
+      a.className = "skip-link";
+      a.href = "#main";
+      a.textContent = "Skip to main content";
+      document.body.insertBefore(a, document.body.firstChild);
+    }
+  }
+})();
+
+(function () {
   const header = document.querySelector(".site-header");
   const below = document.querySelector(".splash-below");
   if (!header || !below) return;
@@ -85,10 +100,15 @@
 
   input?.addEventListener("input", update);
   chips.forEach((chip) => {
+    chip.setAttribute("aria-pressed", chip.classList.contains("is-active") ? "true" : "false");
     chip.addEventListener("click", () => {
       activeCat = (chip.getAttribute("data-filter-cat") || "all").toLowerCase();
       activeLabel = activeCat === "all" ? "" : chip.textContent.trim();
-      chips.forEach((c) => c.classList.toggle("is-active", c === chip));
+      chips.forEach((c) => {
+        const on = c === chip;
+        c.classList.toggle("is-active", on);
+        c.setAttribute("aria-pressed", on ? "true" : "false");
+      });
       update();
     });
   });

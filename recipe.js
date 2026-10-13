@@ -1,4 +1,18 @@
 (function () {
+  if (!document.querySelector(".skip-link")) {
+    const main = document.querySelector("main");
+    if (main) {
+      if (!main.id) main.id = "main";
+      const a = document.createElement("a");
+      a.className = "skip-link";
+      a.href = "#main";
+      a.textContent = "Skip to main content";
+      document.body.insertBefore(a, document.body.firstChild);
+    }
+  }
+})();
+
+(function () {
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function () {
       navigator.serviceWorker.register("./sw.js").catch(function () {});
@@ -47,12 +61,36 @@
   steps.forEach((li, idx) => {
     li.dataset.stepIndex = String(idx);
     li.style.cursor = "pointer";
-    li.title = "Tap to mark done";
-    li.addEventListener("click", () => {
+    li.setAttribute("role", "button");
+    li.setAttribute("tabindex", "0");
+    li.setAttribute("aria-pressed", "false");
+    li.title = "Mark step done";
+    const toggle = () => {
       if (document.body.classList.contains("cook-mode")) return;
-      li.classList.toggle("is-done");
+      const on = li.classList.toggle("is-done");
+      li.setAttribute("aria-pressed", on ? "true" : "false");
+    };
+    li.addEventListener("click", toggle);
+    li.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggle();
+      }
     });
   });
+
+
+  // Polite live region for toolbar status (copy / share)
+  let statusLive = document.getElementById("recipe-status");
+  if (!statusLive) {
+    statusLive = document.createElement("div");
+    statusLive.id = "recipe-status";
+    statusLive.className = "visually-hidden";
+    statusLive.setAttribute("aria-live", "polite");
+    statusLive.setAttribute("aria-atomic", "true");
+    article.appendChild(statusLive);
+  }
+  const announceStatus = (msg) => { statusLive.textContent = msg; };
 
   const copyBtn = document.querySelector("[data-action='copy-ingredients']");
   if (copyBtn) {
@@ -69,7 +107,7 @@
       try {
         await navigator.clipboard.writeText(text);
         copyBtn.classList.add("is-success");
-        copyBtn.textContent = "Copied";
+        copyBtn.textContent = "Copied"; announceStatus("Ingredients copied");
         setTimeout(() => {
           copyBtn.classList.remove("is-success");
           copyBtn.textContent = "Copy ingredients";
@@ -94,7 +132,7 @@
         } else {
           await navigator.clipboard.writeText(url);
           shareBtn.classList.add("is-success");
-          shareBtn.textContent = "Link copied";
+          shareBtn.textContent = "Link copied"; announceStatus("Link copied");
           setTimeout(() => {
             shareBtn.classList.remove("is-success");
             shareBtn.textContent = "Share";
@@ -589,7 +627,12 @@
     const li = steps[cookIndex];
     cookStepEl.textContent = li.textContent.trim();
     if (cookMetaEl) cookMetaEl.textContent = "Step " + (cookIndex + 1) + " of " + steps.length;
-    steps.forEach((s, i) => s.classList.toggle("is-cook-current", i === cookIndex));
+    steps.forEach((s, i) => {
+      const current = i === cookIndex;
+      s.classList.toggle("is-cook-current", current);
+      if (current) s.setAttribute("aria-current", "step");
+      else s.removeAttribute("aria-current");
+    });
     renderTimerOffers();
   }
 
@@ -621,6 +664,9 @@
     syncWake();
     window.scrollTo({ top: 0, behavior: "smooth" });
     window.setTimeout(scheduleCookPad, 350);
+    // Move focus into the cook controls so keyboard users aren't stranded
+    const next = document.querySelector("[data-action='cook-next']");
+    if (next) next.focus();
   }
 
   function exitCookMode() {
