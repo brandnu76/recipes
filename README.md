@@ -34,6 +34,7 @@ Import URL pattern after GitHub Pages:
 - [Mongolian Beef and Noodles](mongolian-beef-noodles.html)
 - [High-Protein Mongolian Beef Noodles](high-protein-mongolian-beef-noodles.html)
 - [The Supreme Pacific Jasmine Musubi](supreme-pacific-jasmine-musubi.html)
+- [Keto Sheet Pan Burgers with Bacon & Jalapeño (Frozen Patties)](keto-sheet-pan-burgers-bacon-jalapeno-frozen.html)
 
 ## Breakfast & brunch
 
