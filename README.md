@@ -38,6 +38,7 @@ Import URL pattern after GitHub Pages:
 
 ## Breakfast & brunch
 
+- [Homemade Grape Jelly](homemade-grape-jelly.html)
 - [Christmas Cranberry Butter](christmas-cranberry-butter.html)
 - [Baked Cinnamon Apple Butter French Toast](baked-cinnamon-apple-butter-french-toast.html)
 
