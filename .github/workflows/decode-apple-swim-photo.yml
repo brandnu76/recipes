@@ -1,0 +1,21 @@
+name: decode-apple-swim-photo
+on:
+  push:
+    paths: ['.github/workflows/decode-apple-swim-photo.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  decode:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          base64 -d images/apple-swim-biscuits.webp.b64 > images/apple-swim-biscuits.webp
+          git rm -q images/apple-swim-biscuits.webp.b64 .github/workflows/decode-apple-swim-photo.yml
+          git rm -q --ignore-unmatch images/apple-butter-swim-biscuits.webp
+          git add images/apple-swim-biscuits.webp
+          git config user.name github-actions
+          git config user.email github-actions@users.noreply.github.com
+          git commit -m 'Add apple swim biscuits photo (webp); remove old apple butter photo and staging files'
+          git push
