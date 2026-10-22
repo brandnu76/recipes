@@ -71,6 +71,9 @@ def main() -> int:
         if html.name in NON_RECIPE or html.name.startswith("category-"):
             continue
         text = html.read_text(encoding="utf-8", errors="replace")
+        # Redirect stubs (meta refresh to a moved recipe) are not recipe pages.
+        if re.search(r'<meta[^>]+http-equiv=["\']refresh["\']', text, re.I):
+            continue
         has_hero = bool(re.search(r'class=["\'][^"\']*recipe-hero', text)) or \
                    bool(re.search(r'<img[^>]+itemprop=["\']image["\']', text))
         if not has_hero:
