@@ -142,6 +142,161 @@
     });
   }
 
+  // --- device-local memory: Save heart + cooking progress ---
+  // Everything stays in this browser's localStorage. No accounts, no tracking.
+  // Every access is wrapped so private mode or a full quota just turns the
+  // feature off instead of breaking the page.
+  const SAVED_KEY = "clt:saved";
+  const PROGRESS_PREFIX = "clt:progress:";
+  const PROGRESS_TTL_MS = 24 * 60 * 60 * 1000;
+  const store = {
+    get(key) {
+      try { const raw = window.localStorage.getItem(key); return raw ? JSON.parse(raw) : null; } catch (_) { return null; }
+    },
+    set(key, value) {
+      try { window.localStorage.setItem(key, JSON.stringify(value)); return true; } catch (_) { return false; }
+    },
+    remove(key) {
+      try { window.localStorage.removeItem(key); } catch (_) {}
+    },
+  };
+  const slug = decodeURIComponent((location.pathname.split("/").pop() || "").replace(/\.html?$/i, ""));
+
+  // Drop any other recipe's progress older than a day so checks don't linger.
+  try {
+    const now = Date.now();
+    const stale = [];
+    for (let i = 0; i < window.localStorage.length; i += 1) {
+      const k = window.localStorage.key(i);
+      if (!k || k.indexOf(PROGRESS_PREFIX) !== 0) continue;
+      const v = store.get(k);
+      if (!v || typeof v.t !== "number" || now - v.t > PROGRESS_TTL_MS) stale.push(k);
+    }
+    stale.forEach((k) => store.remove(k));
+  } catch (_) {}
+
+  const toolbar = article.querySelector(".recipe-toolbar") || document.querySelector(".recipe-toolbar");
+
+  function readSaved() {
+    const v = store.get(SAVED_KEY);
+    return Array.isArray(v) ? v.filter((s) => typeof s === "string") : [];
+  }
+
+  if (slug && toolbar) {
+    const saveBtn = document.createElement("button");
+    saveBtn.type = "button";
+    saveBtn.className = "toolbar-btn save-btn";
+    saveBtn.setAttribute("data-action", "save");
+    const heart = document.createElement("span");
+    heart.className = "save-heart";
+    heart.setAttribute("aria-hidden", "true");
+    const label = document.createElement("span");
+    label.className = "save-label";
+    saveBtn.appendChild(heart);
+    saveBtn.appendChild(label);
+    const paint = (on) => {
+      saveBtn.setAttribute("aria-pressed", on ? "true" : "false");
+      saveBtn.classList.toggle("is-saved", on);
+      heart.textContent = on ? "\u2665" : "\u2661";
+      label.textContent = on ? "Saved" : "Save";
+      saveBtn.title = on ? "Saved on this device. Tap to remove." : "Save to this device";
+    };
+    paint(readSaved().indexOf(slug) !== -1);
+    saveBtn.addEventListener("click", () => {
+      const list = readSaved();
+      const idx = list.indexOf(slug);
+      const on = idx === -1;
+      if (on) list.unshift(slug);
+      else list.splice(idx, 1);
+      if (!store.set(SAVED_KEY, list)) {
+        announceStatus("Saving isn't available in this browser mode");
+        return;
+      }
+      paint(on);
+      announceStatus(on ? "Recipe saved on this device" : "Removed from saved recipes");
+    });
+    const printRef = toolbar.querySelector("[data-action='print']");
+    if (printRef && printRef.nextSibling) toolbar.insertBefore(saveBtn, printRef.nextSibling);
+    else toolbar.appendChild(saveBtn);
+  }
+
+  // Progress is keyed by list position, not text, so the servings scaler
+  // rewriting quantities never orphans a check.
+  if (slug && (ingredients.length || steps.length)) {
+    const progressKey = PROGRESS_PREFIX + slug;
+    let clearBtn = null;
+    let restoring = false;
+
+    const setIngredient = (li, on) => {
+      li.classList.toggle("is-checked", on);
+      li.setAttribute("aria-checked", on ? "true" : "false");
+    };
+    const setStep = (li, on) => {
+      li.classList.toggle("is-done", on);
+      li.setAttribute("aria-pressed", on ? "true" : "false");
+    };
+    const snapshot = () => ({
+      ing: ingredients.reduce((acc, li, i) => (li.classList.contains("is-checked") ? acc.concat(i) : acc), []),
+      steps: steps.reduce((acc, li, i) => (li.classList.contains("is-done") ? acc.concat(i) : acc), []),
+    });
+    const syncClear = (count) => {
+      if (clearBtn) clearBtn.hidden = count === 0;
+    };
+    const saveProgress = () => {
+      if (restoring) return;
+      const snap = snapshot();
+      const count = snap.ing.length + snap.steps.length;
+      if (count) store.set(progressKey, { t: Date.now(), ing: snap.ing, steps: snap.steps });
+      else store.remove(progressKey);
+      syncClear(count);
+    };
+
+    if (toolbar) {
+      clearBtn = document.createElement("button");
+      clearBtn.type = "button";
+      clearBtn.className = "toolbar-btn clear-checks-btn";
+      clearBtn.setAttribute("data-action", "clear-checks");
+      clearBtn.textContent = "Clear checks";
+      clearBtn.title = "Uncheck all ingredients and steps";
+      clearBtn.hidden = true;
+      clearBtn.addEventListener("click", () => {
+        restoring = true;
+        ingredients.forEach((li) => setIngredient(li, false));
+        steps.forEach((li) => setStep(li, false));
+        restoring = false;
+        store.remove(progressKey);
+        syncClear(0);
+        announceStatus("Checks cleared");
+        const cookBtn = toolbar.querySelector("[data-action='cook-mode']");
+        if (cookBtn) cookBtn.focus();
+      });
+      toolbar.appendChild(clearBtn);
+    }
+
+    const saved = store.get(progressKey);
+    if (saved && typeof saved.t === "number" && Date.now() - saved.t <= PROGRESS_TTL_MS) {
+      restoring = true;
+      (Array.isArray(saved.ing) ? saved.ing : []).forEach((i) => { if (ingredients[i]) setIngredient(ingredients[i], true); });
+      (Array.isArray(saved.steps) ? saved.steps : []).forEach((i) => { if (steps[i]) setStep(steps[i], true); });
+      restoring = false;
+      const snap = snapshot();
+      syncClear(snap.ing.length + snap.steps.length);
+    } else if (saved) {
+      store.remove(progressKey);
+    }
+
+    // Catch every way a check changes (tap, keyboard, cook mode "Next").
+    if ("MutationObserver" in window) {
+      const mo = new MutationObserver((records) => {
+        if (records.some((r) => r.attributeName === "class")) saveProgress();
+      });
+      ingredients.concat(steps).forEach((li) => mo.observe(li, { attributes: true, attributeFilter: ["class"] }));
+    } else {
+      article.addEventListener("click", () => window.setTimeout(saveProgress, 0));
+      article.addEventListener("keydown", () => window.setTimeout(saveProgress, 0));
+    }
+  }
+
   // --- servings scaler ---
   function parseYield() {
     const el = article.querySelector(".yield, .p-yield, [itemprop='recipeYield']");

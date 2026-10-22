@@ -1606,3 +1606,66 @@ h2#ingredients + .ingredient-group {
 .book-list a:focus-visible {
   outline-offset: 4px;
 }
+
+/* Device-local Save heart + remembered cooking progress (localStorage only) */
+.save-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.save-btn .save-heart {
+  font-size: 1.05em;
+  line-height: 1;
+  color: var(--fire-soft);
+}
+.save-btn[aria-pressed="true"] {
+  border-color: rgba(122, 145, 96, 0.7);
+  background: rgba(79, 100, 60, 0.22);
+  color: var(--cream);
+}
+.save-btn[aria-pressed="true"] .save-heart { color: #a8bf8a; }
+.clear-checks-btn {
+  color: var(--cream-muted);
+  border-style: dashed;
+}
+.clear-checks-btn[hidden] { display: none; }
+
+.book-list a { position: relative; }
+.card-saved {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 999px;
+  background: rgba(18, 15, 13, 0.78);
+  border: 1px solid rgba(122, 145, 96, 0.6);
+  color: #a8bf8a;
+  font-size: 0.95rem;
+  line-height: 1;
+  pointer-events: none;
+}
+.filter-chip-saved span { color: var(--fire-soft); }
+.filter-chip-saved.is-active span { color: #a8bf8a; }
+.saved-empty {
+  margin: 1.5rem 0;
+  padding: 1rem 1.15rem;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--bg-raised);
+  color: var(--cream-muted);
+}
+.saved-empty[hidden] { display: none; }
+
+@media print {
+  .save-btn,
+  .clear-checks-btn,
+  .card-saved,
+  .saved-empty,
+  .splash-saved {
+    display: none !important;
+  }
+}
