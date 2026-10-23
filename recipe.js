@@ -409,6 +409,137 @@
     });
   });
 
+  // --- "For this step": ingredients a step calls for ---
+  // Matching is deliberately conservative: an ingredient shows up when its
+  // whole name appears in the step ("brown sugar", "egg noodles"), or when a
+  // word from its name appears that no other ingredient shares ("onion",
+  // "Worcestershire"). Shared words alone ("pepper" with black pepper and
+  // bell pepper) never match, so the panel stays quiet rather than wrong.
+  const STEP_ING_SKIP = new Set(("a an and of for to the with into plus more about each " +
+    "cup cups c tablespoon tablespoons tbsp tbs tbl teaspoon teaspoons tsp ounce ounces oz pound pounds lb lbs " +
+    "gram grams g kg kilogram kilograms ml milliliter milliliters liter liters litre litres l quart quarts qt pint pints pt gallon gallons " +
+    "clove cloves can cans jar jars package packages pkg box boxes bag bags stick sticks pinch pinches dash dashes " +
+    "slice slices sprig sprigs head heads bunch bunches handful stalk stalks piece pieces inch inches envelope packet packets container " +
+    "large medium small jumbo whole half fresh freshly chopped minced diced sliced grated shredded softened melted " +
+    "room temperature cold warm hot extra virgin boneless skinless bone skin finely roughly coarsely thinly thickly packed lightly " +
+    "divided optional taste needed kosher unsalted salted low sodium reduced fat full free high quality store bought homemade good pure " +
+    "cut peeled seeded halved quartered trimmed rinsed drained beaten cubed crushed toasted cooked uncooked raw frozen thawed " +
+    "all purpose fine dark light out top over just well thick thin thinly ground heaping level generous scant regular plain style brand favorite your any such like other leftover").split(/\s+/));
+
+  // Describing words that may only match as part of the whole name.
+  const STEP_ING_ADJ = new Set(("white black red green yellow orange purple brown golden sweet baking bread sharp mild " +
+    "smoked dry dried wild baby italian mexican french greek english spicy hot sour").split(/\s+/));
+
+  function stepIngStem(w) {
+    if (w.length > 4 && /ies$/.test(w)) return w.slice(0, -3) + "y";
+    if (w.length > 4 && /(oes|ches|shes|sses|xes)$/.test(w)) return w.slice(0, -2);
+    if (w.length > 3 && /[^s]s$/.test(w)) return w.slice(0, -1);
+    return w;
+  }
+
+  function stepIngWordBody(stem) {
+    const esc = stem.replace(/[^a-z]/g, "");
+    return /y$/.test(esc) ? esc.slice(0, -1) + "(?:y|ies)" : esc + "(?:s|es)?";
+  }
+
+  function stepIngWordRe(stem) {
+    return new RegExp("(^|[^a-z])(" + stepIngWordBody(stem) + ")(?![a-z])", "g");
+  }
+
+  function stepIngCore(text) {
+    const parts = String(text || "").toLowerCase()
+      .replace(/\([^)]*\)/g, " ")
+      .replace(/[’']/g, "")
+      .split(/\bfor (?:the|serving|garnish|dusting|brushing|frying|greasing)\b|\bto serve\b/)[0]
+      .split(/,|;|\s[-–—]\s/);
+    // "4 boneless, skinless chicken breasts": use the first piece that names something.
+    for (const part of parts) {
+      const words = part.replace(/[^a-z\s-]/g, " ").replace(/-/g, " ").split(/\s+/)
+        .filter((w) => w === "or" || (w.length >= 3 && !STEP_ING_SKIP.has(w)));
+      if (!words.length) continue;
+      // "avocado oil or beef tallow" -> two names, each matched on its own.
+      const alts = [];
+      let cur = [];
+      words.forEach((w) => {
+        if (w === "or") { if (cur.length) alts.push(cur); cur = []; }
+        else cur.push(stepIngStem(w));
+      });
+      if (cur.length) alts.push(cur);
+      if (alts.length) return alts;
+    }
+    return [];
+  }
+
+  function matchStepIngredients(stepText, cores) {
+    const text = " " + String(stepText || "").toLowerCase().replace(/[’']/g, "").replace(/-/g, " ") + " ";
+    const claimed = [];
+    const overlaps = (a, b) => claimed.some(([s, e]) => a < e && b > s);
+    const hits = new Set();
+    const counts = new Map();
+    const flat = cores.map((alts) => [].concat(...alts));
+    flat.forEach((words) => new Set(words).forEach((w) => counts.set(w, (counts.get(w) || 0) + 1)));
+    // Pass 1: whole names, then their tails ("dark brown sugar" -> "brown
+    // sugar"), longest first, so "peanut butter" claims its words before
+    // plain "butter" can.
+    const phrases = [];
+    cores.forEach((alts, i) => alts.forEach((words) => {
+      if (words.length === 1) phrases.push([i, words]);
+      for (let k = 0; k <= words.length - 2; k++) phrases.push([i, words.slice(k)]);
+    }));
+    phrases.sort((a, b) => b[1].join(" ").length - a[1].join(" ").length);
+    phrases.forEach(([i, words]) => {
+      if (hits.has(i) && words.length < 2) return;
+      const pattern = words.map(stepIngWordBody).join("[\\s,]+(?:and\\s+)?");
+      const re = new RegExp("(^|[^a-z])(" + pattern + ")(?![a-z])", "g");
+      // A full name claims every mention, so "peanut butter" twice in one
+      // step never leaves a stray "butter" for the pan grease.
+      const all = words.length > 1;
+      let m;
+      while ((m = re.exec(text))) {
+        const s = m.index + m[1].length;
+        const e = s + m[2].length;
+        if (!overlaps(s, e)) {
+          claimed.push([s, e]);
+          hits.add(i);
+          if (!all) break;
+        }
+      }
+    });
+    // Pass 2: a single word. It counts when only this ingredient uses it, or
+    // when this is the one ingredient it names ("pepper" -> black pepper, not
+    // red pepper flakes). Never inside a span already claimed.
+    const heads = new Map();
+    cores.forEach((alts) => new Set(alts.map((a) => a[a.length - 1]))
+      .forEach((h) => heads.set(h, (heads.get(h) || 0) + 1)));
+    cores.forEach((alts, i) => {
+      if (hits.has(i)) return;
+      const own = new Set(alts.map((a) => a[a.length - 1]));
+      for (const w of flat[i]) {
+        const unique = counts.get(w) === 1 && !STEP_ING_ADJ.has(w);
+        const soleHead = own.has(w) && heads.get(w) === 1;
+        if (!unique && !soleHead) continue;
+        const re = stepIngWordRe(w);
+        let m;
+        let found = false;
+        while ((m = re.exec(text))) {
+          const s = m.index + m[1].length;
+          const e = s + m[2].length;
+          if (!overlaps(s, e)) { claimed.push([s, e]); found = true; break; }
+        }
+        if (found) { hits.add(i); break; }
+      }
+    });
+    return Array.from(hits).sort((a, b) => a - b);
+  }
+
+  const ingredientItems = (() => {
+    const marked = ingredients.filter((li) =>
+      li.matches(".ingredient, .p-ingredient, [itemprop='recipeIngredient']"));
+    return marked.length ? marked : ingredients;
+  })();
+  const ingredientCores = ingredientItems.map((li) => stepIngCore(li.dataset.original || li.textContent));
+  const stepIngredientMap = steps.map((li) => matchStepIngredients(li.textContent, ingredientCores));
+
   // --- cook mode ---
   let wakeLock = null;
   let cookIndex = 0;
@@ -788,7 +919,62 @@
       if (current) s.setAttribute("aria-current", "step");
       else s.removeAttribute("aria-current");
     });
+    renderStepIngredients();
     renderTimerOffers();
+  }
+
+  let stepIngHost = null;
+  let stepIngList = null;
+
+  function ensureStepIngHost() {
+    if (stepIngHost || !cookPanel) return stepIngHost;
+    const inner = cookPanel.querySelector(".cook-panel-inner") || cookPanel;
+    stepIngHost = document.createElement("div");
+    stepIngHost.className = "cook-step-ings";
+    stepIngHost.hidden = true;
+    const label = document.createElement("p");
+    label.className = "cook-step-ings-label";
+    label.id = "cook-step-ings-label";
+    label.textContent = "For this step";
+    stepIngList = document.createElement("ul");
+    stepIngList.setAttribute("aria-labelledby", label.id);
+    stepIngHost.appendChild(label);
+    stepIngHost.appendChild(stepIngList);
+    const stepText = inner.querySelector("[data-cook-step]");
+    if (stepText && stepText.nextSibling) inner.insertBefore(stepIngHost, stepText.nextSibling);
+    else inner.appendChild(stepIngHost);
+    return stepIngHost;
+  }
+
+  function renderStepIngredients() {
+    ensureStepIngHost();
+    if (!stepIngList) return;
+    clearEl(stepIngList);
+    const picks = stepIngredientMap[cookIndex] || [];
+    picks.forEach((idx) => {
+      const li = ingredientItems[idx];
+      if (!li) return;
+      const item = document.createElement("li");
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "cook-step-ing";
+      // Read the live text so the servings scaler's amounts show here too.
+      btn.textContent = li.textContent.trim();
+      const sync = () => {
+        const on = li.classList.contains("is-checked");
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+        btn.classList.toggle("is-checked", on);
+      };
+      sync();
+      btn.title = "Tick off in the ingredient list";
+      btn.addEventListener("click", () => {
+        li.click();
+        sync();
+      });
+      item.appendChild(btn);
+      stepIngList.appendChild(item);
+    });
+    stepIngHost.hidden = picks.length === 0;
   }
 
   async function requestWake() {

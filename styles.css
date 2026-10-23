@@ -820,6 +820,71 @@ body.cook-mode .cook-panel {
   overflow: auto;
 }
 
+/* "For this step": the ingredients the current step names, with live
+   (scaled) amounts. Tap one to tick it off in the main list. */
+.cook-step-ings[hidden] { display: none !important; }
+
+.cook-step-ings {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.cook-step-ings-label {
+  margin: 0;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cream-muted);
+}
+
+.cook-step-ings ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  max-height: 6.4rem;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.cook-step-ing {
+  appearance: none;
+  font: inherit;
+  font-size: 0.86rem;
+  line-height: 1.2;
+  text-align: left;
+  color: var(--cream);
+  background: var(--bg-inset);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  min-height: 2rem;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.cook-step-ing:hover { border-color: var(--fire-soft); }
+
+.cook-step-ing:focus-visible {
+  outline: 2px solid var(--fire-soft);
+  outline-offset: 2px;
+}
+
+.cook-step-ing.is-checked {
+  color: var(--cream-muted);
+  text-decoration: line-through;
+  border-color: rgba(79, 100, 60, 0.55);
+  background: rgba(79, 100, 60, 0.14);
+}
+
+.cook-step-ing.is-checked::before {
+  content: "\2713\00a0";
+  text-decoration: none;
+  display: inline-block;
+}
+
 .cook-actions {
   display: grid;
   grid-template-columns: 1fr 1.4fr 1fr;
