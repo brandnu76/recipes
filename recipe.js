@@ -297,6 +297,109 @@
     }
   }
 
+  // --- My notes: private, device-local notes per recipe ---
+  // Like the margin of a cookbook: "used 2 tbsp honey", "pull at 128°F".
+  // Stored only in this browser's localStorage, never sent anywhere. Added
+  // after the recipe article (and by script, not in the page HTML) so AnyList
+  // and Schema.org/hRecipe readers never see it as part of the recipe.
+  const NOTES_PREFIX = "clt:notes:";
+  if (slug) {
+    const notesKey = NOTES_PREFIX + slug;
+    const readNote = () => {
+      const v = store.get(notesKey);
+      return v && typeof v.text === "string" ? v : null;
+    };
+    const section = document.createElement("section");
+    section.className = "my-notes";
+    section.id = "my-notes";
+    section.setAttribute("aria-labelledby", "my-notes-title");
+    const h = document.createElement("h2");
+    h.id = "my-notes-title";
+    h.textContent = "My notes";
+    const hint = document.createElement("p");
+    hint.className = "my-notes-hint";
+    hint.id = "my-notes-hint";
+    hint.textContent = "Private to this device. Jot swaps, timings, or what the family thought; it saves as you type.";
+    const box = document.createElement("textarea");
+    box.className = "my-notes-input";
+    box.id = "my-notes-input";
+    box.rows = 4;
+    box.maxLength = 4000;
+    box.placeholder = "e.g. Pulled at 128°F, rested 10 min. Doubled the garlic.";
+    box.setAttribute("aria-describedby", "my-notes-hint my-notes-status");
+    const label = document.createElement("label");
+    label.className = "visually-hidden";
+    label.htmlFor = "my-notes-input";
+    label.textContent = "Your notes for this recipe";
+    const status = document.createElement("p");
+    status.className = "my-notes-status";
+    status.id = "my-notes-status";
+    const printOut = document.createElement("div");
+    printOut.className = "my-notes-print";
+    printOut.setAttribute("aria-hidden", "true");
+
+    const fmtDate = (t) => {
+      try { return new Date(t).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }); } catch (_) { return ""; }
+    };
+    const paintStatus = (note, justSaved) => {
+      if (note && note.text.trim()) {
+        status.textContent = (justSaved ? "Saved on this device" : "Last edited " + fmtDate(note.t)) + ".";
+      } else {
+        status.textContent = "";
+      }
+      printOut.textContent = note && note.text.trim() ? note.text.trim() : "";
+      section.classList.toggle("has-notes", !!(note && note.text.trim()));
+    };
+
+    const existing = readNote();
+    if (existing) box.value = existing.text;
+    paintStatus(existing, false);
+
+    let timer = 0;
+    const commit = () => {
+      timer = 0;
+      const text = box.value;
+      if (!text.trim()) {
+        store.remove(notesKey);
+        paintStatus(null, false);
+        return;
+      }
+      const note = { t: Date.now(), text: text };
+      if (!store.set(notesKey, note)) {
+        status.textContent = "Notes can't be saved in this browser mode.";
+        return;
+      }
+      paintStatus(note, true);
+    };
+    box.addEventListener("input", () => {
+      if (timer) window.clearTimeout(timer);
+      timer = window.setTimeout(commit, 600);
+    });
+    box.addEventListener("blur", () => {
+      if (timer) { window.clearTimeout(timer); commit(); }
+    });
+    window.addEventListener("pagehide", () => {
+      if (timer) { window.clearTimeout(timer); commit(); }
+    });
+
+    section.appendChild(h);
+    section.appendChild(hint);
+    section.appendChild(label);
+    section.appendChild(box);
+    section.appendChild(status);
+    section.appendChild(printOut);
+    if (article.parentNode) article.parentNode.insertBefore(section, article.nextSibling);
+
+    const jumpRef = toolbar && toolbar.querySelector(".jump-link[href='#instructions']");
+    if (jumpRef) {
+      const jl = document.createElement("a");
+      jl.className = "jump-link";
+      jl.href = "#my-notes";
+      jl.textContent = "Notes";
+      toolbar.insertBefore(jl, jumpRef.nextSibling);
+    }
+  }
+
   // --- servings scaler ---
   function parseYield() {
     const el = article.querySelector(".yield, .p-yield, [itemprop='recipeYield']");

@@ -1734,3 +1734,63 @@ h2#ingredients + .ingredient-group {
     display: none !important;
   }
 }
+
+/* My notes: private, device-local notes under each recipe (localStorage only) */
+.my-notes {
+  margin: 2rem 0 0;
+  padding: 1.1rem 1.15rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-raised);
+}
+.my-notes h2 { margin-top: 0; }
+.my-notes-hint,
+.my-notes-status {
+  margin: 0.35rem 0 0.6rem;
+  color: var(--cream-muted);
+  font-size: 0.92rem;
+}
+.my-notes-status { margin: 0.5rem 0 0; min-height: 1.2em; }
+.my-notes-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 6.5rem;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: rgba(18, 15, 13, 0.55);
+  color: var(--cream);
+  font: inherit;
+  font-size: 1rem; /* 16px+ keeps iOS from zooming on focus */
+  line-height: 1.5;
+  resize: vertical;
+}
+.my-notes-input::placeholder { color: var(--cream-muted); opacity: 0.75; }
+.my-notes-input:focus-visible { border-color: rgba(122, 145, 96, 0.8); }
+.my-notes-print { display: none; }
+body.cook-mode .my-notes { display: none; }
+
+@media print {
+  .my-notes { display: none !important; }
+  .my-notes.has-notes {
+    display: block !important;
+    margin: 0.8rem 0 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    break-inside: avoid;
+  }
+  .my-notes.has-notes h2 { color: #000; margin: 0 0 0.25rem; }
+  .my-notes.has-notes .my-notes-hint,
+  .my-notes.has-notes .my-notes-status,
+  .my-notes.has-notes .my-notes-input,
+  .my-notes.has-notes label { display: none !important; }
+  .my-notes.has-notes .my-notes-print {
+    display: block !important;
+    color: #000;
+    white-space: pre-wrap;
+    font-size: 10.5pt;
+    line-height: 1.4;
+  }
+}
