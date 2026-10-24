@@ -61,6 +61,7 @@ Import URL pattern after GitHub Pages:
 - [Pumpkin-Shaped Sourdough](pumpkin-shaped-sourdough.html)
 - [Country Sourdough Boule](country-sourdough-boule.html)
 - [Pan Focaccia (Savory or Sweet)](pan-focaccia.html)
+- [Sweet Potato Cornbread](sweet-potato-cornbread.html)
 - [Sourdough Croissants](sourdough-croissants.html)
 
 ## Dessert
