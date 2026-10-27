@@ -73,6 +73,9 @@ Import URL pattern after GitHub Pages:
 - [Sourdough Croissants](sourdough-croissants.html)
 
 ## Dessert
+- [Apple Crumble](apple-crumble.html)
+- [Peach Crumble](peach-crumble.html)
+- [Blueberry Crumble](blueberry-crumble.html)
 
 - [Caramel Apple Pie Poke Cake](caramel-apple-pie-poke-cake.html)
 - [Sugar-Free Apple Pie Protein Burritos](sugar-free-apple-pie-protein-burritos.html)
