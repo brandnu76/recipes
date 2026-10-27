@@ -933,13 +933,69 @@
     beep();
   }
 
+  // "Keep screen on" switch, shared with Plan a Meal (same localStorage key).
+  // On: hold the lock the whole time cook mode is open. Off: only while a
+  // timer runs, like before.
+  const WAKE_KEY = "clt:meal-wake";
+  const wakeSupported = "wakeLock" in navigator;
+  let wakePref = store.get(WAKE_KEY) !== false;
+  let wakeSwitch = null;
+  let wakeStatus = null;
+  function paintWake() {
+    if (!wakeSwitch) return;
+    wakeSwitch.setAttribute("aria-checked", wakePref ? "true" : "false");
+    wakeSwitch.classList.toggle("is-on", wakePref);
+    if (!wakeSupported) { wakeSwitch.disabled = true; wakeStatus.textContent = "Not supported on this browser"; return; }
+    const held = wakeLock && wakeLock.released === false;
+    const inCook = document.body.classList.contains("cook-mode");
+    wakeStatus.textContent = held || (wakePref && !inCook) ? "Screen will stay on" : "Screen may sleep";
+  }
+  if (cookPanel) {
+    const inner = cookPanel.querySelector(".cook-panel-inner") || cookPanel;
+    const wrap = document.createElement("span");
+    wrap.className = "wake-toggle cook-wake";
+    wakeSwitch = document.createElement("button");
+    wakeSwitch.type = "button";
+    wakeSwitch.className = "wake-switch";
+    wakeSwitch.setAttribute("role", "switch");
+    wakeSwitch.setAttribute("aria-labelledby", "cook-wake-label");
+    wakeSwitch.setAttribute("aria-describedby", "cook-wake-status");
+    const knob = document.createElement("span");
+    knob.className = "wake-knob";
+    knob.setAttribute("aria-hidden", "true");
+    wakeSwitch.appendChild(knob);
+    const lab = document.createElement("span");
+    lab.id = "cook-wake-label";
+    lab.className = "wake-label";
+    lab.textContent = "Keep screen on";
+    wakeStatus = document.createElement("span");
+    wakeStatus.id = "cook-wake-status";
+    wakeStatus.className = "wake-status";
+    wakeStatus.setAttribute("aria-live", "polite");
+    wrap.appendChild(wakeSwitch);
+    wrap.appendChild(lab);
+    wrap.appendChild(wakeStatus);
+    inner.appendChild(wrap);
+    wakeSwitch.addEventListener("click", () => {
+      wakePref = !wakePref;
+      store.set(WAKE_KEY, wakePref);
+      syncWake();
+      paintWake();
+    });
+    window.addEventListener("storage", (e) => {
+      if (e.key === WAKE_KEY) { wakePref = store.get(WAKE_KEY) !== false; syncWake(); paintWake(); }
+    });
+    paintWake();
+  }
+
   function needsWake() {
-    return document.body.classList.contains("cook-mode") || timers.some((t) => t.status === "running");
+    return (wakePref && document.body.classList.contains("cook-mode")) || timers.some((t) => t.status === "running");
   }
 
   function syncWake() {
     if (needsWake()) requestWake();
     else releaseWake();
+    paintWake();
   }
 
   function ensureTick() {
@@ -1146,8 +1202,10 @@
       wakeLock = sentinel;
       sentinel.addEventListener("release", () => {
         if (wakeLock === sentinel) wakeLock = null;
+        paintWake();
       });
     } catch (_) {}
+    paintWake();
   }
 
   function releaseWake() {

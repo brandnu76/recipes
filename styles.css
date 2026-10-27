@@ -1898,3 +1898,7 @@ body.cook-mode .meal-tray { display: none; }
 .wake-status { font-size: 0.85rem; color: var(--cream-muted); }
 @media (prefers-reduced-motion: reduce) { .wake-switch, .wake-knob { transition: none; } }
 @media print { .wake-toggle { display: none !important; } }
+
+/* Recipe cook mode — Keep screen on switch (reuses .wake-* above) */
+.cook-wake { margin-top: 0.6rem; }
+@media print { .cook-wake { display: none !important; } }
