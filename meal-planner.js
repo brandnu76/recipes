@@ -7,7 +7,19 @@
   "use strict";
 
   // ---------- pure planning logic (also used by the node test) ----------
+  // Steps up to 3 hours always count. Longer ones (slow cooker, smoker,
+  // braise) count up to 14 hours, but only when the sentence reads like
+  // cooking, not chilling, marinating, proofing, or storage notes.
   const MAX_TIMER_MS = 3 * 60 * 60 * 1000;
+  const MAX_LONG_MS = 14 * 60 * 60 * 1000;
+  const LONG_COOK_RE = /\b(cook|cooking|slow[- ]?cook|crock|on (?:low|high)|smok|braise|braising|simmer|roast|bake|oven|pit|start to pull|low and slow)/i;
+  const LONG_BLOCK_RE = /\b(refrigerat|fridge|chill|marinat|brine|overnight|up to|keeps?|store|freez|ferment|proof|rise|soak|feed|before you|ahead|rest|thaw|cure|days?)\b/i;
+  function sentenceAround(text, i) {
+    const a = text.lastIndexOf(".", i - 1) + 1;
+    let b = text.indexOf(".", i);
+    if (b === -1) b = text.length;
+    return text.slice(a, b);
+  }
   // Same pattern recipe.js cook-mode timers use.
   const DURATION_RE = /\b(\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:\.\d+)?)(?:\s*(?:-|–|—|to)\s*(\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:\.\d+)?))?\s*-?\s*(seconds?|secs?|minutes?|mins?|hours?|hrs?)\b/gi;
   const PREHEAT_MIN = 15;
@@ -34,7 +46,11 @@
       if (amount == null || amount <= 0) continue;
       const u = m[3].toLowerCase().charAt(0);
       const ms = amount * (u === "s" ? 1000 : u === "h" ? 3600000 : 60000);
-      if (ms > MAX_TIMER_MS) continue;
+      if (ms > MAX_LONG_MS) continue;
+      if (ms > MAX_TIMER_MS) {
+        const sent = sentenceAround(text, m.index);
+        if (LONG_BLOCK_RE.test(sent) || !LONG_COOK_RE.test(sent)) continue;
+      }
       const after = text.slice(m.index + m[0].length, m.index + m[0].length + 28);
       if (/\bovernight\b/i.test(after)) continue;
       let mins = ms / 60000;
@@ -68,7 +84,9 @@
     const t = String(text).toLowerCase().replace(/baking (soda|powder|sheet|dish|pan)/g, "$1").replace(/baked beans/g, "beans").replace(/\b(while|as|until) the (grill|oven|smoker|broiler)\b[^.,;]*/g, "");
     const eq = new Set();
     const dutch = /dutch oven/.test(t);
-    const t2 = t.replace(/dutch oven/g, "pot");
+    const slow = /\bslow[- ]?cooker\b|\bcrock[- ]?pot\b|\bcrockpot\b/.test(t);
+    const t2 = t.replace(/dutch oven/g, "pot").replace(/\bslow[- ]?cooker\b|\bcrock[- ]?pot\b|\bcrockpot\b/g, "slowcooker");
+    if (slow) eq.add("slowcooker");
     if (/\bbroil/.test(t2)) eq.add("broiler");
     if (/\bgrill\b|\bgrill grates?\b|\bsmoker\b|\bpellet\b|\bon the grates?\b|\bsmok(e|ing) at\b|\bkettle\b|\bcoals\b/.test(t2)) eq.add("grill");
     if (/\boven\b|\broast(ing)?\b|\bbake[sd]?\b|\bbaking\b/.test(t2) || (dutch && /\bin the oven\b|oven to/.test(t))) eq.add("oven");
@@ -122,6 +140,7 @@
     let dishOvenTemp = null, dishGrillTemp = null;
     let seenHeat = false;
     const heated = { oven: false, grill: false };
+    let usesSlow = false;
     raw.forEach((text, idx) => {
       if (ALT_METHOD_RE.test(text)) { skipped.push(idx); return; }
       const sents = sentences(text);
@@ -136,7 +155,13 @@
         kind: "cook",
         minutes: null,
         source: "default",
-        equip: Array.from(equipmentOf(remaining || text)),
+        equip: (function () {
+          const e = equipmentOf(remaining || text);
+          if (e.has("slowcooker")) usesSlow = true;
+          // "Cover and cook on low 7 hours" after "put it in the slow cooker".
+          else if (usesSlow && /\bon (low|high)\b/i.test(remaining || text) && !e.has("oven") && !e.has("grill")) { e.delete("stove"); e.add("slowcooker"); }
+          return Array.from(e);
+        })(),
         temp: tempOf(remaining),
         active: true,
         makeAhead: false,
@@ -203,11 +228,12 @@
 
   // Lay one dish out backward from its finish (minutes relative to eat time).
   // overrides: { "slug:idx": minutes }, offset: minutes the dish finishes early.
-  const DEFAULT_KITCHEN = { burners: 4, ovens: 1, airFryer: false, grill: "pellet", grillPreheat: 15, ovenPreheat: 15, boil: 15 };
+  const DEFAULT_KITCHEN = { burners: 4, ovens: 1, slowCookers: 1, airFryer: false, grill: "pellet", grillPreheat: 15, ovenPreheat: 15, boil: 15 };
   function kitchenOf(k) {
     const o = Object.assign({}, DEFAULT_KITCHEN, k || {});
     o.burners = Math.max(1, Math.min(8, +o.burners || 4));
     o.ovens = +o.ovens === 2 ? 2 : 1;
+    o.slowCookers = o.slowCookers === "" || o.slowCookers == null || !isFinite(+o.slowCookers) ? 1 : Math.max(0, Math.min(4, Math.round(+o.slowCookers)));
     o.airFryer = !!o.airFryer;
     o.grill = ["none", "pellet", "gas", "charcoal"].indexOf(o.grill) !== -1 ? o.grill : "pellet";
     ["grillPreheat", "ovenPreheat", "boil"].forEach((f) => { o[f] = Math.max(0, Math.min(90, Math.round(+o[f]))); if (!isFinite(o[f])) o[f] = 15; });
@@ -373,6 +399,17 @@
       const live = stove.filter((e) => e.start <= p && e.end > p);
       if (live.length > kit.burners) {
         out.push({ type: "burners", severity: "conflict", message: live.length + " burners at once around {t}, and your range has " + kit.burners + ". Move one stovetop job earlier and hold it warm.", at: p, shiftDish: live[0].dish, shiftBy: 5, events: live.map((e) => e.id) });
+        break;
+      }
+    }
+    // Slow cookers are their own appliance (not a burner or the oven).
+    const slowEv = events.filter((e) => uses(e, "slowcooker"));
+    const slowPts = Array.from(new Set(slowEv.map((e) => e.start))).sort((x, y) => x - y);
+    for (const p of slowPts) {
+      const live = slowEv.filter((e) => e.start <= p && e.end > p);
+      const dishesLive = Array.from(new Set(live.map((e) => e.dish)));
+      if (dishesLive.length > kit.slowCookers) {
+        out.push({ type: "slowcooker", severity: kit.slowCookers ? "conflict" : "warning", message: kit.slowCookers ? dishesLive.length + " dishes need a slow cooker around {t}, and My kitchen says you have " + kit.slowCookers + ". Use a Dutch oven on low in a 275°F oven for one, or add a slow cooker in My kitchen." : "A dish needs a slow cooker, and My kitchen says you don't have one. A covered Dutch oven at 275°F works for most braises.", at: p, events: live.map((e) => e.id) });
         break;
       }
     }
@@ -1022,8 +1059,15 @@
     if (d.getTime() < Date.now() - 60 * 60000) d.setDate(d.getDate() + 1);
     return d;
   }
-  const fmt = (date) => date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  const fmtClock = (date) => date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  // Times on a different day than dinner get the weekday ("Mon 9:00 PM").
+  const fmt = (date) => (date.toDateString() !== eatDate().toDateString() ? date.toLocaleDateString([], { weekday: "short" }) + " " : "") + fmtClock(date);
   const at = (rel) => new Date(eatDate().getTime() + rel * 60000);
+  function earlyNote(date) {
+    if (date.toDateString() !== eatDate().toDateString()) return " That's the day before, " + date.toLocaleDateString([], { weekday: "long" }) + " at " + fmtClock(date) + ".";
+    if (date.getHours() < 12) return " That's a morning start.";
+    return "";
+  }
 
   // --- catalog from recipes.html + search-index.json ---
   async function loadCatalog() {
@@ -1220,7 +1264,7 @@
     const ev = plan && (plan.events.find((e) => e.id === id) || plan.ahead.find((e) => e.id === id));
     if (!ev) return;
     const next = value != null ? value : Math.max(0, (ev.minutes || 0) + delta);
-    state.overrides[id] = Math.min(600, Math.max(0, Math.round(next)));
+    state.overrides[id] = Math.min(900, Math.max(0, Math.round(next)));
     saveState();
     rebuild(id);
   }
@@ -1236,7 +1280,7 @@
     const meta = el("p", "meal-step-meta");
     const bits = [];
     bits.push((ev.minutes || 0) + " min" + (ev.source === "default" ? " (estimated)" : ev.source === "edited" ? " (your edit)" : ""));
-    if (ev.equip && ev.equip.length) bits.push(ev.equip.map((e) => (e === "stove" ? "stovetop" : e)).join(" + ") + (ev.temp ? " " + ev.temp + "°F" : ""));
+    if (ev.equip && ev.equip.length) bits.push(ev.equip.map((e) => (e === "stove" ? "stovetop" : e === "slowcooker" ? "slow cooker" : e)).join(" + ") + (ev.temp ? " " + ev.temp + "°F" : ""));
     if (ev.active === false) bits.push("hands-off");
     if (ev.slack > 0 && !(state.done || {})[ev.id]) bits.push("can wait " + ev.slack + " min");
     if (state.done && state.done[ev.id]) { bits.push("done"); li.classList.add("is-done"); }
@@ -1248,7 +1292,7 @@
     minus.type = "button"; minus.setAttribute("aria-label", "One minute shorter: " + ev.label);
     minus.addEventListener("click", () => nudge(ev.id, -1));
     const input = el("input", "meal-min-input");
-    input.type = "number"; input.min = "0"; input.max = "600"; input.inputMode = "numeric"; input.value = String(ev.minutes || 0);
+    input.type = "number"; input.min = "0"; input.max = "900"; input.inputMode = "numeric"; input.value = String(ev.minutes || 0);
     input.setAttribute("aria-label", "Minutes for: " + ev.label);
     input.addEventListener("change", () => { const v = parseInt(input.value, 10); if (isFinite(v)) nudge(ev.id, 0, v); });
     const plus = el("button", "toolbar-btn meal-mini", "+1");
@@ -1267,7 +1311,7 @@
     if (!plan || !plan.events.length) { empty.hidden = false; tools.hidden = true; return; }
     empty.hidden = true; tools.hidden = false;
     const startAt = at(Math.min(plan.start, plan.aheadStart));
-    $("[data-meal-summary]").textContent = "Start at " + fmt(at(plan.start)) + (plan.ahead.length ? " (do-earlier work before that)" : "") + " to eat at " + fmt(at(0)) + (at(0).toDateString() === new Date().toDateString() ? " today" : " " + at(0).toLocaleDateString([], { weekday: "long" })) + ". " + plan.events.length + " timed steps across " + state.slugs.length + " dishes.";
+    $("[data-meal-summary]").textContent = "Start at " + fmt(at(plan.start)) + (plan.ahead.length ? " (do-earlier work before that)" : "") + " to eat at " + fmtClock(at(0)) + (at(0).toDateString() === new Date().toDateString() ? " today" : " " + at(0).toLocaleDateString([], { weekday: "long" })) + "." + earlyNote(at(plan.start)) + " " + plan.events.length + " timed steps across " + state.slugs.length + " dishes.";
 
     if (plan.conflicts.length) {
       const box = el("section", "meal-conflicts" + (plan.conflicts.every((c) => c.severity === "info") ? " is-info-only" : ""));
@@ -1302,6 +1346,13 @@
     const sec = el("section", "meal-timeline");
     sec.appendChild(el("h2", null, "Timeline"));
     const ol = el("ol", "meal-steps");
+    const early = at(plan.start);
+    if (early.getHours() < 12 || early.toDateString() !== at(0).toDateString()) {
+      const li = el("li", "meal-step meal-eat meal-early-start");
+      li.appendChild(el("span", "meal-time", fmt(early)));
+      li.appendChild(el("p", "meal-step-text", "Start " + fmt(early) + ". Long hands-off cook, so this dish starts early." + earlyNote(early)));
+      ol.appendChild(li);
+    }
     plan.events.forEach((e) => ol.appendChild(stepRow(e, true)));
     const eat = el("li", "meal-step meal-eat");
     eat.appendChild(el("span", "meal-time", fmt(at(0))));
@@ -1513,11 +1564,12 @@
   const kitSummary = $("[data-kitchen-summary]");
   function kitchenLine(k) {
     const g = { none: "no grill", pellet: "pellet grill", gas: "gas grill", charcoal: "charcoal grill" }[k.grill];
-    return k.burners + " burners · " + (k.ovens === 2 ? "2 ovens" : "1 oven") + (k.airFryer ? " · air fryer oven" : "") + " · " + g + (k.grill !== "none" ? " (" + k.grillPreheat + " min to heat)" : "") + " · oven preheat " + k.ovenPreheat + " min · water boils in " + k.boil + " min";
+    return k.burners + " burners · " + (k.ovens === 2 ? "2 ovens" : "1 oven") + " · " + k.slowCookers + " slow cooker" + (k.slowCookers === 1 ? "" : "s") + (k.airFryer ? " · air fryer oven" : "") + " · " + g + (k.grill !== "none" ? " (" + k.grillPreheat + " min to heat)" : "") + " · oven preheat " + k.ovenPreheat + " min · water boils in " + k.boil + " min";
   }
   function paintKitchen() {
     kitForm.elements.burners.value = kitchen.burners;
     kitForm.elements.ovens.value = String(kitchen.ovens);
+    if (kitForm.elements.slowCookers) kitForm.elements.slowCookers.value = kitchen.slowCookers;
     kitForm.elements.airFryer.checked = kitchen.airFryer;
     kitForm.elements.grill.value = kitchen.grill;
     kitForm.elements.grillPreheat.value = kitchen.grillPreheat;
@@ -1529,7 +1581,7 @@
   kitForm.addEventListener("change", (e) => {
     const f = kitForm.elements;
     const prevGrill = kitchen.grill;
-    const next = { burners: f.burners.value, ovens: f.ovens.value, airFryer: f.airFryer.checked, grill: f.grill.value, grillPreheat: f.grillPreheat.value, ovenPreheat: f.ovenPreheat.value, boil: f.boil.value };
+    const next = { burners: f.burners.value, ovens: f.ovens.value, slowCookers: f.slowCookers ? f.slowCookers.value : 1, airFryer: f.airFryer.checked, grill: f.grill.value, grillPreheat: f.grillPreheat.value, ovenPreheat: f.ovenPreheat.value, boil: f.boil.value };
     if (e.target === f.grill && next.grill !== prevGrill) next.grillPreheat = { pellet: 15, gas: 10, charcoal: 25, none: 15 }[next.grill];
     kitchen = kitchenOf(next);
     store.set(KITCHEN_KEY, kitchen);
