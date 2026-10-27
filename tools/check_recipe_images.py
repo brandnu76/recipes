@@ -19,6 +19,7 @@ NON_RECIPE = {
     "index.html",
     "recipes.html",
     "copyright.html",
+    "meal-planner.html",
     "robots.txt",
 }
 
@@ -73,6 +74,9 @@ def main() -> int:
         text = html.read_text(encoding="utf-8", errors="replace")
         # Redirect stubs (meta refresh to a moved recipe) are not recipe pages.
         if re.search(r'<meta[^>]+http-equiv=["\']refresh["\']', text, re.I):
+            continue
+        # Pages intentionally published without a photo opt out explicitly.
+        if re.search(r'<meta[^>]+name=["\']recipe-photo["\'][^>]+content=["\']none["\']', text, re.I):
             continue
         has_hero = bool(re.search(r'class=["\'][^"\']*recipe-hero', text)) or \
                    bool(re.search(r'<img[^>]+itemprop=["\']image["\']', text))
