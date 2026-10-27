@@ -6,6 +6,8 @@ Home (splash): [index.html](index.html)
 
 All recipes: [recipes.html](recipes.html)
 
+Plan a Meal (multi-dish timing): [meal-planner.html](meal-planner.html)
+
 Import URL pattern after GitHub Pages:
 
 `https://brandnu76.github.io/recipes/<slug>.html`
