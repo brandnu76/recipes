@@ -1885,3 +1885,16 @@ body.cook-mode .meal-tray { display: none; }
   .meal-conflicts { background: #fff; border: 1px solid #999; }
   .meal-step-meta, .meal-note { color: #444; }
 }
+
+/* Plan a Meal — Keep screen on switch */
+.wake-toggle { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.wake-switch { position: relative; width: 3.25rem; height: 1.9rem; min-width: 2.75rem; padding: 0; border-radius: 999px; border: 1px solid var(--line-strong); background: var(--bg-inset); cursor: pointer; transition: background 0.2s var(--ease); }
+.wake-switch.is-on { background: var(--fire); border-color: var(--fire-soft); }
+.wake-knob { position: absolute; top: 0.2rem; left: 0.2rem; width: 1.4rem; height: 1.4rem; border-radius: 50%; background: var(--cream); transition: transform 0.2s var(--ease); }
+.wake-switch.is-on .wake-knob { transform: translateX(1.35rem); }
+.wake-switch:disabled { opacity: 0.5; cursor: not-allowed; }
+.wake-switch:focus-visible { outline: 2px solid var(--fire-soft); outline-offset: 2px; }
+.wake-label { font-weight: 600; }
+.wake-status { font-size: 0.85rem; color: var(--cream-muted); }
+@media (prefers-reduced-motion: reduce) { .wake-switch, .wake-knob { transition: none; } }
+@media print { .wake-toggle { display: none !important; } }

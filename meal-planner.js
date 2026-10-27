@@ -680,9 +680,40 @@
       new Notification(title, opts);
     } catch (_) {}
   }
-  async function requestWake() {
-    try { if ("wakeLock" in navigator && (!cook.wake || cook.wake.released)) cook.wake = await navigator.wakeLock.request("screen"); } catch (_) {}
+  // Keep screen on: on by default, remembered on this device.
+  const WAKE_KEY = "clt:meal-wake";
+  const wakeSwitch = $("[data-wake-switch]");
+  const wakeStatus = $("[data-wake-status]");
+  const wakeSupported = "wakeLock" in navigator;
+  let wakeOn = store.get(WAKE_KEY) !== false;
+  function paintWake() {
+    wakeSwitch.setAttribute("aria-checked", wakeOn ? "true" : "false");
+    wakeSwitch.classList.toggle("is-on", wakeOn);
+    if (!wakeSupported) { wakeSwitch.disabled = true; wakeStatus.textContent = "Not supported on this browser"; return; }
+    const held = cook.wake && !cook.wake.released;
+    wakeStatus.textContent = wakeOn && (held || !cook.on) ? "Screen will stay on" : "Screen may sleep";
   }
+  async function requestWake() {
+    if (!wakeSupported || !wakeOn || !cook.on) { paintWake(); return; }
+    try {
+      if (!cook.wake || cook.wake.released) {
+        cook.wake = await navigator.wakeLock.request("screen");
+        cook.wake.addEventListener("release", paintWake);
+      }
+    } catch (_) {}
+    paintWake();
+  }
+  function releaseWake() {
+    if (cook.wake) { const w = cook.wake; cook.wake = null; w.release().catch(() => {}); }
+    paintWake();
+  }
+  wakeSwitch.addEventListener("click", () => {
+    wakeOn = !wakeOn;
+    store.set(WAKE_KEY, wakeOn);
+    if (wakeOn) requestWake(); else releaseWake();
+    say(wakeOn ? "Screen will stay on" : "Screen may sleep");
+  });
+  paintWake();
   function renderCook() {
     if (!plan) return;
     const now = Date.now();
@@ -735,7 +766,7 @@
     window.clearInterval(cook.tick);
     document.body.classList.remove("meal-cooking");
     cookPanel.hidden = true;
-    if (cook.wake) { cook.wake.release().catch(() => {}); cook.wake = null; }
+    releaseWake();
     $("[data-action='meal-cook']").focus();
   }
   $("[data-action='meal-cook']").addEventListener("click", enterCook);

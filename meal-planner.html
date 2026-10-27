@@ -85,6 +85,11 @@
       <p id="meal-prog-label" class="meal-note" data-cook-progress-label></p>
       <div class="meal-cook-opts">
         <label><input type="checkbox" data-cook-sound checked> Chime</label>
+        <span class="wake-toggle">
+          <button type="button" class="wake-switch" role="switch" aria-checked="true" aria-labelledby="wake-label" aria-describedby="wake-status" data-wake-switch><span class="wake-knob" aria-hidden="true"></span></button>
+          <span id="wake-label" class="wake-label">Keep screen on</span>
+          <span id="wake-status" class="wake-status" data-wake-status aria-live="polite"></span>
+        </span>
         <button type="button" class="toolbar-btn" data-action="cook-notify">Turn on notifications</button>
       </div>
       <p class="meal-note">Alerts only work while this page is open. Keep the screen on and the tab in front; the page asks your phone to stay awake.</p>
