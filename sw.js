@@ -1,5 +1,5 @@
 /* Carroll Lowcountry Table — offline cache for kitchen use on GitHub Pages */
-const CACHE = "carroll-lowcountry-v37";
+const CACHE = "carroll-lowcountry-v38";
 const SHELL = [
   "./",
   "./index.html",
@@ -33,7 +33,7 @@ const SHELL = [
 async function addAllSafe(cache, urls) {
   await Promise.all(
     urls.map((url) =>
-      cache.add(url).catch(() => {
+      cache.add(new Request(url, { cache: "reload" })).catch(() => {
         /* skip missing or failed assets */
       })
     )
@@ -97,7 +97,21 @@ self.addEventListener("fetch", (event) => {
       const cache = await caches.open(CACHE);
       const cached = await cache.match(req);
 
-      // Cache-first for static assets (CSS, JS, images) — they change with the cache version.
+      // Network-first for CSS/JS so style and script updates always land.
+      const isCode = /\.(?:css|js)$/i.test(url.pathname);
+      if (isCode) {
+        try {
+          const fresh = await fetch(req, { cache: "no-cache" });
+          if (fresh && fresh.ok) cache.put(req, fresh.clone()).catch(() => {});
+          return fresh;
+        } catch (_) {
+          const fallback = cached || (await cache.match(req, { ignoreSearch: true }));
+          if (fallback) return fallback;
+          throw _;
+        }
+      }
+
+      // Cache-first for images.
       if (isAsset && cached) {
         // Refresh in background
         fetch(req).then((fresh) => {

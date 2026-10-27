@@ -2008,3 +2008,6 @@ img.shop-card-photo { width: 100%; height: auto; object-fit: cover; }
 .shop-page .shop-jump { top: var(--header-h, 4.5rem); }
 .shop-page .shop-section { scroll-margin-top: calc(var(--header-h, 4.5rem) + 3.6rem); }
 .shop-page .shop-disclosure { scroll-margin-top: calc(var(--header-h, 4.5rem) + 3.6rem); }
+
+/* Shop: no-CSS fallback separators, hidden when styles load (v38) */
+.shop-sep { display: none; }
