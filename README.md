@@ -14,6 +14,16 @@ Import URL pattern after GitHub Pages:
 
 ## Weekend dinners
 
+- [Jamaican Oxtail Stew](jamaican-oxtail-stew.html)
+- [Pellet-Grill Reverse-Sear Tri-Tip](pellet-grill-reverse-sear-tri-tip.html)
+- [Keto Slow Cooker Braised Oxtails](keto-slow-cooker-braised-oxtails.html)
+- [Jo Mama's Big-Batch Italian Sausage Spaghetti](jo-mamas-italian-sausage-spaghetti.html)
+- [Oven-Baked BBQ Pork Steaks](oven-baked-bbq-pork-steaks.html)
+- [Pellet-Grilled BBQ Chicken Thighs](pellet-grilled-bbq-chicken-thighs.html)
+- [3-2-1 Baby Back Ribs with Brown Sugar and Honey Wrap](3-2-1-baby-back-ribs.html)
+- [3-2-1 Smoked Ribs with Apple Spritz](3-2-1-smoked-ribs.html)
+- [Easy Seafood Boil Sauce](easy-seafood-boil-sauce.html)
+- [Low-Country Boil](low-country-boil.html)
 - [Seared Ribeye on the Pellet Grill](seared-ribeye-pellet-grill.html)
 - [Texas Smoked Brisket](texas-smoked-brisket.html)
 - [Sheet-Pan Salmon with Sweet Potatoes and Green Beans (10-lb Fillet)](sheet-pan-salmon-sweet-potato-10lb.html)
@@ -27,6 +37,31 @@ Import URL pattern after GitHub Pages:
 
 ## Weekday dinners
 
+- [Baked Mac and Cheese with Smoked Sausage](baked-mac-and-cheese-smoked-sausage.html)
+- [Easy Chicken and Dumplings](easy-chicken-and-dumplings.html)
+- [Olive Garden-Style Zuppa Toscana](zuppa-toscana.html)
+- [One-Pot Cajun Shrimp and Sausage Pasta](one-pot-cajun-shrimp-sausage-pasta.html)
+- [Chicken Dumpling Casserole](chicken-dumpling-casserole.html)
+- [Tex-Mex Cheese Enchiladas with Chili Gravy](cheese-enchiladas-chili-gravy.html)
+- [Egg Roll in a Bowl](egg-roll-in-a-bowl.html)
+- [Lemon Herb Roasted Chicken Thighs with Garlic Butter Asparagus](lemon-herb-chicken-thighs-garlic-butter-asparagus.html)
+- [Garlic Butter Steak Bites](garlic-butter-steak-bites.html)
+- [Sheet Pan Steak Fajitas](sheet-pan-steak-fajitas.html)
+- [Spicy Shrimp Tacos with Avocado Salsa and Cilantro Sour Cream](spicy-shrimp-tacos-avocado-salsa.html)
+- [Baked Ziti with Provolone and Sour Cream](baked-ziti-provolone-sour-cream.html)
+- [Classic Hawaiian Loco Moco](hawaiian-loco-moco.html)
+- [Hominy Grill-Style Shrimp and Grits](hominy-grill-shrimp-and-grits.html)
+- [Salmon with Creamy Dill Sauce and Roasted Asparagus](salmon-creamy-dill-sauce-roasted-asparagus.html)
+- [Chicken Sheet Pan Quesadillas](chicken-sheet-pan-quesadillas.html)
+- [Italian Sausage, Peppers, and Onions](italian-sausage-peppers-onions.html)
+- [Cast-Iron Frozen Patty Smash Burgers with Caramelized Onions](cast-iron-frozen-patty-smash-burgers.html)
+- [Fried Cabbage with Kielbasa](fried-cabbage-with-kielbasa.html)
+- [Jamaican Curry Chicken](jamaican-curry-chicken.html)
+- [Lime and Fish Sauce Beef Salad](lime-beef-salad.html)
+- [Keto Salmon Cakes with Avocado Cream](keto-salmon-cakes-avocado-cream.html)
+- [Cajun Chicken Pasta](cajun-chicken-pasta.html)
+- [Street-Style Beef Tacos](street-style-beef-tacos.html)
+- [Easy General Tso's Chicken](easy-general-tsos-chicken.html)
 - [Cajun Sausage and Rice Skillet](cajun-sausage-rice-skillet.html)
 - [Sheet-Pan Sausage with Potatoes and Green Beans](sheet-pan-sausage-potatoes-green-beans.html)
 - [Crispy Skillet Chicken Alfredo with Ziti](crispy-skillet-chicken-alfredo-ziti.html)
@@ -50,6 +85,8 @@ Import URL pattern after GitHub Pages:
 
 ## Game day
 
+- [Simple, Perfect Chili](simple-perfect-chili.html)
+- [Chili Cheese Dogs](chili-dogs-with-cheese.html)
 - [Ain't No Thing Butta Chicken Wings](aint-no-thing-butta-chicken-wings.html)
 
 ## Sides & salads
