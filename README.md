@@ -78,6 +78,8 @@ Import URL pattern after GitHub Pages:
 
 ## Breakfast & brunch
 
+- [Member's Mark Protein Power-Up Pancakes](protein-power-up-pancakes.html)
+- [Member's Mark Pancakes Upgrade](members-mark-pancakes-upgrade.html)
 - [Homemade Grape Jelly](homemade-grape-jelly.html)
 - [Apple Swim Biscuits](apple-swim-biscuits.html)
 - [Christmas Cranberry Butter](christmas-cranberry-butter.html)
@@ -91,6 +93,23 @@ Import URL pattern after GitHub Pages:
 
 ## Sides & salads
 
+- [The Best Coleslaw](best-coleslaw.html)
+- [Southern Fried Cabbage with Bacon](southern-fried-cabbage.html)
+- [Garlic Butter Mixed Vegetables](garlic-butter-mixed-vegetables.html)
+- [Oven-Roasted Asparagus](oven-roasted-asparagus.html)
+- [Crockpot Pinto Beans](crockpot-pinto-beans.html)
+- [Mexican Tomato Rice](mexican-tomato-rice.html)
+- [Quick Broccoli and Cheese](quick-broccoli-and-cheese.html)
+- [Syracuse Salt Potatoes](syracuse-salt-potatoes.html)
+- [Classic Creamy Southern Coleslaw](creamy-southern-coleslaw.html)
+- [Buttery Garlic Green Beans](buttery-garlic-green-beans.html)
+- [Delicious, Creamy Mashed Potatoes](creamy-mashed-potatoes.html)
+- [Cilantro Lime Rice](cilantro-lime-rice.html)
+- [Creamy Cheddar Cheese Grits](creamy-cheddar-cheese-grits.html)
+- [Honey Roasted Carrots](honey-roasted-carrots.html)
+- [Mushroom Rice Pilaf](mushroom-rice-pilaf.html)
+- [Easy Southern Potato Salad](southern-potato-salad.html)
+- [Crispy Brussels Sprouts with Honey and Bacon](crispy-brussels-sprouts-honey-bacon.html)
 - [Crispy Brussels Sprouts with Soy-Ginger Glaze](crispy-brussels-sprouts-soy-ginger-glaze.html)
 - [Crispy Garlic Butter Parmesan Smashed Potatoes](crispy-garlic-butter-parmesan-smashed-potatoes.html)
 - [Classic Caesar Salad with Garlic Parmesan Croutons](classic-caesar-salad-garlic-croutons.html)
@@ -101,6 +120,7 @@ Import URL pattern after GitHub Pages:
 
 ## Breads
 
+- [Grandmother's Cornbread](grandmothers-cornbread.html)
 - [Popeye's-Style Honey Biscuits](popeyes-style-honey-biscuits.html)
 - [Cuisinart CBK-100 Basic White Bread](cuisinart-cbk-100-basic-white-bread.html)
 - [Pumpkin-Shaped Sourdough](pumpkin-shaped-sourdough.html)
