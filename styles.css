@@ -1966,3 +1966,7 @@ body.cook-mode .meal-tray { display: none; }
 .shop-qty-row { display: grid; grid-template-columns: 1fr 5rem; align-items: center; gap: 0.6rem; padding: 0.3rem 0; }
 .shop-qty-row.is-picked label { color: var(--fire-soft); font-weight: 700; }
 .shop-submit[disabled] { opacity: 0.55; cursor: not-allowed; }
+/* shop: photo cards, recipe link, swap note */
+img.shop-card-photo { width: 100%; height: auto; object-fit: cover; }
+.shop-recipe-link { color: var(--fire-soft); font-size: 0.93rem; }
+.shop-swap { font-size: 0.9rem; border-left: 3px solid var(--fire-soft); padding-left: 0.5rem; }
