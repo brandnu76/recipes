@@ -169,7 +169,7 @@
       if (step.equip.indexOf("grill") !== -1 && !step.temp) step.temp = dishGrillTemp;
       if (step.equip.indexOf("oven") !== -1 && step.temp) dishOvenTemp = step.temp;
       if (parsed != null) { step.minutes = parsed; step.source = "parsed"; }
-      if (/\b(rest|let (it |them )?(rest|stand|sit|cool))\b/i.test(remaining)) step.kind = "rest";
+      if (/(?<!the )\b(rest|let (it |them )?(rest|stand|sit|cool))\b(?! of)/i.test(remaining) || /^\s*cool\b|\bcool (for )?\d/i.test(remaining)) step.kind = "rest";
       const heat = step.equip.length > 0;
       step.active = !(PASSIVE_RE.test(remaining) && (step.minutes || 0) >= 8) || step.kind === "preheat-only";
       if (!heat && !seenHeat && MAKE_AHEAD_RE.test(remaining) && !LAST_MINUTE_RE.test(remaining) && !NOT_AHEAD_RE.test(remaining)) step.makeAhead = true;
@@ -198,7 +198,25 @@
 
   // Lay one dish out backward from its finish (minutes relative to eat time).
   // overrides: { "slug:idx": minutes }, offset: minutes the dish finishes early.
-  function scheduleDish(dish, overrides, offset) {
+  const DEFAULT_KITCHEN = { burners: 4, ovens: 1, airFryer: false, grill: "pellet", grillPreheat: 15, ovenPreheat: 15, boil: 15 };
+  function kitchenOf(k) {
+    const o = Object.assign({}, DEFAULT_KITCHEN, k || {});
+    o.burners = Math.max(1, Math.min(8, +o.burners || 4));
+    o.ovens = +o.ovens === 2 ? 2 : 1;
+    o.airFryer = !!o.airFryer;
+    o.grill = ["none", "pellet", "gas", "charcoal"].indexOf(o.grill) !== -1 ? o.grill : "pellet";
+    ["grillPreheat", "ovenPreheat", "boil"].forEach((f) => { o[f] = Math.max(0, Math.min(90, Math.round(+o[f]))); if (!isFinite(o[f])) o[f] = 15; });
+    return o;
+  }
+  // Rests, cools, and holds can shrink to half (never below 3 min).
+  function compressibleOf(e) {
+    const base = e.baseMinutes || e.minutes;
+    if (e.background || e.kind !== "rest" || base <= 3) return 0;
+    return Math.max(0, e.minutes - Math.max(3, Math.ceil(base * 0.5)));
+  }
+
+  function scheduleDish(dish, overrides, offset, kitchen) {
+    const kit = kitchenOf(kitchen);
     const ev = [];
     let end = -(offset || 0);
     const chain = dish.steps.filter((s) => !s.makeAhead);
@@ -216,7 +234,7 @@
       if (s.kind !== "preheat-only") {
         ev.push({
           id: dish.slug + ":" + s.idx, dish: dish.slug, name: dish.name, color: dish.color, idx: s.idx,
-          kind: s.kind, label: s.label, text: s.label.length < s.text.length && s.label.slice(-1) !== "…" ? s.label : s.text, start: p.start, end: p.end, minutes: p.minutes,
+          kind: s.kind, label: s.label, text: s.label.length < s.text.length && s.label.slice(-1) !== "…" ? s.label : s.text, start: p.start, end: p.end, minutes: p.minutes, baseMinutes: s.minutes,
           source: p.edited ? "edited" : s.source, equip: s.equip, temp: s.temp, active: s.active, editable: true,
         });
       }
@@ -229,7 +247,8 @@
           until = later ? later.start : (placed[i + 1] ? placed[i + 1].start : p.start);
         }
         const keyB = dish.slug + ":" + s.idx + ":" + b.kind;
-        const mins = overrides && overrides[keyB] != null ? Math.max(0, +overrides[keyB]) : b.minutes;
+        const kitMins = b.kind === "boil" ? kit.boil : b.equip === "grill" ? kit.grillPreheat : b.equip === "oven" ? kit.ovenPreheat : b.minutes;
+        const mins = overrides && overrides[keyB] != null ? Math.max(0, +overrides[keyB]) : kitMins;
         ev.push({
           id: keyB, dish: dish.slug, name: dish.name, color: dish.color, idx: s.idx,
           kind: b.kind, label: b.kind === "boil" ? b.label : (b.equip === "oven" ? "Preheat the oven" : b.equip === "grill" ? "Fire up the grill" : "Turn on the broiler") + (b.temp ? " to " + b.temp + "°F" : ""),
@@ -262,10 +281,54 @@
     return moveA <= moveB ? { dish: a.dish, name: a.name, by: Math.max(1, moveA) } : { dish: b.dish, name: b.name, by: Math.max(1, moveB) };
   }
 
-  function findConflicts(events) {
+  const GRILL_RANGE = { pellet: [180, 500], gas: [250, 550], charcoal: [225, 450] };
+  function findConflicts(events, kitchen) {
+    const kit = kitchenOf(kitchen);
     const out = [];
     const seen = new Set();
     const uses = (e, k) => e.equip.indexOf(k) !== -1 && e.minutes > 0;
+    // Ovens: at each moment, count distinct temperatures vs ovens on hand,
+    // then try the air fryer oven or the grill (as an outdoor oven).
+    const ovenEv = events.filter((e) => uses(e, "oven") && e.temp);
+    const ovenPoints = Array.from(new Set(ovenEv.map((e) => e.start))).sort((x, y) => x - y);
+    ovenPoints.forEach((p) => {
+      const live = ovenEv.filter((e) => e.start <= p && e.end > p);
+      const byDish = {};
+      live.forEach((e) => { if (!byDish[e.dish] || !e.background) byDish[e.dish] = e; });
+      const list = Object.keys(byDish).map((k) => byDish[k]).sort((x, y) => x.start - y.start);
+      const temps = [];
+      list.forEach((e) => { if (!temps.some((t) => Math.abs(t - e.temp) <= 10)) temps.push(e.temp); });
+      if (temps.length <= kit.ovens) return;
+      const key = "oven|" + list.map((e) => e.dish).sort().join("|");
+      if (seen.has(key)) return;
+      seen.add(key);
+      // Dishes beyond the main oven(s), latest starters first get moved.
+      const ovenTemps = temps.slice(0, kit.ovens);
+      const extra = list.filter((e) => !ovenTemps.some((t) => Math.abs(t - e.temp) <= 10));
+      const grillBusy = events.some((g) => uses(g, "grill") && g.start <= p && g.end > p);
+      const spare = [];
+      if (kit.airFryer) spare.push({ name: "air fryer oven", max: 450, min: 150 });
+      if (kit.grill !== "none" && !grillBusy) spare.push({ name: kit.grill + " grill", min: GRILL_RANGE[kit.grill][0], max: GRILL_RANGE[kit.grill][1] });
+      const moves = [];
+      let stuck = null;
+      const doneTemps = [];
+      extra.forEach((e) => {
+        if (doneTemps.some((t) => Math.abs(t - e.temp) <= 10)) return;
+        const i = spare.findIndex((sp) => e.temp >= sp.min && e.temp <= sp.max);
+        if (i === -1) { stuck = stuck || e; return; }
+        moves.push(e.name + " → " + spare[i].name + " at " + e.temp + "°F" + (/air fryer/.test(spare[i].name) ? " (small batches)" : ""));
+        doneTemps.push(e.temp);
+        spare.splice(i, 1);
+      });
+      const ovensTxt = kit.ovens === 2 ? "both ovens" : "the oven";
+      if (!stuck) {
+        out.push({ type: "oven-move", severity: "info", message: "Around {t} " + ovensTxt + " can't hold every temperature (" + temps.map((t) => t + "°F").join(", ") + "). Plan: " + moves.join("; ") + ".", at: p, events: live.map((e) => e.id) });
+      } else {
+        const other = list.find((e) => e.dish !== stuck.dish && ovenTemps.some((t) => Math.abs(t - e.temp) <= 10)) || list[0];
+        const f = bestShift(events, stuck, other, ["oven", "broiler"]);
+        out.push({ type: "oven", severity: "conflict", message: "Oven clash around {t}: " + list.map((e) => e.name + " " + e.temp + "°F").join(", ") + " and you have " + (kit.ovens === 2 ? "2 ovens" : "1 oven") + (moves.length ? " (" + moves.join("; ") + ")" : "") + ". Finish " + f.name + " " + f.by + " min early and hold it covered, or add an air fryer / grill in My kitchen.", at: p, shiftDish: f.dish, shiftBy: f.by, events: live.map((e) => e.id) });
+      }
+    });
     for (let i = 0; i < events.length; i += 1) {
       for (let j = i + 1; j < events.length; j += 1) {
         const a = events[i], b = events[j];
@@ -281,10 +344,6 @@
           seen.add(k);
           out.push({ type: type, severity: severity, message: msg, at: Math.max(a.start, b.start), shiftDish: shiftDish, shiftBy: shiftBy, events: [a.id, b.id] });
         };
-        if (uses(a, "oven") && uses(b, "oven") && a.temp && b.temp && a.temp !== b.temp) {
-          const f = bestShift(events, a, b, ["oven", "broiler"]);
-          push("oven", "conflict", "Oven clash around {t}: " + a.name + " wants " + a.temp + "°F and " + b.name + " wants " + b.temp + "°F at the same time. Finish " + f.name + " " + f.by + " min early and hold it covered, use a second oven or air fryer, or split the difference if one dish is forgiving.", f.dish, f.by);
-        }
         if (uses(a, "broiler") && uses(b, "broiler")) {
           push("broiler", "conflict", "Both " + a.name + " and " + b.name + " need the broiler around {t}. Broil " + earlier.name + " first.", earlier.dish, Math.ceil(ov));
         }
@@ -292,7 +351,7 @@
           const f = bestShift(events, a, b, ["grill"]);
           push("grill", "conflict", "Grill clash around {t}: " + a.name + " at " + a.temp + "°F vs " + b.name + " at " + b.temp + "°F. Finish " + f.name + " " + f.by + " min early, or cook one on the stovetop or in the oven.", f.dish, f.by);
         }
-        if (uses(a, "broiler") && uses(b, "oven") || uses(b, "broiler") && uses(a, "oven")) {
+        if (kit.ovens < 2 && (uses(a, "broiler") && uses(b, "oven") || uses(b, "broiler") && uses(a, "oven"))) {
           const f = bestShift(events, a, b, ["oven", "broiler"]);
           push("broiler-oven", "conflict", "Around {t} the broiler and a bake need the same oven (" + a.name + " / " + b.name + "). Finish " + f.name + " " + f.by + " min early.", f.dish, f.by);
         }
@@ -307,8 +366,8 @@
     const points = Array.from(new Set(stove.map((e) => e.start))).sort((x, y) => x - y);
     for (const p of points) {
       const live = stove.filter((e) => e.start <= p && e.end > p);
-      if (live.length > 4) {
-        out.push({ type: "burners", severity: "conflict", message: live.length + " burners at once around {t}. Most home ranges have 4. Move one stovetop job earlier and hold it warm.", at: p, shiftDish: live[0].dish, shiftBy: 5, events: live.map((e) => e.id) });
+      if (live.length > kit.burners) {
+        out.push({ type: "burners", severity: "conflict", message: live.length + " burners at once around {t}, and your range has " + kit.burners + ". Move one stovetop job earlier and hold it warm.", at: p, shiftDish: live[0].dish, shiftBy: 5, events: live.map((e) => e.id) });
         break;
       }
     }
@@ -319,17 +378,73 @@
     const o = opts || {};
     let events = [], ahead = [];
     dishes.forEach((d) => {
-      const r = scheduleDish(d, o.overrides || {}, (o.offsets || {})[d.slug] || 0);
+      const r = scheduleDish(d, o.overrides || {}, (o.offsets || {})[d.slug] || 0, o.kitchen);
       events = events.concat(r.events);
       ahead = ahead.concat(r.ahead);
     });
     events.sort((a, b) => a.start - b.start || (a.background ? -1 : 1) || a.dish.localeCompare(b.dish));
-    const conflicts = findConflicts(events);
+    const kit = kitchenOf(o.kitchen);
+    if (kit.grill === "none" && events.some((e) => e.equip.indexOf("grill") !== -1)) {
+      var noGrill = true;
+    }
+    const conflicts = findConflicts(events, kit);
+    if (noGrill) conflicts.unshift({ type: "no-grill", severity: "warning", message: "A dish needs a grill or smoker, and My kitchen says you don't have one. Use the oven method in that recipe if it has one.", at: events[0].start, events: [] });
+    // Slack: how long a step can slip before dinner moves (finish-early hold
+    // plus any rest that can shrink later in the same dish).
+    const done = o.done || {};
+    events.forEach((e) => {
+      const later = events.filter((x) => x.dish === e.dish && !x.background && x.start >= e.end && !done[x.id]);
+      e.compressible = compressibleOf(e);
+      e.slack = ((o.offsets || {})[e.dish] || 0) + later.reduce((a, x) => a + compressibleOf(x), 0);
+    });
     const first = events.length ? events[0].start : 0;
     // Do-earlier work should be finished before the first timed step.
     let cursor = first;
     for (let i = ahead.length - 1; i >= 0; i -= 1) { ahead[i].by = first; cursor -= ahead[i].minutes || 0; }
     return { events: events, ahead: ahead, conflicts: conflicts, start: first, aheadStart: cursor };
+  }
+
+  // Re-time mid-cook. delay > 0 = behind, < 0 = ahead. nowRel = minutes from
+  // eat time to now (negative before dinner). mode "push" moves dinner;
+  // "keep" absorbs the delay in holds and rests first, then moves dinner by
+  // whatever is left. Returns new overrides/offsets and the eat-time shift.
+  function retime(dishes, opts, delay, mode, nowRel) {
+    const o = opts || {};
+    const overrides = Object.assign({}, o.overrides || {});
+    const offsets = Object.assign({}, o.offsets || {});
+    const done = o.done || {};
+    const d = Math.round(delay);
+    if (!d) return { overrides: overrides, offsets: offsets, shift: 0, absorbed: {}, stuck: [] };
+    if (mode === "push" || d < 0) return { overrides: overrides, offsets: offsets, shift: d, absorbed: {}, stuck: [] };
+    const plan = planMeal(dishes, o);
+    const remaining = plan.events.filter((e) => !done[e.id] && e.end > nowRel && !e.background);
+    // A dish is only late if it is under way, or its next step would now
+    // start after the time it was due.
+    const cap = {}, late = {};
+    dishes.forEach((di) => {
+      const rest = remaining.filter((e) => e.dish === di.slug);
+      if (!rest.length) { late[di.slug] = 0; cap[di.slug] = 0; return; }
+      const next = rest[0];
+      late[di.slug] = next.start <= nowRel ? d : Math.max(0, nowRel + d - next.start);
+      cap[di.slug] = (offsets[di.slug] || 0) + rest.reduce((a, e) => a + compressibleOf(e), 0);
+    });
+    const live = dishes.filter((di) => late[di.slug] > 0);
+    const shift = live.reduce((m, di) => Math.max(m, late[di.slug] - cap[di.slug]), 0);
+    const absorbed = {}, stuck = [];
+    live.forEach((di) => {
+      const need = Math.max(0, late[di.slug] - shift);
+      let left = need;
+      const take = Math.min(left, offsets[di.slug] || 0);
+      if (take) { offsets[di.slug] = (offsets[di.slug] || 0) - take; left -= take; }
+      remaining.filter((e) => e.dish === di.slug).reverse().forEach((e) => {
+        if (left <= 0) return;
+        const c = Math.min(left, compressibleOf(e));
+        if (c > 0) { overrides[e.id] = e.minutes - c; left -= c; }
+      });
+      absorbed[di.slug] = need;
+      if (cap[di.slug] < late[di.slug]) stuck.push(di.slug);
+    });
+    return { overrides: overrides, offsets: offsets, shift: shift, absorbed: absorbed, stuck: stuck };
   }
 
   function extractRecipe(json) {
@@ -345,7 +460,7 @@
     return null;
   }
 
-  const core = { parseStepMinutes: parseStepMinutes, isoMinutes: isoMinutes, buildDish: buildDish, scheduleDish: scheduleDish, planMeal: planMeal, findConflicts: findConflicts, extractRecipe: extractRecipe, equipmentOf: equipmentOf, tempOf: tempOf };
+  const core = { parseStepMinutes: parseStepMinutes, isoMinutes: isoMinutes, buildDish: buildDish, scheduleDish: scheduleDish, planMeal: planMeal, retime: retime, kitchenOf: kitchenOf, findConflicts: findConflicts, extractRecipe: extractRecipe, equipmentOf: equipmentOf, tempOf: tempOf };
   if (typeof module !== "undefined" && module.exports) module.exports = core;
   if (typeof document === "undefined") return;
 
@@ -366,7 +481,10 @@
 
   let catalog = [];          // [{slug, title, cat, search}]
   const dishCache = {};      // slug -> dish
-  let state = { slugs: [], eat: "18:30", day: null, overrides: {}, offsets: {}, done: {} };
+  let state = { slugs: [], eat: "18:30", day: null, overrides: {}, offsets: {}, done: {}, retimeMode: "keep", note: null };
+  const KITCHEN_KEY = "clt:kitchen";
+  let kitchen = kitchenOf(store.get(KITCHEN_KEY));
+  let currentDishes = [];
   let plan = null;
 
   // --- state: URL beats saved plan beats the tray from recipe pages ---
@@ -381,6 +499,9 @@
   function saveState() {
     store.set(PLAN_KEY, state);
     store.set(MEAL_KEY, state.slugs);
+    // Keep a shared link in the address bar in step with edits and re-times,
+    // so a reload mid-cook rebuilds this plan, not the original link.
+    try { if (/[?&]r=/.test(location.search)) history.replaceState(null, "", state.slugs.length ? shareUrl() : location.pathname); } catch (_) {}
   }
   function shareUrl() {
     const u = new URL(location.href.replace(/[?#].*$/, ""));
@@ -533,6 +654,8 @@
     bits.push((ev.minutes || 0) + " min" + (ev.source === "default" ? " (estimated)" : ev.source === "edited" ? " (your edit)" : ""));
     if (ev.equip && ev.equip.length) bits.push(ev.equip.map((e) => (e === "stove" ? "stovetop" : e)).join(" + ") + (ev.temp ? " " + ev.temp + "°F" : ""));
     if (ev.active === false) bits.push("hands-off");
+    if (ev.slack > 0 && !(state.done || {})[ev.id]) bits.push("can wait " + ev.slack + " min");
+    if (state.done && state.done[ev.id]) { bits.push("done"); li.classList.add("is-done"); }
     meta.textContent = bits.join(" · ");
     body.appendChild(meta);
     li.appendChild(body);
@@ -563,7 +686,7 @@
     $("[data-meal-summary]").textContent = "Start at " + fmt(at(plan.start)) + (plan.ahead.length ? " (do-earlier work before that)" : "") + " to eat at " + fmt(at(0)) + (at(0).toDateString() === new Date().toDateString() ? " today" : " " + at(0).toLocaleDateString([], { weekday: "long" })) + ". " + plan.events.length + " timed steps across " + state.slugs.length + " dishes.";
 
     if (plan.conflicts.length) {
-      const box = el("section", "meal-conflicts");
+      const box = el("section", "meal-conflicts" + (plan.conflicts.every((c) => c.severity === "info") ? " is-info-only" : ""));
       box.setAttribute("aria-label", "Timing conflicts");
       box.appendChild(el("h2", null, "Heads up"));
       const ul = el("ul");
@@ -620,7 +743,9 @@
     }
     if (seq !== buildSeq) return;
     status.textContent = "";
-    plan = dishes.length ? planMeal(dishes, { overrides: state.overrides, offsets: state.offsets }) : null;
+    currentDishes = dishes;
+    plan = dishes.length ? planMeal(dishes, { overrides: state.overrides, offsets: state.offsets, kitchen: kitchen, done: state.done }) : null;
+    renderNote();
     renderDishes(dishes, errors);
     renderPlan(focusId);
     if (cook.on) renderCook();
@@ -629,11 +754,11 @@
   // --- eat time ---
   const eatInput = $("[data-meal-eat]");
   eatInput.addEventListener("change", () => {
-    if (/^\d{1,2}:\d{2}$/.test(eatInput.value)) { state.eat = eatInput.value; state.day = null; state.done = {}; saveState(); rebuild(); }
+    if (/^\d{1,2}:\d{2}$/.test(eatInput.value)) { state.eat = eatInput.value; state.day = null; state.done = {}; state.note = null; saveState(); rebuild(); }
   });
   searchInput.addEventListener("input", renderResults);
   $("[data-action='meal-reset']").addEventListener("click", () => {
-    state.overrides = {}; state.offsets = {}; state.done = {}; saveState(); rebuild(); say("Edits cleared");
+    state.overrides = {}; state.offsets = {}; state.done = {}; state.note = null; saveState(); rebuild(); say("Edits cleared");
   });
   $("[data-action='meal-clear']").addEventListener("click", () => {
     state = { slugs: [], eat: state.eat, day: null, overrides: {}, offsets: {}, done: {} }; saveState(); rebuild(); say("Meal cleared");
@@ -750,6 +875,7 @@
   function enterCook() {
     if (!plan || !plan.events.length) return;
     cook.on = true;
+    if (!state.day) { state.day = at(0).toISOString(); saveState(); }
     const now = Date.now();
     plan.events.forEach((e) => { if (at(e.start).getTime() < now - 90000) cook.alerted[e.id] = true; });
     document.body.classList.add("meal-cooking");
@@ -775,7 +901,13 @@
     if (!plan) return;
     const now = Date.now();
     const ev = plan.events.find((e) => at(e.start).getTime() <= now && !state.done[e.id]);
-    if (ev) { state.done[ev.id] = true; saveState(); say("Done: " + ev.label); renderCook(); }
+    if (ev) {
+      state.done[ev.id] = true; saveState(); say("Done: " + ev.label); renderCook();
+      if (!ev.background) {
+        const drift = Math.round((now - at(ev.end).getTime()) / 60000);
+        if (drift >= 3 || drift <= -3) offerDrift(drift);
+      }
+    }
   });
   const soundBox = $("[data-cook-sound]");
   soundBox.addEventListener("change", () => { cook.sound = soundBox.checked; if (cook.sound) chime(); });
@@ -790,17 +922,118 @@
   document.addEventListener("visibilitychange", () => { if (cook.on && document.visibilityState === "visible") { requestWake(); renderCook(); } });
   document.addEventListener("keydown", (e) => { if (cook.on && e.key === "Escape") exitCook(); });
 
+  // --- My kitchen ---
+  const kitForm = $("[data-kitchen]");
+  const kitSummary = $("[data-kitchen-summary]");
+  function kitchenLine(k) {
+    const g = { none: "no grill", pellet: "pellet grill", gas: "gas grill", charcoal: "charcoal grill" }[k.grill];
+    return k.burners + " burners · " + (k.ovens === 2 ? "2 ovens" : "1 oven") + (k.airFryer ? " · air fryer oven" : "") + " · " + g + (k.grill !== "none" ? " (" + k.grillPreheat + " min to heat)" : "") + " · oven preheat " + k.ovenPreheat + " min · water boils in " + k.boil + " min";
+  }
+  function paintKitchen() {
+    kitForm.elements.burners.value = kitchen.burners;
+    kitForm.elements.ovens.value = String(kitchen.ovens);
+    kitForm.elements.airFryer.checked = kitchen.airFryer;
+    kitForm.elements.grill.value = kitchen.grill;
+    kitForm.elements.grillPreheat.value = kitchen.grillPreheat;
+    kitForm.elements.ovenPreheat.value = kitchen.ovenPreheat;
+    kitForm.elements.boil.value = kitchen.boil;
+    kitForm.elements.grillPreheat.disabled = kitchen.grill === "none";
+    kitSummary.textContent = "My kitchen: " + kitchenLine(kitchen);
+  }
+  kitForm.addEventListener("change", (e) => {
+    const f = kitForm.elements;
+    const prevGrill = kitchen.grill;
+    const next = { burners: f.burners.value, ovens: f.ovens.value, airFryer: f.airFryer.checked, grill: f.grill.value, grillPreheat: f.grillPreheat.value, ovenPreheat: f.ovenPreheat.value, boil: f.boil.value };
+    if (e.target === f.grill && next.grill !== prevGrill) next.grillPreheat = { pellet: 15, gas: 10, charcoal: 25, none: 15 }[next.grill];
+    kitchen = kitchenOf(next);
+    store.set(KITCHEN_KEY, kitchen);
+    paintKitchen();
+    say("Kitchen saved");
+    rebuild();
+  });
+  kitForm.addEventListener("submit", (e) => e.preventDefault());
+  paintKitchen();
+
+  // --- Running behind / ahead ---
+  const noteEl = $("[data-retime-note]");
+  const noteCook = $("[data-cook-retime-note]");
+  const driftEl = $("[data-drift]");
+  function hhmm(d) { return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); }
+  function renderNote() {
+    [noteEl, noteCook].forEach((n) => {
+      if (!n) return;
+      n.hidden = !state.note;
+      n.textContent = state.note || "";
+    });
+  }
+  function applyRetime(delay, mode) {
+    if (!plan || !currentDishes.length || !delay) return;
+    const was = at(0);
+    const nowRel = (Date.now() - was.getTime()) / 60000;
+    let msg;
+    if (delay < 0 && mode !== "push") {
+      msg = "You're " + -delay + " min ahead. Dinner stays at " + fmt(was) + "; the next step can wait.";
+    } else {
+      const r = retime(currentDishes, { overrides: state.overrides, offsets: state.offsets, kitchen: kitchen, done: state.done }, delay, mode, nowRel);
+      state.overrides = r.overrides;
+      state.offsets = r.offsets;
+      if (r.shift) {
+        const next = new Date(was.getTime() + r.shift * 60000);
+        state.eat = hhmm(next);
+        state.day = next.toISOString();
+        eatInput.value = state.eat;
+      }
+      const now = at(0);
+      const absorbedTxt = delay > 0 && mode === "keep" && delay - r.shift > 0 ? " Absorbed " + (delay - r.shift) + " min in rests and holds." : "";
+      const stuckTxt = r.stuck.length && r.shift ? " Couldn't fully absorb it: " + r.stuck.map(titleOf).join(", ") + "." : "";
+      msg = r.shift ? "New eat time " + fmt(now) + " (was " + fmt(was) + ")." + absorbedTxt + stuckTxt : "Dinner still at " + fmt(now) + "." + absorbedTxt;
+    }
+    state.note = msg;
+    driftEl.hidden = true;
+    // Steps that moved later should chime again when they come due.
+    Object.keys(cook.alerted).forEach((id) => { if (!state.done[id]) delete cook.alerted[id]; });
+    saveState();
+    say(msg);
+    rebuild().then(() => { if (cook.on) { const t = Date.now(); plan.events.forEach((e) => { if (at(e.start).getTime() < t - 90000) cook.alerted[e.id] = true; }); } });
+  }
+  const modeInputs = app.querySelectorAll("input[name='retime-mode']");
+  modeInputs.forEach((r) => {
+    r.addEventListener("change", () => { if (r.checked) { state.retimeMode = r.value; saveState(); } });
+  });
+  app.querySelectorAll("[data-behind]").forEach((b) => b.addEventListener("click", () => applyRetime(+b.getAttribute("data-behind"), state.retimeMode)));
+  const customMin = $("[data-retime-min]");
+  const customVal = () => Math.max(1, Math.min(120, parseInt(customMin.value, 10) || 5));
+  $("[data-action='retime-behind']").addEventListener("click", () => applyRetime(customVal(), state.retimeMode));
+  $("[data-action='retime-ahead']").addEventListener("click", () => applyRetime(-customVal(), state.retimeMode));
+  let driftBy = 0;
+  function offerDrift(mins) {
+    driftBy = mins;
+    const late = mins > 0;
+    $("[data-drift-text]").textContent = late ? "That step finished " + mins + " min behind schedule. Re-time the rest?" : "You're " + -mins + " min ahead of schedule.";
+    $("[data-action='drift-keep']").textContent = late ? "Keep dinner at " + fmt(at(0)) + " if possible" : "Keep dinner at " + fmt(at(0));
+    $("[data-action='drift-push']").textContent = late ? "Push dinner to " + fmt(new Date(at(0).getTime() + mins * 60000)) : "Eat earlier, at " + fmt(new Date(at(0).getTime() + mins * 60000));
+    driftEl.hidden = false;
+  }
+  $("[data-action='drift-keep']").addEventListener("click", () => { if (driftBy > 0) applyRetime(driftBy, "keep"); else { driftEl.hidden = true; } });
+  $("[data-action='drift-push']").addEventListener("click", () => applyRetime(driftBy, "push"));
+  $("[data-action='drift-dismiss']").addEventListener("click", () => { driftEl.hidden = true; });
+  $("[data-action='retime-clear']").addEventListener("click", () => { state.note = null; saveState(); renderNote(); });
+
   // --- boot ---
   (async function boot() {
     const fromUrl = readUrl();
     const saved = store.get(PLAN_KEY);
     const tray = store.get(MEAL_KEY);
-    if (fromUrl) state = Object.assign(state, fromUrl);
+    const sameAsSaved = fromUrl && saved && Array.isArray(saved.slugs) && saved.slugs.join(",") === fromUrl.slugs.join(",") && saved.eat === fromUrl.eat;
+    if (sameAsSaved) state = Object.assign(state, saved);
+    else if (fromUrl) state = Object.assign(state, fromUrl);
     else if (saved && Array.isArray(saved.slugs)) state = Object.assign(state, saved, { slugs: Array.isArray(tray) ? tray.slice(0, MAX_DISHES) : saved.slugs });
     else if (Array.isArray(tray)) state.slugs = tray.slice(0, MAX_DISHES);
     state.overrides = state.overrides || {}; state.offsets = state.offsets || {}; state.done = state.done || {};
     if (!saved && !fromUrl) state.eat = "18:30";
     eatInput.value = state.eat.length === 4 ? "0" + state.eat : state.eat;
+    state.retimeMode = state.retimeMode === "push" ? "push" : "keep";
+    modeInputs.forEach((r) => { r.checked = r.value === state.retimeMode; });
     saveState();
     await loadCatalog();
     rebuild();

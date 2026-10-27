@@ -1902,3 +1902,32 @@ body.cook-mode .meal-tray { display: none; }
 /* Recipe cook mode — Keep screen on switch (reuses .wake-* above) */
 .cook-wake { margin-top: 0.6rem; }
 @media print { .cook-wake { display: none !important; } }
+
+/* Plan a Meal — My kitchen + running behind */
+.meal-kitchen-summary { margin: 0 0 0.4rem; font-size: 0.92rem; color: var(--cream-muted); }
+.meal-kitchen summary { cursor: pointer; font-weight: 700; color: var(--fire-soft); min-height: 2.75rem; display: flex; align-items: center; }
+.meal-kitchen summary:focus-visible { outline: 2px solid var(--fire-soft); outline-offset: 2px; border-radius: 6px; }
+.meal-kitchen-form input[type="number"], .meal-kitchen-form select { min-height: 2.75rem; padding: 0.4rem 0.6rem; font: inherit; color: var(--cream); background: var(--bg-inset); border: 1px solid var(--line-strong); border-radius: 10px; }
+.meal-kitchen-form input[type="number"] { width: 6rem; }
+.meal-kitchen-form select { width: 100%; max-width: 28rem; }
+.meal-planner fieldset { border: 1px solid var(--line); border-radius: 10px; margin: 0.7rem 0; padding: 0.4rem 0.8rem 0.6rem; }
+.meal-planner legend { font-weight: 600; padding: 0 0.3rem; }
+.meal-planner label.meal-inline { display: flex; align-items: center; gap: 0.5rem; font-weight: 400; min-height: 2.5rem; margin: 0.1rem 0; }
+.meal-planner input[type="radio"], .meal-planner input[type="checkbox"] { width: 1.25rem; height: 1.25rem; accent-color: var(--fire-soft); }
+.meal-retime { border-top: 1px solid var(--line); padding-top: 0.6rem; }
+.meal-retime h3 { margin: 0 0 0.4rem; font-family: var(--font-display); font-size: 1.1rem; }
+.meal-retime-row { display: flex; flex-wrap: wrap; gap: 0.45rem; align-items: center; margin: 0.45rem 0; }
+.meal-retime-row .toolbar-btn { min-height: 2.75rem; }
+.meal-retime-banner { margin: 0.4rem 0; padding: 0.7rem 0.9rem; border-radius: 12px; background: rgba(122, 145, 96, 0.18); border: 1px solid var(--fire-soft); font-weight: 700; color: var(--cream); }
+.meal-retime-banner[hidden], .meal-drift[hidden] { display: none; }
+.meal-drift { padding: 0.7rem 0.9rem; border-radius: 12px; border: 1px solid rgba(224, 160, 112, 0.5); background: rgba(224, 160, 112, 0.08); }
+.meal-drift p { margin: 0 0 0.3rem; font-weight: 600; }
+.meal-conflict.is-info::before { content: "Plan"; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--fire-soft); }
+.meal-conflicts.is-info-only { border-color: var(--fire-soft); background: rgba(122, 145, 96, 0.1); }
+.meal-step.is-done .meal-step-text { text-decoration: line-through; opacity: 0.7; }
+@media print {
+  .meal-kitchen, .meal-retime, .meal-drift { display: none !important; }
+  .meal-kitchen-card { padding: 0; }
+  .meal-kitchen-summary { color: #333; }
+  .meal-retime-banner { background: #fff; border: 1px solid #555; color: #000; }
+}

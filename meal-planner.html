@@ -41,6 +41,37 @@
       <p class="meal-note">Tip: tap <strong>+ Add to meal</strong> on any recipe page and it shows up here.</p>
     </section>
 
+    <section class="meal-card meal-kitchen-card">
+      <p class="meal-kitchen-summary" data-kitchen-summary></p>
+      <details class="meal-kitchen no-print">
+        <summary>My kitchen</summary>
+        <p class="meal-note">Set this once. It's saved on this device and the planner uses it for burners, ovens, and preheat times.</p>
+        <form class="meal-kitchen-form" data-kitchen>
+          <label for="kit-burners">Stovetop burners</label>
+          <input id="kit-burners" name="burners" type="number" min="1" max="8" inputmode="numeric">
+          <fieldset>
+            <legend>Ovens</legend>
+            <label class="meal-inline"><input type="radio" name="ovens" value="1"> 1 oven</label>
+            <label class="meal-inline"><input type="radio" name="ovens" value="2"> 2 ovens (or a double oven)</label>
+          </fieldset>
+          <label class="meal-inline"><input type="checkbox" name="airFryer"> Toaster or air fryer oven (small, up to 450°F)</label>
+          <label for="kit-grill">Outdoor grill or smoker</label>
+          <select id="kit-grill" name="grill">
+            <option value="none">None</option>
+            <option value="pellet">Pellet grill (works as an outdoor oven, 180–500°F)</option>
+            <option value="gas">Gas grill</option>
+            <option value="charcoal">Charcoal grill</option>
+          </select>
+          <label for="kit-grill-pre">Grill heat-up (min)</label>
+          <input id="kit-grill-pre" name="grillPreheat" type="number" min="0" max="90" inputmode="numeric">
+          <label for="kit-oven-pre">Oven preheat (min)</label>
+          <input id="kit-oven-pre" name="ovenPreheat" type="number" min="0" max="90" inputmode="numeric">
+          <label for="kit-boil">Pot of water to a boil (min)</label>
+          <input id="kit-boil" name="boil" type="number" min="0" max="90" inputmode="numeric">
+        </form>
+      </details>
+    </section>
+
     <section class="meal-card no-print" aria-labelledby="meal-time-h">
       <h2 id="meal-time-h">2. When do you want to eat?</h2>
       <label for="meal-eat">Eat at</label>
@@ -50,6 +81,7 @@
     <section class="meal-card meal-output" aria-labelledby="meal-plan-h">
       <h2 id="meal-plan-h">3. Your timeline</h2>
       <p class="meal-status" data-meal-status></p>
+      <p class="meal-retime-banner" data-retime-note role="status" hidden></p>
       <p class="meal-empty" data-meal-empty>Add at least one recipe to build a timeline.</p>
       <div data-meal-tools hidden>
         <p class="meal-summary" data-meal-summary></p>
@@ -75,7 +107,16 @@
         <p class="cook-card-dish"></p>
         <p class="cook-card-text"></p>
       </div>
+      <p class="meal-retime-banner" data-cook-retime-note hidden></p>
       <button type="button" class="toolbar-btn meal-done-btn" data-action="cook-done">Done, next</button>
+      <div class="meal-drift" data-drift role="alert" hidden>
+        <p data-drift-text></p>
+        <div class="meal-retime-row">
+          <button type="button" class="toolbar-btn" data-action="drift-keep">Keep dinner time</button>
+          <button type="button" class="toolbar-btn" data-action="drift-push">Push dinner later</button>
+          <button type="button" class="toolbar-btn" data-action="drift-dismiss">Ignore</button>
+        </div>
+      </div>
       <div class="cook-card" data-cook-next>
         <p class="cook-card-label">Next <span class="cook-card-time"></span> <span class="cook-card-in" data-cook-in></span></p>
         <p class="cook-card-dish"></p>
@@ -83,6 +124,26 @@
       </div>
       <progress class="meal-progress" data-cook-progress max="1" value="0" aria-labelledby="meal-prog-label"></progress>
       <p id="meal-prog-label" class="meal-note" data-cook-progress-label></p>
+      <section class="meal-retime" aria-labelledby="retime-h">
+        <h3 id="retime-h">Running behind?</h3>
+        <fieldset class="meal-retime-mode">
+          <legend>When I'm behind</legend>
+          <label class="meal-inline"><input type="radio" name="retime-mode" value="keep" checked> Keep dinner time if possible (shorten rests and holds)</label>
+          <label class="meal-inline"><input type="radio" name="retime-mode" value="push"> Push dinner later</label>
+        </fieldset>
+        <div class="meal-retime-row">
+          <button type="button" class="toolbar-btn" data-behind="2">Behind 2 min</button>
+          <button type="button" class="toolbar-btn" data-behind="5">Behind 5</button>
+          <button type="button" class="toolbar-btn" data-behind="10">Behind 10</button>
+        </div>
+        <div class="meal-retime-row">
+          <label for="retime-min" class="meal-inline">Minutes</label>
+          <input id="retime-min" class="meal-min-input" type="number" min="1" max="120" value="5" inputmode="numeric" data-retime-min>
+          <button type="button" class="toolbar-btn" data-action="retime-behind">I'm behind</button>
+          <button type="button" class="toolbar-btn" data-action="retime-ahead">I'm ahead</button>
+          <button type="button" class="toolbar-btn" data-action="retime-clear">Hide note</button>
+        </div>
+      </section>
       <div class="meal-cook-opts">
         <label><input type="checkbox" data-cook-sound checked> Chime</label>
         <span class="wake-toggle">
