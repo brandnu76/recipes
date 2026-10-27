@@ -175,7 +175,10 @@
       if (!heat && !seenHeat && MAKE_AHEAD_RE.test(remaining) && !LAST_MINUTE_RE.test(remaining) && !NOT_AHEAD_RE.test(remaining)) step.makeAhead = true;
       if (!heat && SAUCE_AHEAD_RE.test(remaining) && !LAST_MINUTE_RE.test(remaining) && !NOT_AHEAD_RE.test(remaining)) step.makeAhead = true;
       if (!heat && /\b(marinat|dry[- ]brine|brine)\w*/i.test(remaining) && !LAST_MINUTE_RE.test(remaining)) step.makeAhead = true;
-      if (heat) seenHeat = true;
+      // A cooked component the recipe says keeps ("make them up to a day
+      // ahead", "store airtight") can be done before the main timeline.
+      if (heat && idx < raw.length - 1 && /\b(make (it |them )?(up to [^.]*)?ahead|a day ahead|up to \d+ days|store (it |them )?airtight)\b/i.test(remaining) && !LAST_MINUTE_RE.test(remaining)) step.makeAhead = true;
+      if (heat && !step.makeAhead) seenHeat = true;
       dish.steps.push(step);
     });
     // Recipes with no heat at all (salads): the last step stays at the table,
@@ -260,7 +263,7 @@
     });
     const ahead = dish.steps.filter((s) => s.makeAhead).map((s) => ({
       id: dish.slug + ":" + s.idx, dish: dish.slug, name: dish.name, color: dish.color, idx: s.idx,
-      label: s.label, text: s.text, minutes: overrides && overrides[dish.slug + ":" + s.idx] != null ? +overrides[dish.slug + ":" + s.idx] : s.minutes,
+      label: s.background.length ? shortText(s.text) : s.label, text: s.text, minutes: overrides && overrides[dish.slug + ":" + s.idx] != null ? +overrides[dish.slug + ":" + s.idx] : s.minutes,
     }));
     return { events: ev, ahead: ahead };
   }

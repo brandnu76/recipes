@@ -27,6 +27,7 @@ Import URL pattern after GitHub Pages:
 
 ## Weekday dinners
 
+- [Crispy Skillet Chicken Alfredo with Ziti](crispy-skillet-chicken-alfredo-ziti.html)
 - [Sheet-Pan Lemon-Garlic Chicken and Vegetables](sheet-pan-lemon-garlic-chicken.html)
 - [Skillet Creamy Tuscan Chicken](skillet-creamy-tuscan-chicken.html)
 - [One-Pot Sausage, Peppers, and Rice](one-pot-sausage-peppers-rice.html)
@@ -51,6 +52,7 @@ Import URL pattern after GitHub Pages:
 
 ## Sides & salads
 
+- [Classic Caesar Salad with Garlic Parmesan Croutons](classic-caesar-salad-garlic-croutons.html)
 - [Garden Salad](garden-salad.html)
 - [Antipasto Pasta Salad](antipasto-pasta-salad.html)
 - [Seared Steak Salad](seared-steak-salad.html)
