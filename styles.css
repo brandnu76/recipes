@@ -2096,3 +2096,7 @@ img.shop-card-photo { width: 100%; height: auto; object-fit: cover; }
   opacity: .8;
   text-align: right;
 }
+
+/* Plan a Meal: full step text always wraps, never clipped (v44) */
+.meal-step-text, .cook-card-text, .meal-ahead li { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; -webkit-line-clamp: unset; max-height: none; }
+@media print { .meal-step-text, .cook-card-text { white-space: normal; overflow: visible; max-height: none; } }

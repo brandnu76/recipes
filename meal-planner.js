@@ -111,9 +111,8 @@
 
   function shortText(text, max) {
     const s = String(text).replace(/\s+/g, " ").trim();
-    if (s.length <= (max || 170)) return s;
-    const cut = s.slice(0, max || 170);
-    return cut.slice(0, cut.lastIndexOf(" ")) + "…";
+    // Never cut step text: long instructions wrap instead (max is ignored).
+    return s;
   }
 
   // Build a dish model from a schema.org Recipe object.
