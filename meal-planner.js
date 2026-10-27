@@ -1,5 +1,7 @@
 /* Carroll Lowcountry Table — Plan a Meal.
    Works backward from the time you want to eat so every dish lands together.
+   The shopping list combines ingredient lines from each dish's schema.org
+   recipeIngredient (scaled when a dish's servings differ from its base yield).
    Everything stays on this device (localStorage). No accounts, no server. */
 (function (root) {
   "use strict";
@@ -463,7 +465,501 @@
     return null;
   }
 
-  const core = { parseStepMinutes: parseStepMinutes, isoMinutes: isoMinutes, buildDish: buildDish, scheduleDish: scheduleDish, planMeal: planMeal, retime: retime, kitchenOf: kitchenOf, findConflicts: findConflicts, extractRecipe: extractRecipe, equipmentOf: equipmentOf, tempOf: tempOf };
+  // ---------- shopping list (pure; UI below) ----------
+  // Scaling matches the recipe page: leading amounts, plus one "plus 1 teaspoon"
+  // style second amount. Parenthetical conversions are left alone. Merging only
+  // sums lines that parse to the same food and the same unit. Anything unsure
+  // (ranges, "or", "to taste", odd parentheticals, pinches) stays its own line.
+  const SHOP_FRAC = {
+    "¼": 0.25, "½": 0.5, "¾": 0.75, "⅓": 1 / 3, "⅔": 2 / 3,
+    "⅛": 0.125, "⅜": 0.375, "⅝": 0.625, "⅞": 0.875,
+    "⅕": 0.2, "⅖": 0.4, "⅗": 0.6, "⅘": 0.8, "⅙": 1 / 6, "⅚": 5 / 6,
+  };
+  const SHOP_FRAC_CHARS = "¼½¾⅓⅔⅛⅜⅝⅞⅕⅖⅗⅘⅙⅚";
+
+  function formatShopQty(n) {
+    if (!isFinite(n) || n <= 0) return "";
+    const nearest = Math.round(n);
+    if (Math.abs(n - nearest) < 0.02) n = nearest;
+    const whole = Math.floor(n + 1e-9);
+    const frac = n - whole;
+    if (frac < 0.008) return String(whole);
+    const glyphs = {
+      "1/2": "½", "1/3": "⅓", "2/3": "⅔", "1/4": "¼", "3/4": "¾",
+      "1/5": "⅕", "2/5": "⅖", "3/5": "⅗", "4/5": "⅘",
+      "1/6": "⅙", "5/6": "⅚", "1/8": "⅛", "3/8": "⅜", "5/8": "⅝", "7/8": "⅞",
+    };
+    let best = null;
+    let bestDiff = 0.008;
+    [2, 3, 4, 5, 6, 8, 12].forEach((d) => {
+      const k = Math.round(frac * d);
+      if (k <= 0 || k >= d) return;
+      const diff = Math.abs(frac - k / d);
+      if (diff < bestDiff) { bestDiff = diff; best = k + "/" + d; }
+    });
+    if (!best) {
+      // Nearest eighth keeps a scaled 11/9 cup shoppable ("1¼") instead of "1.22".
+      let eighths = Math.round(frac * 8);
+      if (eighths >= 8) return String(whole + 1);
+      if (eighths <= 0) return whole ? String(whole) : "⅛";
+      const reduced = { 1: "1/8", 2: "1/4", 3: "3/8", 4: "1/2", 5: "5/8", 6: "3/4", 7: "7/8" }[eighths];
+      best = reduced;
+    }
+    const g = glyphs[best] || best;
+    if (whole === 0) return g;
+    return glyphs[best] ? whole + g : whole + " " + best;
+  }
+
+  function readShopQtyAt(text, i) {
+    const s = text.slice(i);
+    let m = s.match(new RegExp("^(\\d+)([" + SHOP_FRAC_CHARS + "])"));
+    if (m) return { n: +m[1] + SHOP_FRAC[m[2]], end: i + m[0].length };
+    m = s.match(/^(\d+)\s+(\d+)\/(\d+)/);
+    if (m && +m[3]) return { n: +m[1] + +m[2] / +m[3], end: i + m[0].length };
+    m = s.match(new RegExp("^(\\d+)\\s+([" + SHOP_FRAC_CHARS + "])"));
+    if (m) return { n: +m[1] + SHOP_FRAC[m[2]], end: i + m[0].length };
+    m = s.match(new RegExp("^([" + SHOP_FRAC_CHARS + "])"));
+    if (m) return { n: SHOP_FRAC[m[1]], end: i + m[0].length };
+    m = s.match(/^(\d+)\/(\d+)/);
+    if (m && +m[2]) return { n: +m[1] / +m[2], end: i + m[0].length };
+    m = s.match(/^(\d+(?:\.\d+)?)/);
+    if (m) return { n: parseFloat(m[1]), end: i + m[0].length };
+    return null;
+  }
+
+  function readLeadingShopQty(text) {
+    const pad = /^(\s*)/.exec(text);
+    const start = pad[1].length;
+    const first = readShopQtyAt(text, start);
+    if (!first) return null;
+    const sep = /^\s*(?:-|–|to)\s*/i.exec(text.slice(first.end));
+    if (sep) {
+      const second = readShopQtyAt(text, first.end + sep[0].length);
+      if (second) return { start: start, end: second.end, n: first.n, n2: second.n, range: true, sep: sep[0] };
+    }
+    return { start: start, end: first.end, n: first.n, range: false };
+  }
+
+  const SHOP_UNIT_WORDS = [
+    ["tablespoons", "tbsp"], ["tablespoon", "tbsp"], ["teaspoons", "tsp"], ["teaspoon", "tsp"],
+    ["tbsp", "tbsp"], ["tbs", "tbsp"], ["tbl", "tbsp"], ["tsp", "tsp"],
+    ["cups", "cup"], ["cup", "cup"],
+    ["ounces", "oz"], ["ounce", "oz"], ["pounds", "lb"], ["pound", "lb"], ["lbs", "lb"], ["lb", "lb"],
+    ["grams", "g"], ["gram", "g"], ["kilograms", "kg"], ["kilogram", "kg"],
+    ["milliliters", "ml"], ["milliliter", "ml"], ["liters", "l"], ["liter", "l"], ["litres", "l"], ["litre", "l"],
+    ["quarts", "qt"], ["quart", "qt"], ["pints", "pt"], ["pint", "pt"], ["gallons", "gal"], ["gallon", "gal"],
+    ["cloves", "clove"], ["clove", "clove"], ["slices", "slice"], ["slice", "slice"],
+    ["cans", "can"], ["can", "can"], ["jars", "jar"], ["jar", "jar"],
+    ["packages", "package"], ["package", "package"], ["pkg", "package"],
+    ["bunches", "bunch"], ["bunch", "bunch"], ["heads", "head"], ["head", "head"],
+    ["sprigs", "sprig"], ["sprig", "sprig"], ["stalks", "stalk"], ["stalk", "stalk"],
+    ["sticks", "stick"], ["stick", "stick"], ["fillets", "fillet"], ["fillet", "fillet"],
+    ["strips", "strip"], ["strip", "strip"], ["pieces", "piece"], ["piece", "piece"],
+    ["scoops", "scoop"], ["scoop", "scoop"], ["packets", "packet"], ["packet", "packet"],
+    ["envelopes", "envelope"], ["envelope", "envelope"], ["bags", "bag"], ["bag", "bag"],
+    ["boxes", "box"], ["box", "box"], ["bottles", "bottle"], ["bottle", "bottle"],
+    ["ears", "ear"], ["ear", "ear"], ["links", "link"], ["link", "link"],
+    ["rashers", "rasher"], ["rasher", "rasher"],
+    ["pinches", "pinch"], ["pinch", "pinch"], ["dashes", "dash"], ["dash", "dash"],
+    ["handfuls", "handful"], ["handful", "handful"], ["splashes", "splash"], ["splash", "splash"],
+    ["oz", "oz"], ["qt", "qt"], ["pt", "pt"], ["kg", "kg"], ["ml", "ml"], ["gal", "gal"], ["g", "g"], ["l", "l"],
+  ];
+
+  function matchShopUnit(s) {
+    const fluid = /^(fl\.?\s*oz|fluid ounces?)\b\s*(?:of\s+)?(.*)$/i.exec(s);
+    if (fluid) return { unit: "fl-oz", rest: fluid[2], word: fluid[1] };
+    for (let i = 0; i < SHOP_UNIT_WORDS.length; i += 1) {
+      const word = SHOP_UNIT_WORDS[i][0];
+      const re = new RegExp("^(" + word + ")\\.?\\b(?:\\s+of)?\\s*(.*)$", "i");
+      const m = re.exec(s);
+      if (m) return { unit: SHOP_UNIT_WORDS[i][1], rest: m[2], word: m[1] };
+    }
+    return null;
+  }
+
+  const SHOP_ABBREV = { tsp: 1, tbsp: 1, tbs: 1, tbl: 1, oz: 1, lb: 1, lbs: 1, g: 1, kg: 1, ml: 1, qt: 1, pt: 1 };
+
+  function shopUnitWord(unit, qty, originalWord) {
+    const w = String(originalWord || "").toLowerCase().replace(/\.$/, "");
+    if (SHOP_ABBREV[w]) {
+      if ((w === "lb" || w === "lbs") && qty > 1) return "lbs";
+      if ((w === "lb" || w === "lbs") && qty <= 1) return "lb";
+      return w;
+    }
+    if (/^fl/i.test(w) && unit === "fl-oz") return qty > 1 ? "fl oz" : "fl oz";
+    return shopUnitPhrase(unit, qty);
+  }
+
+  function rewriteShopUnit(after, qty) {
+    const leadSpace = (/^(\s*)/.exec(after) || ["", ""])[1];
+    const body = after.slice(leadSpace.length);
+    const um = matchShopUnit(body);
+    if (!um) return after;
+    const word = shopUnitWord(um.unit, qty, um.word);
+    const consumed = body.slice(0, body.length - um.rest.length);
+    const ofWord = /\bof\b/i.test(consumed) ? " of " : " ";
+    return leadSpace + word + (um.rest ? ofWord + um.rest : "");
+  }
+
+  function scaleShopPlus(rest, factor) {
+    let depth = 0;
+    for (let i = 0; i < rest.length; i += 1) {
+      const ch = rest[i];
+      if (ch === "(") depth += 1;
+      else if (ch === ")") depth = Math.max(0, depth - 1);
+      if (depth) continue;
+      if (i > 0 && /[A-Za-z]/.test(rest[i - 1])) continue;
+      const m = /^(?:plus|\+)\s+/i.exec(rest.slice(i));
+      if (!m) continue;
+      const q = readShopQtyAt(rest, i + m[0].length);
+      if (!q) return rest;
+      const after = rest.slice(q.end);
+      if (!matchShopUnit(after.replace(/^\s+/, ""))) return rest;
+      return rest.slice(0, i + m[0].length) + formatShopQty(q.n * factor) + rewriteShopUnit(after, q.n * factor);
+    }
+    return rest;
+  }
+
+  function scaleShopText(text, factor) {
+    const raw = String(text || "");
+    if (!(factor > 0) || Math.abs(factor - 1) < 1e-9) return raw;
+    const lead = readLeadingShopQty(raw);
+    if (!lead) return raw;
+    const qtyForUnit = (lead.range ? Math.max(lead.n, lead.n2) : lead.n) * factor;
+    const scaled = lead.range
+      ? formatShopQty(lead.n * factor) + lead.sep + formatShopQty(lead.n2 * factor)
+      : formatShopQty(lead.n * factor);
+    const rest = scaleShopPlus(rewriteShopUnit(raw.slice(lead.end), qtyForUnit), factor);
+    return stripStaleMeasures(raw.slice(0, lead.start) + scaled + rest);
+  }
+
+  // Equivalent weights in parentheses go stale once the leading amount changes.
+  function stripStaleMeasures(text) {
+    let s = String(text).replace(/\s*\(([^)]*)\)/g, (full, inner) => shopMeasureNote(inner) ? "" : full);
+    s = s.replace(/,\s*about\s+[\d./\s¼½¾⅓⅔⅛⅜⅝⅞-]+(?:fl\.?\s*oz|cups?|tablespoons?|teaspoons?|tbsp|tsp|ounces?|oz|pounds?|lbs?|grams?|g|kg|ml)\b[^,]*/gi, "");
+    return s.replace(/\s{2,}/g, " ").replace(/\s+,/g, ",").replace(/,\s*$/g, "").trim();
+  }
+
+  const SHOP_NO_SINGULAR = new Set("asparagus molasses hummus couscous oats grits bitters greens series species lens citrus news shorts".split(" "));
+  function singularShopWord(w) {
+    if (SHOP_NO_SINGULAR.has(w)) return w;
+    if (w === "leaves") return "leaf";
+    if (w === "loaves") return "loaf";
+    if (w.length > 4 && w.endsWith("ies")) return w.slice(0, -3) + "y";
+    if (w.length > 4 && /(oes|ches|shes|sses|xes|zes)$/.test(w)) return w.slice(0, -2);
+    if (w.length > 3 && /[^s]s$/.test(w) && !w.endsWith("ss")) return w.slice(0, -1);
+    return w;
+  }
+  function pluralShopWord(w) {
+    const l = w.toLowerCase();
+    if (SHOP_NO_SINGULAR.has(l)) return w;
+    if (l === "leaf") return "leaves";
+    if (l === "loaf") return "loaves";
+    if (/[^aeiou]y$/i.test(w)) return w.slice(0, -1) + "ies";
+    if (/^(potato|tomato)$/i.test(w)) return w + "es";
+    if (/(s|x|z|ch|sh)$/i.test(w)) return w + "es";
+    return w + "s";
+  }
+
+  const SHOP_PREP_SEG = /^(divided|diced|minced|chopped|grated|shredded|sliced|peeled|deveined|halved|quartered|trimmed|rinsed|drained|beaten|cubed|crushed|toasted|packed|melted|softened|zested|juiced|washed|torn|mashed|cooled|thawed|seeded|stemmed|cored|optional|plus\b|for\b|cut\b|thinly|roughly|finely|freshly|at room|room temperature|to serve|to taste|into\b|about\b|preferably|preferred|if\b|patted|spun|scrubbed|separated|warmed|chilled|crumbled|and sliced|and minced|and deveined|and peeled|and halved|sliced into|cut into|plus more|or more|for serving|for the|to reduce|warm|ground)\b/i;
+
+  function cleanShopName(rest) {
+    const stripped = String(rest || "").replace(/\([^)]*\)/g, " ");
+    const parts = stripped.split(",");
+    const kept = [];
+    for (let i = 0; i < parts.length; i += 1) {
+      const t = parts[i].trim();
+      if (!t) continue;
+      if (i > 0 && SHOP_PREP_SEG.test(t)) continue;
+      kept.push(t);
+    }
+    return kept.join(" ").replace(/\s+/g, " ").trim();
+  }
+
+  function shopNameKey(name) {
+    return String(name || "")
+      .toLowerCase()
+      .replace(/[’']/g, "")
+      .replace(/-/g, " ")
+      .replace(/[^\p{L}\p{N}\s]/gu, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .split(" ")
+      .filter(Boolean)
+      .map(singularShopWord)
+      .join(" ");
+  }
+
+  function isPantryStaple(nameKey) {
+    const n = String(nameKey || "").toLowerCase().replace(/\s+/g, " ").trim();
+    if (!n) return false;
+    if (/^(flaky |kosher |sea |table |fine |coarse |maldon |iodized )?(salt)$/.test(n)) return true;
+    if (/^(freshly ground |ground |cracked |fresh ground )?(black )?pepper$/.test(n)) return true;
+    if (/^(kosher |sea |table |fine |flaky )?salt and (freshly ground |ground |cracked )?(black )?pepper$/.test(n)) return true;
+    if (/^(cold |warm |hot |boiling |ice |cool |filtered |tap |lukewarm |room temperature )?water$/.test(n)) return true;
+    if (/^(extra virgin |virgin )?olive oil$/.test(n)) return true;
+    if (/^(vegetable|canola|avocado|neutral|cooking|salad|grapeseed|sunflower|peanut) oil$/.test(n)) return true;
+    if (/^oil$/.test(n)) return true;
+    if (/^(avocado oil|cooking|nonstick|non stick|baking) spray$/.test(n)) return true;
+    return false;
+  }
+
+  function shopMeasureNote(inner) {
+    const s = String(inner || "").trim().toLowerCase().replace(/[–—]/g, "-");
+    if (!/\d|[¼½¾⅓⅔⅛⅜⅝⅞]/.test(s)) return false;
+    if (/\binch/.test(s)) return false;
+    const words = s.replace(/[^a-z0-9.\s/-]/g, " ").split(/\s+/).filter(Boolean);
+    const ok = /^(about|approx|approximately|roughly|each|or|to|and|a|of|cup|cups|tbsp|tablespoon|tablespoons|tsp|teaspoon|teaspoons|oz|ounce|ounces|lb|lbs|pound|pounds|g|gram|grams|kg|ml|l|liter|liters|fl|stick|sticks|mashed|chopped|diced|grated|sliced|halved|minced|packed|softened|melted|divided)$/;
+    return words.length > 0 && words.every((w) => ok.test(w) || /^[\d./-]+$/.test(w));
+  }
+
+  const SHOP_OPEN_RE = /\b(to taste|as needed|plus more|or more|or so|for serving|for the pan|for greasing|for frying|for drizzling|for brushing|for dusting|for finishing|for the top|for the grill|for soaking|if needed|optional|to serve)\b/i;
+  const SHOP_VAGUE_UNITS = { pinch: 1, dash: 1, splash: 1, handful: 1 };
+  const SHOP_UNIT_PHRASE = {
+    cup: ["cup", "cups"], tbsp: ["tablespoon", "tablespoons"], tsp: ["teaspoon", "teaspoons"],
+    oz: ["ounce", "ounces"], lb: ["pound", "pounds"], g: ["gram", "grams"], kg: ["kilogram", "kilograms"],
+    ml: ["milliliter", "milliliters"], l: ["liter", "liters"], "fl-oz": ["fluid ounce", "fluid ounces"],
+    qt: ["quart", "quarts"], pt: ["pint", "pints"], gal: ["gallon", "gallons"],
+    clove: ["clove", "cloves"], slice: ["slice", "slices"], can: ["can", "cans"], jar: ["jar", "jars"],
+    package: ["package", "packages"], bunch: ["bunch", "bunches"], head: ["head", "heads"],
+    sprig: ["sprig", "sprigs"], stalk: ["stalk", "stalks"], stick: ["stick", "sticks"],
+    fillet: ["fillet", "fillets"], strip: ["strip", "strips"], piece: ["piece", "pieces"],
+    scoop: ["scoop", "scoops"], packet: ["packet", "packets"], envelope: ["envelope", "envelopes"],
+    bag: ["bag", "bags"], box: ["box", "boxes"], bottle: ["bottle", "bottles"],
+    ear: ["ear", "ears"], link: ["link", "links"], rasher: ["rasher", "rashers"],
+  };
+
+  function shopUnitPhrase(unit, qty) {
+    const pair = SHOP_UNIT_PHRASE[unit];
+    if (!pair) return unit || "";
+    return qty > 1 ? pair[1] : pair[0];
+  }
+
+  function applyShopName(base, rest) {
+    const cleaned = cleanShopName(rest);
+    base.nameDisplay = cleaned || String(rest || "").replace(/\s+/g, " ").trim();
+    base.nameKey = shopNameKey(base.nameDisplay);
+  }
+
+  function hoistGarlicClove(name) {
+    const m = /^(.*)\s+cloves?$/i.exec(name);
+    if (!m) return null;
+    const food = m[1].trim();
+    if (!food || /\d/.test(food)) return null;
+    return food;
+  }
+
+  function parseShopLine(display) {
+    const text = String(display || "").trim();
+    const base = {
+      qty: null, unit: null, nameKey: "", nameDisplay: text, qualKey: "", qualDisplay: "",
+      pantry: false, summable: false, optional: /\boptional\b/i.test(text), unitTail: false, ranged: false,
+    };
+    const parens = [];
+    const parenRe = /\(([^)]*)\)/g;
+    let pm;
+    while ((pm = parenRe.exec(text))) parens.push(pm[1]);
+    const significant = parens.some((p) => !shopMeasureNote(p));
+    const outside = text.replace(/\([^)]*\)/g, " ");
+    const open = SHOP_OPEN_RE.test(text);
+    const compound = /\b(?:plus|\+)\s+\d/i.test(outside);
+    const orAlt = /\bor\b/i.test(outside);
+    const finish = () => {
+      base.pantry = isPantryStaple(base.nameKey);
+      return base;
+    };
+
+    const vague = /^(a\s+)?(pinch|pinches|dash|dashes|splash|splashes)(?:\s+of)?\s+(.+)$/i.exec(text);
+    if (vague && !/^[\d¼½¾⅓⅔⅛⅜⅝⅞]/.test(text)) {
+      applyShopName(base, vague[3]);
+      base.unit = vague[2].toLowerCase().replace(/es$/, "").replace(/s$/, "");
+      base.summable = false;
+      return finish();
+    }
+
+    const lead = readLeadingShopQty(text);
+    if (lead && !lead.range) {
+      const afterQty = text.slice(lead.end).replace(/^\s+/, "");
+      const can = /^\(([^)]+)\)\s*(cans?|jars?|bottles?|packages?|pkgs?|bags?|boxes|box)\b(?:\s+of\b)?\s*(.*)$/i.exec(afterQty);
+      if (can) {
+        const canon = matchShopUnit(can[2]);
+        applyShopName(base, can[3]);
+        base.qty = lead.n;
+        base.unit = canon ? canon.unit : "can";
+        base.qualDisplay = can[1].trim();
+        base.qualKey = base.qualDisplay.toLowerCase().replace(/\s+/g, " ");
+        base.summable = !open && !compound && !orAlt && !significant && !!base.nameKey && base.qty > 0;
+        return finish();
+      }
+      const unit = matchShopUnit(afterQty);
+      if (unit) {
+        applyShopName(base, unit.rest);
+        base.qty = lead.n;
+        base.unit = unit.unit;
+      } else {
+        applyShopName(base, afterQty);
+        const food = hoistGarlicClove(base.nameDisplay);
+        if (food) {
+          base.unit = "clove";
+          base.unitTail = true;
+          applyShopName(base, food);
+        }
+        base.qty = lead.n;
+      }
+      const vagueUnit = !!SHOP_VAGUE_UNITS[base.unit];
+      base.summable = !open && !compound && !orAlt && !significant && !vagueUnit && base.qty > 0 && !!base.nameKey;
+      return finish();
+    }
+
+    if (lead && lead.range) {
+      const after = text.slice(lead.end).replace(/^\s+/, "");
+      const unit = matchShopUnit(after);
+      applyShopName(base, unit ? unit.rest : after);
+      base.ranged = true;
+      base.summable = false;
+      return finish();
+    }
+
+    applyShopName(base, text);
+    base.summable = false;
+    return finish();
+  }
+
+  function roundShopQty(n) {
+    const r = Math.round(n * 1000) / 1000;
+    const nearest = Math.round(r);
+    if (Math.abs(r - nearest) < 0.02) return nearest;
+    return r;
+  }
+
+  function countShopName(nameDisplay, qty) {
+    const parts = String(nameDisplay || "").split(" ");
+    if (!parts.length || !parts[0]) return nameDisplay;
+    const last = parts[parts.length - 1];
+    const sing = singularShopWord(last.toLowerCase());
+    const cased = last[0] === last[0].toUpperCase() ? sing.charAt(0).toUpperCase() + sing.slice(1) : sing;
+    parts[parts.length - 1] = qty > 1 ? pluralShopWord(cased) : cased;
+    return parts.join(" ");
+  }
+
+  function formatSummedShop(items, qty) {
+    const sample = items[0];
+    const q = roundShopQty(qty);
+    const qText = formatShopQty(q);
+    if (!sample.unit) return (qText + " " + countShopName(sample.nameDisplay, q)).replace(/\s+/g, " ").trim();
+    const unit = shopUnitPhrase(sample.unit, q);
+    const qual = sample.qualDisplay ? "(" + sample.qualDisplay + ") " : "";
+    const tail = items.every((it) => it.unitTail);
+    const body = tail ? sample.nameDisplay + " " + unit : unit + " " + sample.nameDisplay;
+    return (qText + " " + qual + body).replace(/\s+/g, " ").trim();
+  }
+
+  function shopLineFrom(item) {
+    return { ids: [item.id], text: item.display, sources: [item.dish], pantry: !!item.pantry };
+  }
+
+  function buildShoppingList(dishes, mode) {
+    const items = [];
+    (dishes || []).forEach((dish) => {
+      const base = dish.baseYield > 0 ? dish.baseYield : 1;
+      const servings = dish.servings > 0 ? dish.servings : base;
+      const factor = servings / base;
+      (dish.ingredients || []).forEach((line, index) => {
+        const display = scaleShopText(line, factor);
+        const item = parseShopLine(display);
+        item.id = dish.slug + ":" + index;
+        item.slug = dish.slug;
+        item.dish = dish.name || dish.slug;
+        item.color = dish.color;
+        item.display = display;
+        item.servings = servings;
+        item.baseYield = base;
+        items.push(item);
+      });
+    });
+    if (mode === "merged") return mergeShopItems(items);
+    return groupShopByDish(items);
+  }
+
+  function groupShopByDish(items) {
+    const groups = [];
+    const bySlug = new Map();
+    const pantrySubs = [];
+    const pantryBy = new Map();
+    items.forEach((item) => {
+      if (item.pantry) {
+        if (!pantryBy.has(item.slug)) {
+          const sub = { title: item.dish, slug: item.slug, color: item.color, lines: [] };
+          pantryBy.set(item.slug, sub);
+          pantrySubs.push(sub);
+        }
+        pantryBy.get(item.slug).lines.push(shopLineFrom(item));
+        return;
+      }
+      if (!bySlug.has(item.slug)) {
+        const g = {
+          kind: "dish", title: item.dish, slug: item.slug, color: item.color,
+          servings: item.servings, baseYield: item.baseYield, lines: [],
+        };
+        bySlug.set(item.slug, g);
+        groups.push(g);
+      }
+      bySlug.get(item.slug).lines.push(shopLineFrom(item));
+    });
+    if (pantrySubs.length) groups.push({ kind: "pantry", title: "Probably on hand", lines: [], subgroups: pantrySubs });
+    return { groups: groups };
+  }
+
+  function mergeShopItems(items) {
+    const shop = [];
+    const pantry = [];
+    const index = new Map();
+    items.forEach((item) => {
+      let key;
+      if (item.summable) {
+        key = "sum\u0001" + (item.pantry ? "p" : "s") + "\u0001" + (item.unit || "count") + "\u0001" + item.nameKey + "\u0001" + (item.qualKey || "") + "\u0001" + (item.optional ? "1" : "0");
+      } else if (item.qty == null && !item.ranged) {
+        key = "plain\u0001" + (item.pantry ? "p" : "s") + "\u0001" + item.nameKey + "\u0001" + (item.optional ? "1" : "0");
+      } else {
+        key = "solo\u0001" + item.id;
+      }
+      let line = index.get(key);
+      if (!line) {
+        line = { ids: [], text: item.display, sources: [], pantry: !!item.pantry, items: [] };
+        index.set(key, line);
+        (item.pantry ? pantry : shop).push(line);
+      }
+      line.ids.push(item.id);
+      line.items.push(item);
+      if (line.sources.indexOf(item.dish) === -1) line.sources.push(item.dish);
+    });
+    const unpack = (list) => {
+      const out = [];
+      list.forEach((line) => {
+        const items = line.items || [];
+        const canSum = items.length > 1 && items[0].summable && items.every((it) => it.summable && it.unit === items[0].unit && it.nameKey === items[0].nameKey);
+        if (canSum) {
+          const sum = items.reduce((a, it) => a + it.qty, 0);
+          const text = formatSummedShop(items, sum);
+          if (/\d\.\d/.test(text)) items.forEach((it) => out.push(shopLineFrom(it)));
+          else { line.text = text; delete line.items; out.push(line); }
+          return;
+        }
+        line.text = items.length ? items[0].display : line.text;
+        delete line.items;
+        out.push(line);
+      });
+      return out;
+    };
+    const shopLines = unpack(shop);
+    const pantryLines = unpack(pantry);
+    const groups = [];
+    if (shopLines.length) groups.push({ kind: "shop", title: "", lines: shopLines });
+    if (pantryLines.length) groups.push({ kind: "pantry", title: "Probably on hand", lines: pantryLines });
+    return { groups: groups };
+  }
+
+  const core = { parseStepMinutes: parseStepMinutes, isoMinutes: isoMinutes, buildDish: buildDish, scheduleDish: scheduleDish, planMeal: planMeal, retime: retime, kitchenOf: kitchenOf, findConflicts: findConflicts, extractRecipe: extractRecipe, equipmentOf: equipmentOf, tempOf: tempOf, scaleShopText: scaleShopText, parseShopLine: parseShopLine, buildShoppingList: buildShoppingList, isPantryStaple: isPantryStaple };
   if (typeof module !== "undefined" && module.exports) module.exports = core;
   if (typeof document === "undefined") return;
 
@@ -484,7 +980,7 @@
 
   let catalog = [];          // [{slug, title, cat, search}]
   const dishCache = {};      // slug -> dish
-  let state = { slugs: [], eat: "18:30", day: null, overrides: {}, offsets: {}, done: {}, retimeMode: "keep", note: null };
+  let state = { slugs: [], eat: "18:30", day: null, overrides: {}, offsets: {}, done: {}, servings: {}, retimeMode: "keep", note: null };
   const KITCHEN_KEY = "clt:kitchen";
   let kitchen = kitchenOf(store.get(KITCHEN_KEY));
   let currentDishes = [];
@@ -561,8 +1057,48 @@
       try { recipe = extractRecipe(JSON.parse(s.textContent)); } catch (_) {}
     });
     if (!recipe) throw new Error("no recipe data");
-    dishCache[slug] = buildDish(recipe, slug, i);
+    const dish = buildDish(recipe, slug, i);
+    dish.ingredients = listIngredients(recipe, doc);
+    dish.baseYield = yieldCount(recipe, doc);
+    dishCache[slug] = dish;
     return dishCache[slug];
+  }
+
+  function listIngredients(recipe, doc) {
+    const out = [];
+    const push = (v) => {
+      if (v == null) return;
+      if (typeof v === "string") { const t = v.trim(); if (t) out.push(t); return; }
+      if (typeof v === "object") push(v.text || v.name);
+    };
+    const raw = recipe && recipe.recipeIngredient;
+    if (Array.isArray(raw)) raw.forEach(push);
+    else if (raw) push(raw);
+    if (!out.length && doc) {
+      doc.querySelectorAll("[itemprop='recipeIngredient']").forEach((node) => {
+        const t = (node.textContent || "").replace(/\s+/g, " ").trim();
+        if (t) out.push(t);
+      });
+    }
+    return out;
+  }
+
+  function yieldCount(recipe, doc) {
+    let raw = recipe && recipe.recipeYield;
+    if (Array.isArray(raw)) raw = raw[0];
+    if (raw && typeof raw === "object") raw = raw.value || raw.name || "";
+    if (!raw && doc) {
+      const node = doc.querySelector("[itemprop='recipeYield']");
+      raw = node ? node.textContent : "";
+    }
+    const m = String(raw || "").match(/(\d+)/);
+    return m ? Math.max(1, parseInt(m[1], 10)) : 1;
+  }
+
+  function servingsFor(dish) {
+    const n = state.servings && parseInt(state.servings[dish.slug], 10);
+    if (n >= 1 && n <= 48) return n;
+    return dish.baseYield || 1;
   }
 
   // --- picker ---
@@ -600,6 +1136,7 @@
     state.slugs = state.slugs.filter((s) => s !== slug);
     Object.keys(state.overrides).forEach((k) => { if (k.indexOf(slug + ":") === 0) delete state.overrides[k]; });
     delete state.offsets[slug];
+    if (state.servings) delete state.servings[slug];
     saveState();
     say(titleOf(slug) + " removed");
     rebuild();
@@ -617,6 +1154,7 @@
       li.appendChild(a);
       if (errors[slug]) li.appendChild(el("span", "meal-dish-err", "Couldn't load this recipe."));
       else if (d) li.appendChild(el("span", "meal-dish-meta", (d.total ? d.total + " min listed" : "no time listed") + " · " + d.steps.length + " steps"));
+      if (d) li.appendChild(servingsControl(d));
       const off = el("span", "meal-offset");
       const offLabel = el("span", "meal-offset-label", (state.offsets[slug] || 0) ? "Done " + state.offsets[slug] + " min early" : "Done at eat time");
       const mk = (txt, delta, aria) => { const b = el("button", "toolbar-btn meal-mini", txt); b.type = "button"; b.setAttribute("aria-label", aria); b.addEventListener("click", () => { state.offsets[slug] = Math.max(0, (state.offsets[slug] || 0) + delta); saveState(); rebuild(); }); return b; };
@@ -633,6 +1171,49 @@
     });
     $("[data-meal-count]").textContent = state.slugs.length + " of " + MAX_DISHES + " dishes";
     renderResults();
+  }
+
+  function servingsControl(dish) {
+    const base = dish.baseYield || 1;
+    const serv = el("span", "meal-servings");
+    serv.setAttribute("role", "group");
+    serv.setAttribute("aria-label", "Servings for " + dish.name);
+    const minus = el("button", "toolbar-btn meal-mini", "−");
+    minus.type = "button";
+    minus.setAttribute("aria-label", "Fewer servings of " + dish.name);
+    const readout = el("span", "meal-servings-readout");
+    const num = el("span", null, "");
+    readout.appendChild(num);
+    readout.appendChild(document.createTextNode(" servings"));
+    const plus = el("button", "toolbar-btn meal-mini", "+");
+    plus.type = "button";
+    plus.setAttribute("aria-label", "More servings of " + dish.name);
+    const hint = el("span", "meal-servings-base", "");
+    const paint = () => {
+      const n = servingsFor(dish);
+      num.textContent = String(n);
+      hint.textContent = n === base ? "" : "base " + base;
+      minus.disabled = n <= 1;
+      plus.disabled = n >= 48;
+    };
+    const setN = (n) => {
+      n = Math.max(1, Math.min(48, n));
+      if (!state.servings || typeof state.servings !== "object") state.servings = {};
+      if (n === base) delete state.servings[dish.slug];
+      else state.servings[dish.slug] = n;
+      saveState();
+      paint();
+      renderShop();
+      say(dish.name + ", " + n + " servings");
+    };
+    minus.addEventListener("click", () => setN(servingsFor(dish) - 1));
+    plus.addEventListener("click", () => setN(servingsFor(dish) + 1));
+    paint();
+    serv.appendChild(minus);
+    serv.appendChild(readout);
+    serv.appendChild(plus);
+    serv.appendChild(hint);
+    return serv;
   }
 
   function nudge(id, delta, value) {
@@ -747,10 +1328,12 @@
     if (seq !== buildSeq) return;
     status.textContent = "";
     currentDishes = dishes;
+    lastErrors = errors;
     plan = dishes.length ? planMeal(dishes, { overrides: state.overrides, offsets: state.offsets, kitchen: kitchen, done: state.done }) : null;
     renderNote();
     renderDishes(dishes, errors);
     renderPlan(focusId);
+    renderShop();
     if (cook.on) renderCook();
   }
 
@@ -764,7 +1347,7 @@
     state.overrides = {}; state.offsets = {}; state.done = {}; state.note = null; saveState(); rebuild(); say("Edits cleared");
   });
   $("[data-action='meal-clear']").addEventListener("click", () => {
-    state = { slugs: [], eat: state.eat, day: null, overrides: {}, offsets: {}, done: {} }; saveState(); rebuild(); say("Meal cleared");
+    state = { slugs: [], eat: state.eat, day: null, overrides: {}, offsets: {}, done: {}, servings: {} }; saveState(); rebuild(); say("Meal cleared");
   });
   $("[data-action='meal-print']").addEventListener("click", () => window.print());
   const shareBtn = $("[data-action='meal-share']");
@@ -1022,6 +1605,255 @@
   $("[data-action='drift-dismiss']").addEventListener("click", () => { driftEl.hidden = true; });
   $("[data-action='retime-clear']").addEventListener("click", () => { state.note = null; saveState(); renderNote(); });
 
+  // --- Shopping list ---
+  const TICK_KEY = "clt:shop-ticks";
+  const SHOP_VIEW_KEY = "clt:shop-view";
+  const SHOP_OPEN_KEY = "clt:shop-open";
+  let ticks = store.get(TICK_KEY);
+  if (!ticks || typeof ticks !== "object" || Array.isArray(ticks)) ticks = {};
+  let shopView = store.get(SHOP_VIEW_KEY) === "merged" ? "merged" : "dish";
+  let shopOpen = store.get(SHOP_OPEN_KEY) !== false;
+  let shopModel = { groups: [] };
+  let lastErrors = {};
+
+  function saveTicks() { store.set(TICK_KEY, ticks); }
+
+  function eachShopLine(fn) {
+    (shopModel.groups || []).forEach((g) => {
+      (g.lines || []).forEach((line) => fn(line, g));
+      (g.subgroups || []).forEach((sub) => (sub.lines || []).forEach((line) => fn(line, g)));
+    });
+  }
+
+  function shopPlainText() {
+    const lines = [];
+    eachShopLine((line) => {
+      const ids = line.ids || [];
+      if (ids.length && ids.every((id) => ticks[id])) return;
+      if (line.text) lines.push(line.text);
+    });
+    return lines.join("\n");
+  }
+
+  function paintShopChrome() {
+    const panel = $("[data-shop-panel]");
+    const toggle = $("[data-shop-toggle]");
+    if (panel) panel.hidden = !shopOpen;
+    if (toggle) {
+      toggle.setAttribute("aria-expanded", shopOpen ? "true" : "false");
+      toggle.textContent = shopOpen ? "Hide list" : "Show list";
+    }
+    app.querySelectorAll("[data-shop-view]").forEach((btn) => {
+      btn.setAttribute("aria-pressed", btn.getAttribute("data-shop-view") === shopView ? "true" : "false");
+    });
+  }
+
+  function paintShopStatus() {
+    const status = $("[data-shop-status]");
+    if (!status) return;
+    let shopN = 0;
+    let pantryN = 0;
+    let any = 0;
+    eachShopLine((line, g) => {
+      any += 1;
+      const ids = line.ids || [];
+      if (ids.length && ids.every((id) => ticks[id])) return;
+      if (g.kind === "pantry") pantryN += 1;
+      else shopN += 1;
+    });
+    if (!any) { status.textContent = ""; return; }
+    if (!shopN && !pantryN) { status.textContent = "All ticked"; return; }
+    const bits = [];
+    if (shopN) bits.push(shopN + " still to shop");
+    if (pantryN) bits.push(pantryN + " probably on hand");
+    status.textContent = bits.join(" · ");
+  }
+
+  function renderShop() {
+    const section = $("[data-meal-shop]");
+    const list = $("[data-shop-list]");
+    if (!section || !list) return;
+    if (!state.slugs.length) {
+      section.hidden = true;
+      shopModel = { groups: [] };
+      list.replaceChildren();
+      paintShopStatus();
+      return;
+    }
+    section.hidden = false;
+    paintShopChrome();
+    const modelDishes = [];
+    state.slugs.forEach((slug) => {
+      const d = currentDishes.find((x) => x.slug === slug);
+      if (!d) return;
+      modelDishes.push({
+        slug: slug, name: d.name, color: d.color,
+        ingredients: d.ingredients || [], baseYield: d.baseYield || 1, servings: servingsFor(d),
+      });
+    });
+    shopModel = buildShoppingList(modelDishes, shopView);
+    list.replaceChildren();
+    state.slugs.forEach((slug) => {
+      if (lastErrors[slug]) list.appendChild(el("p", "shop-miss", "Couldn't load ingredients for " + titleOf(slug) + "."));
+      else {
+        const d = modelDishes.find((x) => x.slug === slug);
+        if (d && !d.ingredients.length) list.appendChild(el("p", "shop-miss", "No ingredient list on " + d.name + "."));
+      }
+    });
+    let headingN = 0;
+    const addLine = (ul, line) => {
+      const li = el("li", "shop-line");
+      const ids = line.ids || [];
+      const allOn = ids.length > 0 && ids.every((id) => ticks[id]);
+      const some = ids.some((id) => ticks[id]);
+      if (allOn) li.classList.add("is-checked");
+      const label = document.createElement("label");
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.checked = !!allOn;
+      input.dataset.ids = ids.join(",");
+      label.appendChild(input);
+      label.appendChild(el("span", "shop-line-text", line.text));
+      if (shopView === "merged" && line.sources && line.sources.length) label.appendChild(el("span", "shop-sources", line.sources.join(" · ")));
+      li.appendChild(label);
+      ul.appendChild(li);
+      if (some && !allOn) input.indeterminate = true;
+      input.addEventListener("change", () => {
+        (input.dataset.ids || "").split(",").filter(Boolean).forEach((id) => {
+          if (input.checked) ticks[id] = 1;
+          else delete ticks[id];
+        });
+        input.indeterminate = false;
+        li.classList.toggle("is-checked", input.checked);
+        saveTicks();
+        paintShopStatus();
+        say((input.checked ? "Ticked " : "Cleared ") + line.text);
+      });
+    };
+    (shopModel.groups || []).forEach((g) => {
+      const sec = el("section", "shop-group" + (g.color != null && g.kind !== "pantry" ? " dish-c" + (g.color % 4) : "") + (g.kind === "pantry" ? " shop-pantry" : ""));
+      let labelled = "";
+      if (g.title) {
+        headingN += 1;
+        const h = el("h3");
+        h.id = "shop-h-" + headingN;
+        labelled = h.id;
+        h.appendChild(document.createTextNode(g.title));
+        if (g.servings) {
+          let meta = " · " + g.servings + (g.servings === 1 ? " serving" : " servings");
+          if (g.baseYield && g.servings !== g.baseYield) meta += " (base " + g.baseYield + ")";
+          h.appendChild(el("span", "shop-yield", meta));
+        }
+        sec.appendChild(h);
+      }
+      if ((g.lines || []).length) {
+        const ul = el("ul", "shop-lines");
+        if (labelled) ul.setAttribute("aria-labelledby", labelled);
+        g.lines.forEach((line) => addLine(ul, line));
+        sec.appendChild(ul);
+      }
+      (g.subgroups || []).forEach((sub) => {
+        if (!sub.lines || !sub.lines.length) return;
+        headingN += 1;
+        const subH = el("p", "shop-sub" + (sub.color != null ? " dish-c" + (sub.color % 4) : ""), sub.title);
+        subH.id = "shop-h-" + headingN;
+        sec.appendChild(subH);
+        const ul = el("ul", "shop-lines");
+        ul.setAttribute("aria-labelledby", subH.id);
+        sub.lines.forEach((line) => addLine(ul, line));
+        sec.appendChild(ul);
+      });
+      if (sec.childNodes.length) list.appendChild(sec);
+    });
+    paintShopStatus();
+  }
+
+  function writeShopText(btn, idleLabel) {
+    const text = shopPlainText();
+    if (!text) {
+      say("All items are ticked");
+      if (btn) { btn.textContent = "All ticked"; window.setTimeout(() => { btn.textContent = idleLabel; }, 1600); }
+      return "";
+    }
+    return text;
+  }
+
+  async function copyPlain(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (_) {}
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand("copy");
+      ta.remove();
+      if (ok) return true;
+    } catch (_) {}
+    window.prompt("Copy this list", text);
+    return false;
+  }
+
+  const shopToggle = $("[data-shop-toggle]");
+  if (shopToggle) shopToggle.addEventListener("click", () => {
+    shopOpen = !shopOpen;
+    store.set(SHOP_OPEN_KEY, shopOpen);
+    paintShopChrome();
+    say(shopOpen ? "Shopping list shown" : "Shopping list hidden");
+  });
+  app.querySelectorAll("[data-shop-view]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      shopView = btn.getAttribute("data-shop-view") === "merged" ? "merged" : "dish";
+      store.set(SHOP_VIEW_KEY, shopView);
+      renderShop();
+      say(shopView === "merged" ? "Merged list" : "List by dish");
+    });
+  });
+  const copyShopBtn = $("[data-action='shop-copy']");
+  if (copyShopBtn) copyShopBtn.addEventListener("click", async () => {
+    const text = writeShopText(copyShopBtn, "Copy list");
+    if (!text) return;
+    const ok = await copyPlain(text);
+    if (!ok) return;
+    copyShopBtn.classList.add("is-success");
+    copyShopBtn.textContent = "Copied";
+    say("Shopping list copied");
+    window.setTimeout(() => { copyShopBtn.classList.remove("is-success"); copyShopBtn.textContent = "Copy list"; }, 1600);
+  });
+  const shareShopBtn = $("[data-action='shop-share']");
+  if (shareShopBtn) shareShopBtn.addEventListener("click", async () => {
+    const text = writeShopText(shareShopBtn, "Share list");
+    if (!text) return;
+    const title = "Shopping list: " + state.slugs.map(titleOf).join(", ");
+    try {
+      if (navigator.share) { await navigator.share({ title: title, text: text }); say("Shopping list shared"); return; }
+    } catch (e) { if (e && e.name === "AbortError") return; }
+    const ok = await copyPlain(text);
+    if (!ok) return;
+    shareShopBtn.classList.add("is-success");
+    shareShopBtn.textContent = "Copied";
+    say("Shopping list copied");
+    window.setTimeout(() => { shareShopBtn.classList.remove("is-success"); shareShopBtn.textContent = "Share list"; }, 1600);
+  });
+  const clearShopBtn = $("[data-action='shop-clear']");
+  if (clearShopBtn) clearShopBtn.addEventListener("click", () => {
+    ticks = {};
+    saveTicks();
+    renderShop();
+    say("Ticks cleared");
+  });
+  window.addEventListener("beforeprint", () => {
+    const panel = $("[data-shop-panel]");
+    if (panel && state.slugs.length) panel.hidden = false;
+  });
+  window.addEventListener("afterprint", paintShopChrome);
+  paintShopChrome();
+
   // --- boot ---
   (async function boot() {
     const fromUrl = readUrl();
@@ -1033,6 +1865,7 @@
     else if (saved && Array.isArray(saved.slugs)) state = Object.assign(state, saved, { slugs: Array.isArray(tray) ? tray.slice(0, MAX_DISHES) : saved.slugs });
     else if (Array.isArray(tray)) state.slugs = tray.slice(0, MAX_DISHES);
     state.overrides = state.overrides || {}; state.offsets = state.offsets || {}; state.done = state.done || {};
+    if (!state.servings || typeof state.servings !== "object" || Array.isArray(state.servings)) state.servings = {};
     if (!saved && !fromUrl) state.eat = "18:30";
     eatInput.value = state.eat.length === 4 ? "0" + state.eat : state.eat;
     state.retimeMode = state.retimeMode === "push" ? "push" : "keep";

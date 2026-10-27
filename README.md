@@ -6,7 +6,7 @@ Home (splash): [index.html](index.html)
 
 All recipes: [recipes.html](recipes.html)
 
-Plan a Meal (multi-dish timing): [meal-planner.html](meal-planner.html)
+Plan a Meal (multi-dish timing and a combined shopping list): [meal-planner.html](meal-planner.html)
 
 Import URL pattern after GitHub Pages:
 

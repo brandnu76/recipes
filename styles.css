@@ -1932,6 +1932,81 @@ body.cook-mode .meal-tray { display: none; }
   .meal-retime-banner { background: #fff; border: 1px solid #555; color: #000; }
 }
 
+/* Plan a Meal — per-dish servings + shopping list */
+.meal-servings { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; }
+.meal-servings-readout { font-weight: 700; font-variant-numeric: tabular-nums; min-width: 6.2rem; text-align: center; }
+.meal-servings-base { font-size: 0.8rem; color: var(--cream-muted); }
+.meal-shop-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; }
+.meal-shop-head h2 { margin: 0; }
+.meal-shop-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.65rem 1rem; margin: 0.75rem 0 0.35rem; }
+.meal-shop-view { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.meal-shop-view .toolbar-btn[aria-pressed="true"] {
+  border-color: var(--fire-soft);
+  background: rgba(79, 100, 60, 0.28);
+  color: var(--cream);
+}
+.shop-group { margin: 0.85rem 0 0.2rem; }
+.shop-group h3 {
+  font-family: var(--font-display);
+  font-size: 1.08rem;
+  margin: 0 0 0.35rem;
+  padding-left: 0.55rem;
+  border-left: 4px solid var(--dish, var(--fire-soft));
+}
+.shop-yield { font-family: var(--font-body); font-weight: 600; font-size: 0.85rem; color: var(--cream-muted); }
+.shop-pantry h3 { border-left-color: var(--cream-muted); }
+.shop-sub { margin: 0.55rem 0 0.1rem; font-size: 0.82rem; font-weight: 700; color: var(--dish, var(--cream-muted)); }
+.shop-lines { list-style: none; margin: 0 0 0.45rem; padding: 0; }
+.shop-line label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.55rem 0.65rem;
+  min-height: 2.75rem;
+  padding: 0.4rem 0.15rem;
+  cursor: pointer;
+  line-height: 1.4;
+}
+.shop-line input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.2rem;
+  flex: none;
+  accent-color: var(--fire-soft);
+}
+.shop-line-text { flex: 1 1 12rem; overflow-wrap: anywhere; }
+.shop-sources { flex: 1 1 100%; padding-left: 1.9rem; font-size: 0.82rem; color: var(--cream-muted); }
+.shop-line.is-checked .shop-line-text {
+  color: var(--cream-muted);
+  text-decoration: line-through;
+  text-decoration-color: rgba(185, 174, 158, 0.7);
+}
+.shop-miss { color: #e0a070; margin: 0.4rem 0; }
+@media (max-width: 380px) {
+  .meal-servings-readout { min-width: 5.4rem; }
+  .shop-sources { padding-left: 0; }
+}
+@media print {
+  .meal-shop { background: #fff !important; color: #111 !important; }
+  .meal-shop[hidden] { display: none !important; }
+  [data-shop-panel] { display: block !important; }
+  .shop-group { break-inside: avoid; }
+  .shop-group h3, .shop-line, .shop-line-text, .shop-sub, .shop-yield, .shop-miss { color: #111 !important; }
+  .shop-sources { color: #333 !important; }
+  .shop-group h3, .shop-pantry h3 { border-left-color: #555; }
+  .shop-line { break-inside: avoid; page-break-inside: avoid; }
+  .shop-line.is-checked .shop-line-text { color: #111 !important; text-decoration: none; }
+  .shop-line input[type="checkbox"] {
+    appearance: auto;
+    -webkit-appearance: checkbox;
+    accent-color: #111;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    width: 0.85rem;
+    height: 0.85rem;
+  }
+}
+
 /* Recipe cards without a photo: soft olive tile */
 .book-list a .card-photo-none {
   background: linear-gradient(135deg, rgba(79,100,60,0.35), rgba(79,100,60,0.08)), var(--bg-inset);

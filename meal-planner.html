@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <title>Plan a Meal — Carroll Lowcountry Table</title>
-  <meta name="description" content="Pick two to four recipes and a time to eat. Plan a Meal builds one timeline so every dish lands on the table together.">
+  <meta name="description" content="Pick two to four recipes and a time to eat. Plan a Meal builds one timeline so every dish lands together, plus a shopping list for the whole meal.">
   <meta property="og:title" content="Plan a Meal — Carroll Lowcountry Table">
   <meta property="og:description" content="One timeline for the whole meal, worked back from when you want to eat.">
   <meta property="og:type" content="website">
@@ -29,7 +29,7 @@
   <main class="page meal-planner" id="main" data-meal-app>
     <div class="meal-hero">
       <h1>Plan a Meal</h1>
-      <p>Pick two to four dishes and the time you want to eat. You get one timeline, worked backward, so the main, the sides, and the salad all land together.</p>
+      <p>Pick two to four dishes and the time you want to eat. You get one timeline, worked backward, so the main, the sides, and the salad all land together. The shopping list under the timeline combines what those dishes need.</p>
     </div>
 
     <section class="meal-card no-print" aria-labelledby="meal-pick-h">
@@ -95,6 +95,29 @@
         <p class="meal-note no-print">Times marked “estimated” had no time in the recipe. Use −1 / +1 or type minutes and the whole plan moves with you.</p>
       </div>
       <div data-meal-plan></div>
+    </section>
+
+    <section class="meal-card meal-shop" id="shopping-list" aria-labelledby="meal-shop-h" data-meal-shop hidden>
+      <div class="meal-shop-head">
+        <h2 id="meal-shop-h">Shopping list</h2>
+        <button type="button" class="toolbar-btn no-print" data-shop-toggle aria-expanded="true" aria-controls="shop-panel">Hide list</button>
+      </div>
+      <div id="shop-panel" data-shop-panel>
+        <div class="meal-shop-controls no-print">
+          <div class="meal-shop-view" role="group" aria-label="Shopping list layout">
+            <button type="button" class="toolbar-btn" data-shop-view="dish" aria-pressed="true">By dish</button>
+            <button type="button" class="toolbar-btn" data-shop-view="merged" aria-pressed="false">Merged</button>
+          </div>
+          <div class="recipe-toolbar meal-toolbar" role="toolbar" aria-label="Shopping list actions">
+            <button type="button" class="toolbar-btn" data-action="shop-copy">Copy list</button>
+            <button type="button" class="toolbar-btn" data-action="shop-share">Share list</button>
+            <button type="button" class="toolbar-btn" data-action="shop-clear">Clear ticks</button>
+          </div>
+        </div>
+        <p class="meal-note no-print">Ticks stay on this device. Merged adds identical ingredients only when the unit matches. Copy list is unticked items, one per line, for a grocery app.</p>
+        <p class="meal-status no-print" data-shop-status></p>
+        <div data-shop-list></div>
+      </div>
     </section>
 
     <section class="meal-cook-panel no-print" data-meal-cook hidden aria-label="Cook the meal">
