@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'self';">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <title>Plan a Meal — Carroll Lowcountry Table</title>
+  <meta name="description" content="Pick two to four recipes and a time to eat. Plan a Meal builds one timeline so every dish lands on the table together.">
+  <meta property="og:title" content="Plan a Meal — Carroll Lowcountry Table">
+  <meta property="og:description" content="One timeline for the whole meal, worked back from when you want to eat.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://brandnu76.github.io/recipes/logo.jpg">
+  <meta name="theme-color" content="#120f0d">
+  <meta name="color-scheme" content="dark">
+  <meta name="copyright" content="© 2026 Brandon Carroll">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+</head>
+<body class="meal-page">
+  <header class="site-header">
+    <a class="site-brand" href="index.html"><img class="site-logo" src="logo-mark.webp" width="46" height="46" alt="" decoding="async"><span class="site-brand-text"><span class="site-brand-name">Carroll</span><span class="site-brand-sub">Lowcountry Table</span></span></a>
+    <a class="site-nav" href="recipes.html">All recipes</a>
+  </header>
+  <main class="page meal-planner" id="main" data-meal-app>
+    <div class="meal-hero">
+      <h1>Plan a Meal</h1>
+      <p>Pick two to four dishes and the time you want to eat. You get one timeline, worked backward, so the main, the sides, and the salad all land together.</p>
+    </div>
+
+    <section class="meal-card no-print" aria-labelledby="meal-pick-h">
+      <h2 id="meal-pick-h">1. Pick your dishes <span class="meal-count" data-meal-count></span></h2>
+      <ul class="meal-dishes" data-meal-dishes aria-label="Dishes in this meal"></ul>
+      <label for="meal-search">Add a recipe</label>
+      <input id="meal-search" type="search" placeholder="Try chicken, salad, cornbread…" autocomplete="off" data-meal-search>
+      <ul class="meal-results" data-meal-results aria-label="Matching recipes"></ul>
+      <p class="meal-note">Tip: tap <strong>+ Add to meal</strong> on any recipe page and it shows up here.</p>
+    </section>
+
+    <section class="meal-card no-print" aria-labelledby="meal-time-h">
+      <h2 id="meal-time-h">2. When do you want to eat?</h2>
+      <label for="meal-eat">Eat at</label>
+      <input id="meal-eat" type="time" value="18:30" data-meal-eat>
+    </section>
+
+    <section class="meal-card meal-output" aria-labelledby="meal-plan-h">
+      <h2 id="meal-plan-h">3. Your timeline</h2>
+      <p class="meal-status" data-meal-status></p>
+      <p class="meal-empty" data-meal-empty>Add at least one recipe to build a timeline.</p>
+      <div data-meal-tools hidden>
+        <p class="meal-summary" data-meal-summary></p>
+        <div class="recipe-toolbar meal-toolbar no-print" role="toolbar" aria-label="Meal plan actions">
+          <button type="button" class="toolbar-btn meal-cook-btn" data-action="meal-cook">Cook the meal</button>
+          <button type="button" class="toolbar-btn" data-action="meal-share">Share</button>
+          <button type="button" class="toolbar-btn" data-action="meal-print">Print</button>
+          <button type="button" class="toolbar-btn" data-action="meal-reset">Undo my edits</button>
+          <button type="button" class="toolbar-btn" data-action="meal-clear">Clear meal</button>
+        </div>
+        <p class="meal-note no-print">Times marked “estimated” had no time in the recipe. Use −1 / +1 or type minutes and the whole plan moves with you.</p>
+      </div>
+      <div data-meal-plan></div>
+    </section>
+
+    <section class="meal-cook-panel no-print" data-meal-cook hidden aria-label="Cook the meal">
+      <div class="meal-cook-head">
+        <p class="meal-cook-clock" data-cook-clock aria-hidden="true"></p>
+        <button type="button" class="toolbar-btn" data-action="cook-exit">Exit</button>
+      </div>
+      <div class="cook-card" data-cook-now>
+        <p class="cook-card-label">Now <span class="cook-card-time"></span></p>
+        <p class="cook-card-dish"></p>
+        <p class="cook-card-text"></p>
+      </div>
+      <button type="button" class="toolbar-btn meal-done-btn" data-action="cook-done">Done, next</button>
+      <div class="cook-card" data-cook-next>
+        <p class="cook-card-label">Next <span class="cook-card-time"></span> <span class="cook-card-in" data-cook-in></span></p>
+        <p class="cook-card-dish"></p>
+        <p class="cook-card-text"></p>
+      </div>
+      <progress class="meal-progress" data-cook-progress max="1" value="0" aria-labelledby="meal-prog-label"></progress>
+      <p id="meal-prog-label" class="meal-note" data-cook-progress-label></p>
+      <div class="meal-cook-opts">
+        <label><input type="checkbox" data-cook-sound checked> Chime</label>
+        <button type="button" class="toolbar-btn" data-action="cook-notify">Turn on notifications</button>
+      </div>
+      <p class="meal-note">Alerts only work while this page is open. Keep the screen on and the tab in front; the page asks your phone to stay awake.</p>
+    </section>
+    <p class="visually-hidden" role="status" aria-live="polite" data-live></p>
+  </main>
+  <footer class="site-footer">
+    <p class="footer-copy">© 2026 Brandon Carroll. All rights reserved.</p>
+    <p class="footer-links"><a href="copyright.html">Copyright &amp; use</a> · Carroll Lowcountry Table</p>
+  </footer>
+  <script src="site.js" defer></script>
+  <script src="meal-planner.js" defer></script>
+</body>
+</html>

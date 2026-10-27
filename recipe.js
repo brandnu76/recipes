@@ -220,6 +220,64 @@
     else toolbar.appendChild(saveBtn);
   }
 
+  // --- Plan a Meal: "+ Add to meal" + floating tray (meal-planner.html) ---
+  // Slugs live in localStorage under clt:meal, same device-only rules as Save.
+  const MEAL_KEY = "clt:meal";
+  const MEAL_MAX = 4;
+  const readMeal = () => {
+    const v = store.get(MEAL_KEY);
+    return Array.isArray(v) ? v.filter((s) => typeof s === "string").slice(0, MEAL_MAX) : [];
+  };
+  if (slug && toolbar) {
+    const mealBtn = document.createElement("button");
+    mealBtn.type = "button";
+    mealBtn.className = "toolbar-btn meal-btn";
+    mealBtn.setAttribute("data-action", "add-to-meal");
+    const tray = document.createElement("a");
+    tray.className = "meal-tray";
+    tray.href = "meal-planner.html";
+    const trayCount = document.createElement("span");
+    trayCount.className = "meal-tray-count";
+    trayCount.setAttribute("aria-hidden", "true");
+    const trayLabel = document.createElement("span");
+    trayLabel.textContent = "Plan meal";
+    tray.appendChild(trayCount);
+    tray.appendChild(trayLabel);
+    document.body.appendChild(tray);
+    const paintMeal = () => {
+      const list = readMeal();
+      const on = list.indexOf(slug) !== -1;
+      mealBtn.setAttribute("aria-pressed", on ? "true" : "false");
+      mealBtn.classList.toggle("is-in-meal", on);
+      mealBtn.textContent = on ? "\u2713 In meal" : "+ Add to meal";
+      mealBtn.title = on ? "In your meal plan. Tap to remove." : "Add to a multi-dish meal plan";
+      trayCount.textContent = String(list.length);
+      tray.hidden = list.length === 0;
+      tray.setAttribute("aria-label", "Plan a Meal, " + list.length + (list.length === 1 ? " dish" : " dishes"));
+    };
+    paintMeal();
+    mealBtn.addEventListener("click", () => {
+      const list = readMeal();
+      const idx = list.indexOf(slug);
+      if (idx === -1 && list.length >= MEAL_MAX) {
+        announceStatus("A meal holds up to " + MEAL_MAX + " dishes. Remove one in Plan a Meal first.");
+        return;
+      }
+      if (idx === -1) list.push(slug);
+      else list.splice(idx, 1);
+      if (!store.set(MEAL_KEY, list)) {
+        announceStatus("Meal planning isn't available in this browser mode");
+        return;
+      }
+      paintMeal();
+      announceStatus(idx === -1 ? "Added to your meal. " + list.length + " of " + MEAL_MAX + " dishes." : "Removed from your meal");
+    });
+    window.addEventListener("storage", (e) => { if (e.key === MEAL_KEY) paintMeal(); });
+    const saveRef = toolbar.querySelector("[data-action='save']");
+    if (saveRef && saveRef.nextSibling) toolbar.insertBefore(mealBtn, saveRef.nextSibling);
+    else toolbar.appendChild(mealBtn);
+  }
+
   // Progress is keyed by list position, not text, so the servings scaler
   // rewriting quantities never orphans a check.
   if (slug && (ingredients.length || steps.length)) {

@@ -1794,3 +1794,94 @@ body.cook-mode .my-notes { display: none; }
     line-height: 1.4;
   }
 }
+
+/* ---------- Plan a Meal (meal-planner.html) + Add to meal ---------- */
+.dish-c0 { --dish: #7a9160; }
+.dish-c1 { --dish: #d39b5b; }
+.dish-c2 { --dish: #6fa3b5; }
+.dish-c3 { --dish: #c47a8a; }
+.meal-planner { max-width: var(--max); margin: 0 auto; padding: 1.25rem 1rem 3rem; }
+.meal-hero h1 { font-family: var(--font-display); font-size: clamp(2rem, 6vw, 2.8rem); margin: 0.5rem 0 0.4rem; }
+.meal-hero p { color: var(--cream-muted); margin: 0 0 1.2rem; line-height: 1.5; }
+.meal-card { background: var(--bg-raised); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem 1.1rem 1.2rem; margin: 0 0 1rem; }
+.meal-card h2, .meal-planner section h2 { font-family: var(--font-display); font-size: 1.25rem; margin: 0 0 0.75rem; }
+.meal-count { font-family: var(--font-body); font-size: 0.85rem; color: var(--cream-muted); font-weight: 400; margin-left: 0.4rem; }
+.meal-planner label { display: block; font-weight: 600; margin: 0.6rem 0 0.35rem; }
+.meal-planner input[type="search"], .meal-planner input[type="time"] {
+  width: 100%; max-width: 28rem; min-height: 2.75rem; padding: 0.55rem 0.8rem; font: inherit; color: var(--cream);
+  background: var(--bg-inset); border: 1px solid var(--line-strong); border-radius: 10px;
+}
+.meal-planner input[type="time"] { max-width: 12rem; font-size: 1.15rem; }
+.meal-planner input:focus-visible, .meal-planner button:focus-visible { outline: 2px solid var(--fire-soft); outline-offset: 2px; }
+.meal-dishes, .meal-results, .meal-steps, .meal-conflicts ul { list-style: none; margin: 0; padding: 0; }
+.meal-dish { display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem 0.7rem; padding: 0.65rem 0.75rem; margin: 0 0 0.5rem; border: 1px solid var(--line); border-left: 4px solid var(--dish); border-radius: 12px; background: var(--bg-inset); }
+.dish-swatch { width: 0.8rem; height: 0.8rem; border-radius: 50%; background: var(--dish); flex: none; }
+.meal-dish-name { font-weight: 700; color: var(--cream); flex: 1 1 12rem; }
+.meal-dish-meta, .meal-dish-err { font-size: 0.85rem; color: var(--cream-muted); flex-basis: 100%; }
+.meal-dish-err { color: #e0a070; }
+.meal-offset { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.85rem; color: var(--cream-muted); }
+.meal-results li { margin: 0.35rem 0; }
+.meal-pick { width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 0.1rem 0.6rem; text-align: left; padding: 0.6rem 0.75rem; min-height: 2.75rem; font: inherit; color: var(--cream); background: var(--bg-inset); border: 1px solid var(--line); border-radius: 10px; cursor: pointer; }
+.meal-pick .card-cat { grid-column: 1; font-size: 0.72rem; }
+.meal-pick-title { grid-column: 1; font-weight: 600; }
+.meal-pick-add { grid-column: 2; grid-row: 1 / span 2; align-self: center; color: var(--fire-soft); font-weight: 700; }
+.meal-pick:disabled { opacity: 0.55; cursor: default; }
+.meal-pick:not(:disabled):hover { border-color: var(--fire-soft); }
+.meal-note, .meal-status, .meal-empty { color: var(--cream-muted); font-size: 0.9rem; line-height: 1.45; }
+.meal-summary { font-size: 1.05rem; font-weight: 600; }
+.meal-toolbar { margin: 0.6rem 0; }
+.meal-cook-btn { background: var(--fire); color: var(--cream); border-color: var(--fire-soft); font-weight: 700; }
+.meal-mini { min-width: 2.75rem; min-height: 2.75rem; padding: 0.2rem 0.5rem; }
+.meal-conflicts { margin: 0 0 1.2rem; padding: 0.9rem 1rem; border-radius: 12px; border: 1px solid rgba(224, 160, 112, 0.5); background: rgba(224, 160, 112, 0.08); }
+.meal-conflict { margin: 0 0 0.6rem; line-height: 1.45; display: flex; flex-direction: column; gap: 0.4rem; align-items: flex-start; }
+.meal-conflict.is-conflict::before { content: "Clash"; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #e0a070; }
+.meal-conflict.is-warning::before { content: "Busy hands"; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--cream-muted); }
+.meal-ahead, .meal-timeline { margin: 0 0 1.2rem; }
+.meal-step { display: grid; grid-template-columns: 4.6rem 1fr; gap: 0.2rem 0.75rem; padding: 0.7rem 0.4rem 0.7rem 0.75rem; border-left: 4px solid var(--dish, var(--fire)); border-bottom: 1px solid var(--line); }
+.meal-ahead .meal-step { grid-template-columns: 1fr; }
+.meal-time { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--cream); padding-top: 0.15rem; }
+.meal-step-body { min-width: 0; }
+.dish-tag { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; color: #14110e; background: var(--dish, var(--fire-soft)); border-radius: 999px; padding: 0.1rem 0.55rem; margin-bottom: 0.25rem; }
+.meal-step-text { margin: 0.1rem 0; line-height: 1.45; }
+.meal-step-meta { margin: 0.15rem 0 0; font-size: 0.82rem; color: var(--cream-muted); }
+.meal-step.is-background .meal-step-text { font-style: italic; }
+.meal-nudge { grid-column: 2; display: flex; align-items: center; gap: 0.35rem; margin-top: 0.3rem; }
+.meal-ahead .meal-nudge { grid-column: 1; }
+.meal-min-input { width: 4.2rem; min-height: 2.75rem; font: inherit; text-align: center; color: var(--cream); background: var(--bg-inset); border: 1px solid var(--line-strong); border-radius: 8px; }
+.meal-min-unit { font-size: 0.85rem; color: var(--cream-muted); }
+.meal-eat { border-left-color: var(--fire-soft); }
+.meal-eat .meal-step-text { font-weight: 700; }
+.meal-cook-panel { position: fixed; inset: 0; z-index: 60; overflow-y: auto; background: var(--bg); padding: 1rem 1rem 2rem; display: flex; flex-direction: column; gap: 0.9rem; max-width: 40rem; margin: 0 auto; }
+.meal-cook-panel[hidden] { display: none; }
+body.meal-cooking { overflow: hidden; }
+.meal-cook-head { display: flex; justify-content: space-between; align-items: center; }
+.meal-cook-clock { font-family: var(--font-display); font-size: clamp(2.2rem, 10vw, 3.4rem); margin: 0; font-variant-numeric: tabular-nums; }
+.cook-card { border: 1px solid var(--line); border-left: 6px solid var(--dish, var(--line-strong)); border-radius: var(--radius); padding: 0.9rem 1rem; background: var(--bg-raised); }
+[data-cook-now].cook-card { min-height: 9rem; }
+.cook-card-label { margin: 0; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--cream-muted); }
+.cook-card-dish { margin: 0.3rem 0 0.2rem; font-weight: 700; color: var(--dish, var(--cream)); }
+.cook-card-text { margin: 0; font-size: 1.15rem; line-height: 1.5; }
+[data-cook-next] .cook-card-text { font-size: 1rem; color: var(--cream-muted); }
+.meal-done-btn { min-height: 3.25rem; font-size: 1.1rem; font-weight: 700; background: var(--fire); color: var(--cream); }
+.meal-progress { width: 100%; height: 0.7rem; accent-color: var(--fire-soft); }
+.meal-cook-opts { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+.meal-cook-opts label { display: inline-flex; gap: 0.4rem; align-items: center; margin: 0; }
+.splash-btn-meal, .book-hero .meal-link { display: inline-block; }
+.book-hero .meal-link { margin: 0.2rem 0 0.8rem; color: var(--fire-soft); font-weight: 700; }
+.meal-btn.is-in-meal { border-color: var(--fire-soft); color: var(--cream); }
+.meal-tray { position: fixed; right: 1rem; bottom: 1rem; z-index: 45; display: inline-flex; align-items: center; gap: 0.45rem; min-height: 2.75rem; padding: 0.55rem 1rem; border-radius: 999px; background: var(--fire); color: var(--cream); font-weight: 700; text-decoration: none; box-shadow: var(--shadow); border: 1px solid var(--fire-soft); }
+.meal-tray[hidden] { display: none; }
+.meal-tray-count { display: inline-grid; place-items: center; min-width: 1.5rem; height: 1.5rem; border-radius: 999px; background: var(--cream); color: #14110e; font-size: 0.85rem; }
+body.cook-mode .meal-tray { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .meal-tray, .meal-pick { transition: none; }
+}
+@media print {
+  .meal-tray, .meal-cook-panel, .meal-planner .no-print, .meal-nudge { display: none !important; }
+  .meal-planner { max-width: none; padding: 0; }
+  .meal-card { border: 0; padding: 0; background: #fff; }
+  .meal-step { border-left: 3px solid #555; border-bottom: 1px solid #ccc; break-inside: avoid; padding: 0.3rem 0.5rem; }
+  .dish-tag { background: none; color: #000; border: 1px solid #555; }
+  .meal-conflicts { background: #fff; border: 1px solid #999; }
+  .meal-step-meta, .meal-note { color: #444; }
+}
