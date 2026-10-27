@@ -2086,3 +2086,13 @@ img.shop-card-photo { width: 100%; height: auto; object-fit: cover; }
 
 /* Shop: no-CSS fallback separators, hidden when styles load (v38) */
 .shop-sep { display: none; }
+
+/* AI-generated hero note */
+.recipe-hero .hero-ai-note {
+  padding: .35rem .75rem;
+  font-size: .72rem;
+  line-height: 1.3;
+  color: var(--cream-muted, #9a8f84);
+  opacity: .8;
+  text-align: right;
+}
