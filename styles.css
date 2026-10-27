@@ -1931,3 +1931,10 @@ body.cook-mode .meal-tray { display: none; }
   .meal-kitchen-summary { color: #333; }
   .meal-retime-banner { background: #fff; border: 1px solid #555; color: #000; }
 }
+
+/* Recipe cards without a photo: soft olive tile */
+.book-list a .card-photo-none {
+  background: linear-gradient(135deg, rgba(79,100,60,0.35), rgba(79,100,60,0.08)), var(--bg-inset);
+}
+.adapted-from { font-size: 0.92rem; color: var(--cream-muted); margin-top: -0.25rem; }
+.adapted-from a { color: inherit; text-decoration: underline; }

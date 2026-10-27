@@ -27,6 +27,8 @@ Import URL pattern after GitHub Pages:
 
 ## Weekday dinners
 
+- [Cajun Sausage and Rice Skillet](cajun-sausage-rice-skillet.html)
+- [Sheet-Pan Sausage with Potatoes and Green Beans](sheet-pan-sausage-potatoes-green-beans.html)
 - [Crispy Skillet Chicken Alfredo with Ziti](crispy-skillet-chicken-alfredo-ziti.html)
 - [Sheet-Pan Lemon-Garlic Chicken and Vegetables](sheet-pan-lemon-garlic-chicken.html)
 - [Skillet Creamy Tuscan Chicken](skillet-creamy-tuscan-chicken.html)
@@ -52,6 +54,8 @@ Import URL pattern after GitHub Pages:
 
 ## Sides & salads
 
+- [Crispy Brussels Sprouts with Soy-Ginger Glaze](crispy-brussels-sprouts-soy-ginger-glaze.html)
+- [Crispy Garlic Butter Parmesan Smashed Potatoes](crispy-garlic-butter-parmesan-smashed-potatoes.html)
 - [Classic Caesar Salad with Garlic Parmesan Croutons](classic-caesar-salad-garlic-croutons.html)
 - [Garden Salad](garden-salad.html)
 - [Antipasto Pasta Salad](antipasto-pasta-salad.html)
