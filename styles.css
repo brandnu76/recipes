@@ -1938,3 +1938,31 @@ body.cook-mode .meal-tray { display: none; }
 }
 .adapted-from { font-size: 0.92rem; color: var(--cream-muted); margin-top: -0.25rem; }
 .adapted-from a { color: inherit; text-decoration: underline; }
+
+/* ===== shop-* : Lowcountry Table Bakery (hidden draft) ===== */
+.shop-hero h1 { font-family: var(--font-display); margin: 0.2rem 0 0.5rem; }
+.shop-kicker { text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.78rem; font-weight: 700; color: var(--fire-soft); margin: 0; }
+.shop-soon { display: inline-block; padding: 0.45rem 0.8rem; border-radius: 999px; background: rgba(122,145,96,0.18); border: 1px solid var(--fire-soft); font-weight: 700; color: var(--cream); }
+.shop-disclosure { margin: 1.25rem 0; padding: 1rem 1.1rem; border-radius: var(--radius); border: 1px solid var(--line-strong); background: var(--bg-raised); }
+.shop-disclosure h2 { margin-top: 0; font-size: 1.15rem; }
+.shop-disclosure p { margin: 0.35rem 0; }
+.shop-caps { text-transform: uppercase; font-weight: 700; letter-spacing: 0.03em; font-size: 0.9rem; }
+.shop-disclosure-short { font-size: 0.92rem; }
+.shop-disclosure a { color: inherit; text-decoration: underline; }
+.shop-grid { list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); }
+.shop-card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-raised); overflow: hidden; display: flex; flex-direction: column; }
+.shop-card-photo { display: block; aspect-ratio: 4 / 3; background: linear-gradient(135deg, rgba(79,100,60,0.35), rgba(79,100,60,0.08)), var(--bg-inset); }
+.shop-card-body { padding: 0.9rem 1rem 1.1rem; display: flex; flex-direction: column; gap: 0.35rem; flex: 1; }
+.shop-card h3 { font-family: var(--font-display); margin: 0; font-size: 1.15rem; }
+.shop-card p { margin: 0; font-size: 0.93rem; }
+.shop-size, .shop-shelf { color: var(--cream-muted); }
+.shop-price { font-weight: 700; color: var(--fire-soft); }
+.shop-request { margin-top: auto; align-self: flex-start; text-decoration: none; }
+.shop-info ol { padding-left: 1.2rem; }
+.shop-info li { margin: 0.4rem 0; }
+.shop-form { display: grid; gap: 0.45rem; margin-top: 1rem; }
+.shop-form input[type="text"], .shop-form input[type="tel"], .shop-form input[type="email"], .shop-form input[type="date"], .shop-form input[type="number"], .shop-form textarea { width: 100%; padding: 0.6rem 0.7rem; border-radius: 10px; border: 1px solid var(--line-strong); background: var(--bg-inset); color: var(--cream); font: inherit; }
+.shop-items { border: 1px solid var(--line); border-radius: 12px; padding: 0.6rem 0.9rem; }
+.shop-qty-row { display: grid; grid-template-columns: 1fr 5rem; align-items: center; gap: 0.6rem; padding: 0.3rem 0; }
+.shop-qty-row.is-picked label { color: var(--fire-soft); font-weight: 700; }
+.shop-submit[disabled] { opacity: 0.55; cursor: not-allowed; }

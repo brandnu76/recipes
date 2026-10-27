@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://formspree.io; base-uri 'self'; form-action 'self' https://formspree.io;">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <title>Request an order — Lowcountry Table Bakery</title>
+  <meta name="description" content="Send an order request to Lowcountry Table Bakery for weekend pickup in Ludowici, Georgia.">
+  <meta name="theme-color" content="#120f0d">
+  <meta name="color-scheme" content="dark">
+  <meta name="copyright" content="© 2026 Brandon Carroll">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+</head>
+<body class="shop-page">
+  <!-- DRAFT: hidden shop. Do not link from nav, index, category pages, sitemap, or search-index.json until launch. -->
+  <header class="site-header">
+    <a class="site-brand" href="index.html"><img class="site-logo" src="logo-mark.webp" width="46" height="46" alt="" decoding="async"><span class="site-brand-text"><span class="site-brand-name">Carroll</span><span class="site-brand-sub">Lowcountry Table</span></span></a>
+    <a class="site-nav" href="recipes.html">All recipes</a>
+  </header>
+  <main class="page shop shop-order" id="main">
+    <div class="shop-hero">
+      <p class="shop-kicker">Lowcountry Table Bakery</p>
+      <h1>Request an order</h1>
+      <p>This sends a request. I'll confirm by email or text, share the pickup spot in Ludowici, and then you pay by Zelle.</p>
+    </div>
+    <aside class="shop-disclosure shop-disclosure-short" aria-label="Cottage food disclosure">
+      <p><strong>This product was produced at a residential property that is exempt from state inspection. This product may contain allergens.</strong></p>
+      <p class="shop-caps">MADE IN A COTTAGE FOOD OPERATION THAT IS NOT SUBJECT TO STATE FOOD SAFETY INSPECTIONS</p>
+      <p>Lowcountry Table Bakery · Ludowici, GA. Home kitchen also handles common allergens. <a href="shop.html#disclosure">Full disclosure and ingredients</a></p>
+    </aside>
+    <p class="shop-soon" role="note">Coming soon, ordering opens shortly.</p>
+    <!-- TODO(formspree): replace YOUR_FORM_ID below with the real Formspree form ID once Brandon creates the bakery order email,
+         then remove the disabled attribute from the submit button and the "Coming soon" notes. -->
+    <form class="shop-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" data-shop-form>
+      <input type="hidden" name="_subject" value="Lowcountry Table Bakery order request">
+      <label for="o-name">Name</label>
+      <input id="o-name" name="name" type="text" autocomplete="name" required>
+      <label for="o-phone">Phone</label>
+      <input id="o-phone" name="phone" type="tel" autocomplete="tel" required>
+      <label for="o-email">Email</label>
+      <input id="o-email" name="email" type="email" autocomplete="email" required>
+      <fieldset class="shop-items">
+        <legend>Items and quantities</legend>
+          <div class="shop-qty-row"><label for="qty-skillet-cookie">Brown Butter Chocolate Chip Skillet Cookie</label><input id="qty-skillet-cookie" name="qty_skillet-cookie" type="number" min="0" max="6" value="0" inputmode="numeric" data-item="skillet-cookie"></div>
+          <div class="shop-qty-row"><label for="qty-apple-crumble">Apple Crumble</label><input id="qty-apple-crumble" name="qty_apple-crumble" type="number" min="0" max="6" value="0" inputmode="numeric" data-item="apple-crumble"></div>
+          <div class="shop-qty-row"><label for="qty-peach-crumble">Peach Crumble</label><input id="qty-peach-crumble" name="qty_peach-crumble" type="number" min="0" max="6" value="0" inputmode="numeric" data-item="peach-crumble"></div>
+          <div class="shop-qty-row"><label for="qty-blueberry-crumble">Blueberry Crumble</label><input id="qty-blueberry-crumble" name="qty_blueberry-crumble" type="number" min="0" max="6" value="0" inputmode="numeric" data-item="blueberry-crumble"></div>
+      </fieldset>
+      <label for="o-date">Pickup date (Saturday or Sunday)</label>
+      <input id="o-date" name="pickup_date" type="date" required data-weekend-date>
+      <p class="meal-note" data-date-msg aria-live="polite"></p>
+      <label for="o-allergy">Allergy notes</label>
+      <textarea id="o-allergy" name="allergy_notes" rows="3" placeholder="Anything I should know?"></textarea>
+      <label class="meal-inline"><input type="checkbox" name="ack_request" required> I understand this is a request, not a confirmed order</label>
+      <label class="meal-inline"><input type="checkbox" name="ack_disclosure" required> I read the cottage food disclosure</label>
+      <button type="submit" class="toolbar-btn shop-submit" disabled aria-disabled="true">Send request</button>
+      <p class="meal-note">Coming soon, ordering opens shortly. Payment is by Zelle, only after I confirm.</p>
+    </form>
+  </main>
+  <footer class="site-footer">
+    <p class="footer-copy">© 2026 Brandon Carroll. All rights reserved.</p>
+    <p class="footer-links"><a href="copyright.html">Copyright &amp; use</a> · Carroll Lowcountry Table</p>
+  </footer>
+  <script src="site.js" defer></script>
+  <script src="shop.js" defer></script>
+</body>
+</html>
