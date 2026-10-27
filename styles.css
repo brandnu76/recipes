@@ -2004,3 +2004,7 @@ img.shop-card-photo { width: 100%; height: auto; object-fit: cover; }
 .shop-disclosure { scroll-margin-top: 1rem; }
 .shop-items-h { font-size: 0.95rem; margin: 0.8rem 0 0.2rem; color: var(--fire-soft); }
 .shop-items-h:first-of-type { margin-top: 0.2rem; }
+/* shop v2 fix: jump chips stick below the sticky site header */
+.shop-page .shop-jump { top: var(--header-h, 4.5rem); }
+.shop-page .shop-section { scroll-margin-top: calc(var(--header-h, 4.5rem) + 3.6rem); }
+.shop-page .shop-disclosure { scroll-margin-top: calc(var(--header-h, 4.5rem) + 3.6rem); }
