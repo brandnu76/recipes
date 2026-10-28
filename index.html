@@ -47,8 +47,39 @@
         <a class="splash-btn splash-btn-meal" href="meal-planner.html">Plan a Meal</a>
         <a class="splash-btn" href="#categories">Categories</a>
       </div>
+      <a class="splash-cue" href="#discover">Find a recipe <span aria-hidden="true">&darr;</span></a>
     </section>
     <div class="splash-below">
+      <section class="discover" id="discover" aria-labelledby="discover-title">
+        <h2 id="discover-title">What are we cooking?</h2>
+        <form class="discover-search" action="recipes.html" method="get" role="search">
+          <label class="visually-hidden" for="discover-q">Search recipes</label>
+          <input id="discover-q" name="q" type="search" placeholder="Shrimp, brisket, cornbread&hellip;" autocomplete="off" enterkeyhint="search">
+          <button type="submit">Search</button>
+        </form>
+        <p class="discover-label">How much time do you have?</p>
+        <ul class="discover-chips" aria-label="Recipes by total time">
+          <li><a href="recipes.html?time=30">30 min or less</a></li>
+          <li><a href="recipes.html?time=60">1 hour or less</a></li>
+          <li><a href="recipes.html?time=slow">Low &amp; slow (3 hr+)</a></li>
+        </ul>
+        <p class="discover-label">Or pick a kind of meal</p>
+        <ul class="discover-chips" aria-label="Recipes by category">
+          <li><a href="recipes.html?cat=weekday-dinners">Weekday dinners</a></li>
+          <li><a href="recipes.html?cat=weekend-dinners">Weekend dinners</a></li>
+          <li><a href="recipes.html?cat=breakfast-and-brunch">Breakfast</a></li>
+          <li><a href="recipes.html?cat=game-day">Game day</a></li>
+          <li><a href="recipes.html?cat=sides-and-salads">Sides</a></li>
+          <li><a href="recipes.html?cat=dessert">Dessert</a></li>
+        </ul>
+        <h3 class="discover-sub">From the table this week</h3>
+        <ul class="featured-list">
+          <li><a class="featured-card" href="one-pot-cajun-shrimp-sausage-pasta.html"><img src="images/one-pot-cajun-shrimp-sausage-pasta.webp" width="480" height="320" alt="" loading="lazy" decoding="async"><span class="featured-text"><span class="card-cat">Weekday &middot; 35 min</span><span class="featured-title">One-Pot Cajun Shrimp and Sausage Pasta</span></span></a></li>
+          <li><a class="featured-card" href="3-2-1-baby-back-ribs.html"><img src="images/3-2-1-baby-back-ribs.webp" width="480" height="320" alt="" loading="lazy" decoding="async"><span class="featured-text"><span class="card-cat">Weekend pit &middot; 6 hr</span><span class="featured-title">3-2-1 Baby Back Ribs with Brown Sugar and Honey Wrap</span></span></a></li>
+          <li><a class="featured-card" href="peach-crumble.html"><img src="images/peach-crumble.webp" width="480" height="320" alt="" loading="lazy" decoding="async"><span class="featured-text"><span class="card-cat">Dessert &middot; 1 hr 36 min</span><span class="featured-title">Peach Crumble</span></span></a></li>
+        </ul>
+        <p class="hero-ai-note discover-ai-note">Photos are AI-generated illustrations; your dish may vary.</p>
+      </section>
       <section class="splash-categories" id="categories" aria-label="Recipe categories">
         <h2>Categories</h2>
         <ul class="book-list splash-cat-list">
