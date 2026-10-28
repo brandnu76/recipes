@@ -1038,9 +1038,20 @@
   function saveState() {
     store.set(PLAN_KEY, state);
     store.set(MEAL_KEY, state.slugs);
-    // Keep a shared link in the address bar in step with edits and re-times,
-    // so a reload mid-cook rebuilds this plan, not the original link.
-    try { if (/[?&]r=/.test(location.search)) history.replaceState(null, "", state.slugs.length ? shareUrl() : location.pathname); } catch (_) {}
+    // The plan lives only in this device's localStorage. Plan state is never
+    // written to the address bar, so a synced tab, bookmark, history entry or
+    // home-screen shortcut can't carry this plan to another device.
+  }
+  // Drop plan params (?r= ?t= ?e= ?o=) from the address bar after a shared link
+  // has been read, so a bookmarked or synced tab doesn't keep re-importing it.
+  function cleanUrl() {
+    try {
+      const q = new URLSearchParams(location.search);
+      if (!q.has("r")) return;
+      ["r", "t", "e", "o"].forEach((k) => q.delete(k));
+      const qs = q.toString();
+      history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "") + location.hash);
+    } catch (_) {}
   }
   function shareUrl() {
     const u = new URL(location.href.replace(/[?#].*$/, ""));
@@ -1915,13 +1926,18 @@
     const saved = store.get(PLAN_KEY);
     const tray = store.get(MEAL_KEY);
     const sameAsSaved = fromUrl && saved && Array.isArray(saved.slugs) && saved.slugs.join(",") === fromUrl.slugs.join(",") && saved.eat === fromUrl.eat;
+    const savedHasPlan = saved && Array.isArray(saved.slugs) && saved.slugs.length;
+    // A shared link replaces this device's own plan only if the cook says so.
+    const takeShared = fromUrl && !sameAsSaved && fromUrl.slugs.length &&
+      (!savedHasPlan || window.confirm("Load this shared plan? It will replace the plan saved on this device."));
+    if (fromUrl) cleanUrl();
     if (sameAsSaved) state = Object.assign(state, saved);
-    else if (fromUrl) state = Object.assign(state, fromUrl);
+    else if (takeShared) state = Object.assign(state, fromUrl);
     else if (saved && Array.isArray(saved.slugs)) state = Object.assign(state, saved, { slugs: Array.isArray(tray) ? tray.slice(0, MAX_DISHES) : saved.slugs });
     else if (Array.isArray(tray)) state.slugs = tray.slice(0, MAX_DISHES);
     state.overrides = state.overrides || {}; state.offsets = state.offsets || {}; state.done = state.done || {};
     if (!state.servings || typeof state.servings !== "object" || Array.isArray(state.servings)) state.servings = {};
-    if (!saved && !fromUrl) state.eat = "18:30";
+    if (!saved && !takeShared) state.eat = "18:30";
     eatInput.value = state.eat.length === 4 ? "0" + state.eat : state.eat;
     state.retimeMode = state.retimeMode === "push" ? "push" : "keep";
     modeInputs.forEach((r) => { r.checked = r.value === state.retimeMode; });
