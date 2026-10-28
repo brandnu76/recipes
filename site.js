@@ -141,8 +141,20 @@ const cltSaved = (function () {
     });
     filterRow.parentNode.insertBefore(timeRow, filterRow.nextSibling);
   }
+  const setTime = (v) => {
+    const chip = timeChips.find((c) => c.getAttribute("data-filter-time") === v);
+    if (!chip) return false;
+    activeTime = v;
+    timeChips.forEach((c) => {
+      const on = c === chip;
+      c.classList.toggle("is-active", on);
+      c.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    return true;
+  };
   const timeChips = timeRow ? Array.from(timeRow.querySelectorAll("[data-filter-time]")) : [];
   let activeTime = "any";
+  let timesLoaded = false;
   const timeOk = (a) => {
     if (activeTime === "any") return true;
     const t = Number(a.dataset.time || 0);
@@ -170,7 +182,7 @@ const cltSaved = (function () {
 
   // Friendly note when the Saved filter has nothing to show.
   let emptyNote = null;
-  const showEmpty = (msg) => {
+  const showEmpty = (msg, withClear) => {
     if (!msg) {
       if (emptyNote) emptyNote.hidden = true;
       return;
@@ -183,6 +195,18 @@ const cltSaved = (function () {
       else if (meta && meta.parentNode) meta.parentNode.appendChild(emptyNote);
     }
     emptyNote.textContent = msg;
+    if (withClear) {
+      const clear = document.createElement("a");
+      clear.href = "recipes.html";
+      clear.className = "clear-filters";
+      clear.textContent = "Clear filters";
+      clear.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        clearAll();
+      });
+      emptyNote.appendChild(document.createTextNode(" "));
+      emptyNote.appendChild(clear);
+    }
     emptyNote.hidden = false;
   };
 
@@ -218,8 +242,12 @@ const cltSaved = (function () {
           ? "None of your saved recipes match that search."
           : "Nothing saved yet. Open a recipe and tap \u2661 Save to keep it here on this device."
       );
+    } else if (!shown && activeTime !== "any" && !timesLoaded) {
+      showEmpty("");
     } else if (!shown && activeTime !== "any") {
-      showEmpty("No recipes fit that time with these filters. Try a longer time or Any time.");
+      showEmpty("No recipes fit that time with these filters. Try a longer time or Any time.", true);
+    } else if (!shown) {
+      showEmpty("No recipes match " + (q ? "\u201c" + (input?.value || "").trim() + "\u201d" : "these filters") + ". Try fewer or different words.", true);
     } else {
       showEmpty("");
     }
@@ -272,24 +300,37 @@ const cltSaved = (function () {
           }
         });
         timeRow.hidden = false;
+        timesLoaded = true;
         update();
       })
       .catch(() => {});
     timeChips.forEach((chip) => {
       chip.setAttribute("aria-pressed", chip.classList.contains("is-active") ? "true" : "false");
       chip.addEventListener("click", () => {
-        activeTime = chip.getAttribute("data-filter-time") || "any";
-        timeChips.forEach((c) => {
-          const on = c === chip;
-          c.classList.toggle("is-active", on);
-          c.setAttribute("aria-pressed", on ? "true" : "false");
-        });
+        setTime(chip.getAttribute("data-filter-time") || "any");
+        syncUrl();
         update();
       });
     });
   }
 
-  input?.addEventListener("input", update);
+  // Keep ?q= / ?time= / ?cat= in the address bar so a filtered view can be
+  // shared or bookmarked (#saved stays a hash, as before).
+  const slugCat = (s) => String(s || "").toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const syncUrl = () => {
+    if (!history.replaceState) return;
+    try {
+      const sp = new URLSearchParams(location.search);
+      const qv = (input?.value || "").trim();
+      if (qv) sp.set("q", qv); else sp.delete("q");
+      if (activeTime !== "any") sp.set("time", activeTime); else sp.delete("time");
+      if (activeCat !== "all" && activeCat !== "saved") sp.set("cat", slugCat(activeCat)); else sp.delete("cat");
+      const qs = sp.toString();
+      history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "") + (activeCat === "saved" ? "#saved" : ""));
+    } catch (_) {}
+  };
+  let clearAll = () => {};
+  input?.addEventListener("input", () => { update(); syncUrl(); });
   const selectChip = (chip) => {
     activeCat = (chip.getAttribute("data-filter-cat") || "all").toLowerCase();
     activeLabel = activeCat === "all" ? "" : chip.textContent.trim();
@@ -305,16 +346,35 @@ const cltSaved = (function () {
     chip.setAttribute("aria-pressed", chip.classList.contains("is-active") ? "true" : "false");
     chip.addEventListener("click", () => {
       selectChip(chip);
-      if (history.replaceState) {
-        const hash = activeCat === "saved" ? "#saved" : "";
-        try { history.replaceState(null, "", location.pathname + location.search + hash); } catch (_) {}
-      }
+      syncUrl();
     });
   });
   document.addEventListener("clt:saved-change", () => {
     savedSet = new Set(cltSaved.read());
     update();
   });
+  clearAll = () => {
+    if (input) input.value = "";
+    setTime("any");
+    const allChip = chips.find((c) => c.getAttribute("data-filter-cat") === "all");
+    if (allChip) selectChip(allChip); else update();
+    syncUrl();
+  };
+  // Apply URL params on load: ?q=, ?time= (any|30|45|60|slow), ?cat=.
+  let params = null;
+  try { params = new URLSearchParams(location.search); } catch (_) {}
+  if (params) {
+    const qp = params.get("q");
+    if (input && qp) input.value = qp;
+    const tp = (params.get("time") || "").toLowerCase();
+    if (tp) setTime(tp);
+    const cp = params.get("cat");
+    if (cp) {
+      const want = slugCat(cp);
+      const c = chips.find((x) => x.getAttribute("data-filter-cat") !== "saved" && slugCat(x.getAttribute("data-filter-cat")) === want);
+      if (c) { activeCat = (c.getAttribute("data-filter-cat") || "all").toLowerCase(); activeLabel = activeCat === "all" ? "" : c.textContent.trim(); chips.forEach((x) => { x.classList.toggle("is-active", x === c); x.setAttribute("aria-pressed", x === c ? "true" : "false"); }); }
+    }
+  }
   const savedChipEl = chips.find((c) => c.getAttribute("data-filter-cat") === "saved");
   if (savedChipEl && location.hash === "#saved") selectChip(savedChipEl);
   else update();
