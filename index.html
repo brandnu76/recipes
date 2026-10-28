@@ -45,10 +45,35 @@
       <div class="splash-actions">
         <a class="splash-btn splash-btn-primary" href="recipes.html">Browse all recipes</a>
         <a class="splash-btn splash-btn-meal" href="meal-planner.html">Plan a Meal</a>
+        <a class="splash-btn" href="#discover">Find your next dish</a>
         <a class="splash-btn" href="#categories">Categories</a>
       </div>
     </section>
     <div class="splash-below">
+      <section class="home-discovery" id="discover" aria-labelledby="discover-title">
+        <h2 id="discover-title">What sounds good?</h2>
+        <p>Find a favorite by dish name or ingredient, or start with the time you have.</p>
+        <form class="home-search search-wrap" action="recipes.html" method="get" role="search">
+          <label for="home-search">Search recipes</label>
+          <div class="home-search-fields">
+            <input id="home-search" type="search" name="q" placeholder="Try shrimp, chicken, or cornbread…">
+            <button class="splash-btn splash-btn-primary" type="submit">Find recipes</button>
+          </div>
+        </form>
+        <nav class="home-quick-links" aria-label="Recipe shortcuts">
+          <a href="recipes.html?time=30">30 minutes or less</a>
+          <a href="recipes.html?time=60">An hour or less</a>
+          <a href="recipes.html?time=slow">Low &amp; slow</a>
+          <a href="category-weekday-dinners.html">Weekday dinners</a>
+          <a href="category-weekend-dinners.html">Weekend dinners</a>
+        </nav>
+        <h3>From our table</h3>
+        <ul class="book-list home-featured">
+          <li><a href="garlic-butter-steak-bites.html"><img class="card-photo" src="images/garlic-butter-steak-bites.webp" width="480" height="320" alt="" loading="lazy" decoding="async"><span class="card-cat">A quick skillet dinner</span><span class="card-title">Garlic Butter Steak Bites</span></a></li>
+          <li><a href="lowcountry-shrimp-and-grits.html"><img class="card-photo" src="images/lowcountry-shrimp-and-grits.webp" width="480" height="320" alt="" loading="lazy" decoding="async"><span class="card-cat">A Lowcountry favorite</span><span class="card-title">Lowcountry Shrimp and Grits</span></a></li>
+          <li><a href="apple-crumble.html"><img class="card-photo" src="images/apple-crumble.webp" width="480" height="320" alt="" loading="lazy" decoding="async"><span class="card-cat">Something sweet to share</span><span class="card-title">Apple Crumble</span></a></li>
+        </ul>
+      </section>
       <section class="splash-categories" id="categories" aria-label="Recipe categories">
         <h2>Categories</h2>
         <ul class="book-list splash-cat-list">

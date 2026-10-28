@@ -142,7 +142,10 @@ const cltSaved = (function () {
     filterRow.parentNode.insertBefore(timeRow, filterRow.nextSibling);
   }
   const timeChips = timeRow ? Array.from(timeRow.querySelectorAll("[data-filter-time]")) : [];
-  let activeTime = "any";
+  const params = new URLSearchParams(location.search);
+  if (input) input.value = params.get("q") || "";
+  const requestedTime = params.get("time");
+  let activeTime = TIME_OPTS.some(([value]) => value === requestedTime) ? requestedTime : "any";
   const timeOk = (a) => {
     if (activeTime === "any") return true;
     const t = Number(a.dataset.time || 0);
@@ -220,6 +223,8 @@ const cltSaved = (function () {
       );
     } else if (!shown && activeTime !== "any") {
       showEmpty("No recipes fit that time with these filters. Try a longer time or Any time.");
+    } else if (!shown && q) {
+      showEmpty("No recipes match that search. Try a dish name, ingredient, or fewer words.");
     } else {
       showEmpty("");
     }
@@ -276,6 +281,7 @@ const cltSaved = (function () {
       })
       .catch(() => {});
     timeChips.forEach((chip) => {
+      chip.classList.toggle("is-active", chip.getAttribute("data-filter-time") === activeTime);
       chip.setAttribute("aria-pressed", chip.classList.contains("is-active") ? "true" : "false");
       chip.addEventListener("click", () => {
         activeTime = chip.getAttribute("data-filter-time") || "any";

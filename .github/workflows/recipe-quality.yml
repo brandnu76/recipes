@@ -1,0 +1,56 @@
+name: Recipe quality
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate recipe catalog and images
+        run: |
+          python3 tools/check_recipe_catalog.py
+          python3 tools/check_recipe_images.py
+      - name: Check JavaScript and planner regressions
+        run: |
+          for file in *.js; do node --check "$file"; done
+          node --test tests/*.test.cjs
+      - name: Test catalog QA failure detection
+        run: python3 -B -m unittest discover -s tests -p 'test_*.py'
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install browser test tools
+        run: |
+          python3 -m pip install -r tests/requirements-browser.txt
+          python3 -m playwright install --with-deps chromium
+      - name: Check desktop and mobile user flows
+        run: |
+          python3 -m http.server 8001 --bind 127.0.0.1 > /tmp/recipe-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          python3 - <<'PY'
+          import time, urllib.request
+          for attempt in range(30):
+              try:
+                  urllib.request.urlopen('http://127.0.0.1:8001/index.html', timeout=1).close()
+                  break
+              except OSError:
+                  time.sleep(0.2)
+          else:
+              raise SystemExit('Local site did not start')
+          PY
+          python3 tests/browser_smoke.py

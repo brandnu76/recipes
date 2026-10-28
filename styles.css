@@ -2120,3 +2120,15 @@ img.shop-card-photo { width: 100%; height: auto; object-fit: cover; }
 }
 .card-time::before { content: "\23F1\FE0E\00A0"; }
 @media print { .time-row { display: none; } }
+
+/* Homepage discovery keeps the brand splash and offers direct recipe entry. */
+.home-discovery { max-width: 70rem; margin: 0 auto; padding: 2rem 1.25rem; scroll-margin-top: 5rem; }
+.home-discovery h2, .home-discovery h3 { font-family: var(--font-display); }
+.home-discovery p { color: var(--cream-muted); }
+.home-search-fields { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.home-search-fields input { flex: 1 1 16rem; min-width: 0; }
+.home-search-fields button { cursor: pointer; font: inherit; }
+.home-quick-links { display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; margin: 1.25rem 0 2rem; }
+.home-quick-links a { color: var(--fire-soft); text-underline-offset: 0.2em; }
+.home-featured { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 640px) { .home-featured { grid-template-columns: 1fr; } }

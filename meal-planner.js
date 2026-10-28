@@ -423,7 +423,7 @@
       events = events.concat(r.events);
       ahead = ahead.concat(r.ahead);
     });
-    events.sort((a, b) => a.start - b.start || (a.background ? -1 : 1) || a.dish.localeCompare(b.dish));
+    events.sort((a, b) => a.start - b.start || Number(!!b.background) - Number(!!a.background) || a.dish.localeCompare(b.dish) || a.idx - b.idx || a.id.localeCompare(b.id));
     const kit = kitchenOf(o.kitchen);
     if (kit.grill === "none" && events.some((e) => e.equip.indexOf("grill") !== -1)) {
       var noGrill = true;

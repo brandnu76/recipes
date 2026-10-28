@@ -152,3 +152,32 @@ Import URL pattern after GitHub Pages:
 ## Legal
 
 © 2026 Brandon Carroll. All rights reserved. See [copyright.html](copyright.html) and [COPYRIGHT.md](COPYRIGHT.md).
+
+## Development and QA
+
+This is a static site; no application dependencies or build step are required.
+Serve the checkout with `python3 -m http.server 8001 --bind 127.0.0.1`.
+Homepage search submits to `recipes.html?q=...`; optional `time` values are
+`30`, `45`, `60`, and `slow` (three hours or more). Unknown values use Any time.
+
+Run the automated content and planner checks from the repository root:
+
+```sh
+python3 -B tools/check_recipe_catalog.py
+python3 tools/check_recipe_images.py
+python3 -B -m unittest discover -s tests -p 'test_*.py'
+for file in *.js; do node --check "$file"; done
+node --test tests/*.test.cjs
+```
+
+Catalog QA checks schema requirements, local links/assets, exact search/time
+index coverage, cooking-time consistency, and category membership. Intentional
+cross-category listings remain supported. Missing canonical URLs are informational.
+
+For browser acceptance checks, install `tests/requirements-browser.txt` into a
+Python virtual environment, run `python3 -m playwright install chromium`, start
+the server above, and run `python3 tests/browser_smoke.py`. Set `CHROMIUM_PATH`
+to use an existing system Chromium, or `BASE_URL` for a different local port.
+The checks exercise mobile and desktop discovery, URL filters, empty states,
+saved recipes, serving controls, and meal-planner persistence. External Google
+fonts are excluded. CI runs these checks on pull requests and pushes to `main`.
