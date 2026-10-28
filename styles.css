@@ -2100,3 +2100,23 @@ img.shop-card-photo { width: 100%; height: auto; object-fit: cover; }
 /* Plan a Meal: full step text always wraps, never clipped (v44) */
 .meal-step-text, .cook-card-text, .meal-ahead li { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; -webkit-line-clamp: unset; max-height: none; }
 @media print { .meal-step-text, .cook-card-text { white-space: normal; overflow: visible; max-height: none; } }
+
+/* Total-time chips and card time tags (All Recipes) */
+.time-row { margin-top: 0.55rem; }
+.time-row[hidden] { display: none; }
+.time-chip { font-size: 0.8rem; }
+.card-time {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.05rem 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--cream-muted);
+  white-space: nowrap;
+}
+.card-time::before { content: "\23F1\FE0E\00A0"; }
+@media print { .time-row { display: none; } }

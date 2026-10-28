@@ -115,6 +115,50 @@ const cltSaved = (function () {
     savedChip.innerHTML = '<span aria-hidden="true">\u2665</span> Saved';
     filterRow.appendChild(savedChip);
   }
+  // Time filter: total time from each recipe's Schema.org totalTime, shipped in
+  // recipe-meta.json (built by tools/build_recipe_meta.py).
+  const TIME_OPTS = [
+    ["any", "Any time"],
+    ["30", "30 min or less"],
+    ["45", "45 min or less"],
+    ["60", "1 hour or less"],
+    ["slow", "Low & slow (3 hr+)"],
+  ];
+  let timeRow = null;
+  if (filterRow && input && !document.querySelector(".time-row")) {
+    timeRow = document.createElement("div");
+    timeRow.className = "filter-row time-row";
+    timeRow.setAttribute("role", "toolbar");
+    timeRow.setAttribute("aria-label", "Filter by total time");
+    timeRow.hidden = true; // shown once times load
+    TIME_OPTS.forEach(([v, label], i) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "filter-chip time-chip" + (i ? "" : " is-active");
+      b.setAttribute("data-filter-time", v);
+      b.textContent = label;
+      timeRow.appendChild(b);
+    });
+    filterRow.parentNode.insertBefore(timeRow, filterRow.nextSibling);
+  }
+  const timeChips = timeRow ? Array.from(timeRow.querySelectorAll("[data-filter-time]")) : [];
+  let activeTime = "any";
+  const timeOk = (a) => {
+    if (activeTime === "any") return true;
+    const t = Number(a.dataset.time || 0);
+    if (!t) return false;
+    return activeTime === "slow" ? t >= 180 : t <= Number(activeTime);
+  };
+  const fmtTime = (m) => {
+    if (m >= 1440) {
+      const d = Math.round(m / 1440);
+      return d + (d === 1 ? " day" : " days");
+    }
+    const h = Math.floor(m / 60);
+    const r = m % 60;
+    return h ? h + " hr" + (r ? " " + r + " min" : "") : r + " min";
+  };
+
   const chips = Array.from(document.querySelectorAll("[data-filter-cat]"));
   if (!input && !chips.length) return;
 
@@ -160,7 +204,7 @@ const cltSaved = (function () {
       const matchQ = !words.length || (phrase ? hay.includes(q) : words.every((w) => hay.includes(w)));
       const matchC =
         activeCat === "all" || (activeCat === "saved" ? savedSet.has(cltSaved.slugOf(a)) : cat === activeCat);
-      const match = matchQ && matchC;
+      const match = matchQ && matchC && timeOk(a);
       a.parentElement.hidden = !match;
       if (match) shown += 1;
     });
@@ -174,12 +218,18 @@ const cltSaved = (function () {
           ? "None of your saved recipes match that search."
           : "Nothing saved yet. Open a recipe and tap \u2661 Save to keep it here on this device."
       );
+    } else if (!shown && activeTime !== "any") {
+      showEmpty("No recipes fit that time with these filters. Try a longer time or Any time.");
     } else {
       showEmpty("");
     }
     if (meta) {
       const bits = [];
       if (activeLabel) bits.push(activeLabel);
+      if (activeTime !== "any") {
+        const tc = timeChips.find((c) => c.getAttribute("data-filter-time") === activeTime);
+        if (tc) bits.push(tc.textContent.trim());
+      }
       if (q) bits.push("\u201c" + (input?.value || "").trim() + "\u201d");
       meta.textContent = bits.length
         ? shown + " recipe" + (shown === 1 ? "" : "s") + " \u00b7 " + bits.join(" \u00b7 ")
@@ -201,6 +251,42 @@ const cltSaved = (function () {
         update();
       })
       .catch(() => {});
+  }
+
+  if (timeRow) {
+    fetch("recipe-meta.json")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((meta) => {
+        if (!meta) return;
+        cards.forEach((a) => {
+          const m = meta[cltSaved.slugOf(a)];
+          if (!m || !m.t) return;
+          a.dataset.time = String(m.t);
+          if (!a.querySelector(".card-time")) {
+            const tag = document.createElement("span");
+            tag.className = "card-time";
+            tag.textContent = fmtTime(m.t);
+            const cat = a.querySelector(".card-cat");
+            if (cat) cat.appendChild(tag);
+            else a.appendChild(tag);
+          }
+        });
+        timeRow.hidden = false;
+        update();
+      })
+      .catch(() => {});
+    timeChips.forEach((chip) => {
+      chip.setAttribute("aria-pressed", chip.classList.contains("is-active") ? "true" : "false");
+      chip.addEventListener("click", () => {
+        activeTime = chip.getAttribute("data-filter-time") || "any";
+        timeChips.forEach((c) => {
+          const on = c === chip;
+          c.classList.toggle("is-active", on);
+          c.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+        update();
+      });
+    });
   }
 
   input?.addEventListener("input", update);
