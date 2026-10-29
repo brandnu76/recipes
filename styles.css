@@ -2193,3 +2193,23 @@ html { scroll-behavior: smooth; }
   .featured-card img { width: 100%; height: auto; aspect-ratio: 3 / 2; border-radius: 0; }
   .featured-text { padding: 0.2rem 0.85rem 0.9rem; }
 }
+
+
+/* More from our table (related recipes, injected by recipe.js) */
+.more-recipes { margin: 2rem 0 0; }
+.more-recipes h2 { margin: 0 0 0.8rem; }
+.more-recipes-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.more-recipes-list a .card-photo { height: 7rem; }
+.more-recipes-list .card-title { font-size: 0.98rem; }
+.more-recipes-list a .card-cat, .more-recipes-list a .card-title { padding-left: 0.8rem; padding-right: 0.8rem; }
+@media (max-width: 640px) {
+  .more-recipes-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.55rem; }
+  .more-recipes-list .card-title { font-size: 0.95rem; }
+  .more-recipes-list .card-cat { font-size: 0.68rem; }
+  .more-recipes-list a { min-height: 0; padding-bottom: 0.7rem; }
+  .more-recipes-list a .card-photo { height: 6.5rem; }
+  .more-recipes-list a .card-cat, .more-recipes-list a .card-title { padding-left: 0.7rem; padding-right: 0.7rem; }
+}
+.more-recipes-all { margin: 0.9rem 0 0; text-align: right; }
+body.cook-mode .more-recipes { display: none; }
+@media print { .more-recipes { display: none !important; } }

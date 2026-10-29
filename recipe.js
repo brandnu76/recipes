@@ -458,6 +458,70 @@
     }
   }
 
+  // --- More from our table: related recipes at the end of the page ---
+  // Built offline by tools/build_related.py (shared ingredients, keywords and
+  // category). Injected by script after the recipe and notes, so AnyList and
+  // Schema.org/hRecipe readers never see it as part of the recipe.
+  if (slug && window.fetch) {
+    fetch("./related.json", { cache: "no-cache" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((all) => {
+        const me = all && all[slug];
+        const picks = me && Array.isArray(me.r) ? me.r.filter((s) => all[s]).slice(0, 4) : [];
+        if (!picks.length || document.getElementById("more-recipes")) return;
+        const sec = document.createElement("section");
+        sec.className = "more-recipes";
+        sec.id = "more-recipes";
+        sec.setAttribute("aria-labelledby", "more-recipes-title");
+        const h = document.createElement("h2");
+        h.id = "more-recipes-title";
+        h.textContent = "More from our table";
+        const ul = document.createElement("ul");
+        ul.className = "book-list more-recipes-list";
+        picks.forEach((s) => {
+          const d = all[s];
+          const li = document.createElement("li");
+          const a = document.createElement("a");
+          a.href = encodeURIComponent(s) + ".html";
+          if (d.i) {
+            const img = document.createElement("img");
+            img.className = "card-photo";
+            img.src = d.i;
+            img.width = 480;
+            img.height = 320;
+            img.alt = "";
+            img.loading = "lazy";
+            img.decoding = "async";
+            a.appendChild(img);
+          }
+          if (d.c) {
+            const c = document.createElement("span");
+            c.className = "card-cat";
+            c.textContent = d.c;
+            a.appendChild(c);
+          }
+          const t = document.createElement("span");
+          t.className = "card-title";
+          t.textContent = d.n || s;
+          a.appendChild(t);
+          li.appendChild(a);
+          ul.appendChild(li);
+        });
+        const all_ = document.createElement("p");
+        all_.className = "more-recipes-all";
+        const link = document.createElement("a");
+        link.href = "recipes.html";
+        link.textContent = "Browse all recipes";
+        all_.appendChild(link);
+        sec.appendChild(h);
+        sec.appendChild(ul);
+        sec.appendChild(all_);
+        const after = document.getElementById("my-notes") || article;
+        if (after.parentNode) after.parentNode.insertBefore(sec, after.nextSibling);
+      })
+      .catch(() => {});
+  }
+
   // --- servings scaler ---
   function parseYield() {
     const el = article.querySelector(".yield, .p-yield, [itemprop='recipeYield']");
