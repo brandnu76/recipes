@@ -2269,3 +2269,16 @@ body.cook-mode .cal-pop { display: none; }
 .cal-app input[type="text"] { max-width: 28rem; }
 .cal-app select { min-width: 9rem; }
 .cal-app .cal-move-date { min-height: 2rem; padding: 0.2rem 0.4rem; font-size: 0.85rem; }
+
+/* Visitor counter (visitor-counter.js) */
+.site-footer .footer-visitors {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--fire, #4f643c);
+  opacity: 0.85;
+}
+body.cook-mode .footer-visitors { display: none; }
+@media print {
+  .footer-visitors { display: none !important; }
+}
