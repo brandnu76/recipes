@@ -16,5 +16,7 @@ jobs:
           node-version: "20"
       - name: Catalog, indexes, JSON-LD, images and links
         run: python3 tools/check_recipe_catalog.py
+      - name: Link-preview and canonical tags
+        run: python3 tools/build_share_meta.py --check
       - name: Plan a Meal regression tests
         run: node --test tests/
