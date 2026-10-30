@@ -14,6 +14,9 @@ Import URL pattern after GitHub Pages:
 
 ## Weekend dinners
 
+- [Red Wine Braised Short Ribs](red-wine-braised-short-ribs.html)
+- [Smoked Spatchcock Chicken with Carolina Gold Sauce and Smashed Red Potatoes](smoked-spatchcock-chicken-carolina-gold.html)
+- [Pellet-Grill Smoked Meatloaf with Buttered Corn](smoked-meatloaf-buttered-corn.html)
 - [Jamaican Oxtail Stew](jamaican-oxtail-stew.html)
 - [Pellet-Grill Reverse-Sear Tri-Tip](pellet-grill-reverse-sear-tri-tip.html)
 - [Keto Slow Cooker Braised Oxtails](keto-slow-cooker-braised-oxtails.html)
@@ -37,6 +40,12 @@ Import URL pattern after GitHub Pages:
 
 ## Weekday dinners
 
+- [Thai Red Curry Chicken over Jasmine Rice](thai-red-curry-chicken.html)
+- [Savannah Red Rice with Crispy Chicken Thighs](savannah-red-rice-crispy-chicken-thighs.html)
+- [Smothered Pork Chops with Onion Gravy](smothered-pork-chops-onion-gravy.html)
+- [Cottage Pie with Cheddar Mashed Potato Top](cheddar-cottage-pie.html)
+- [Sheet-Pan Greek Chicken Thighs with Potatoes and Tzatziki](sheet-pan-greek-chicken-thighs.html)
+- [Blackened Catfish with Skillet Collards and Bacon](blackened-catfish-skillet-collards.html)
 - [Baked Mac and Cheese with Smoked Sausage](baked-mac-and-cheese-smoked-sausage.html)
 - [Easy Chicken and Dumplings](easy-chicken-and-dumplings.html)
 - [Olive Garden-Style Zuppa Toscana](zuppa-toscana.html)
@@ -87,6 +96,7 @@ Import URL pattern after GitHub Pages:
 
 ## Game day
 
+- [Sheet-Pan Beef Nacho Bake](sheet-pan-beef-nacho-bake.html)
 - [Simple, Perfect Chili](simple-perfect-chili.html)
 - [Chili Cheese Dogs](chili-dogs-with-cheese.html)
 - [Ain't No Thing Butta Chicken Wings](aint-no-thing-butta-chicken-wings.html)
