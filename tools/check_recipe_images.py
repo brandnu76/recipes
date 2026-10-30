@@ -20,6 +20,7 @@ NON_RECIPE = {
     "recipes.html",
     "copyright.html",
     "meal-planner.html",
+    "calendar.html",
     "shop.html",
     "shop-order.html",
     "robots.txt",
