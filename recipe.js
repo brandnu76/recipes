@@ -278,6 +278,62 @@
     else toolbar.appendChild(mealBtn);
   }
 
+  // --- Meal calendar: "Add to calendar" (calendar.html) ---
+  // Saved only in this device's localStorage (clt-meal-calendar-v1); never in the URL.
+  // Lives in the toolbar, outside the hRecipe/JSON-LD markup, so AnyList import is unaffected.
+  const CAL_KEY = "clt-meal-calendar-v1";
+  if (slug && toolbar) {
+    const calBtn = document.createElement("button");
+    calBtn.type = "button";
+    calBtn.className = "toolbar-btn cal-btn";
+    calBtn.setAttribute("data-action", "add-to-calendar");
+    calBtn.textContent = "+ Add to calendar";
+    calBtn.title = "Put this recipe on a day in your meal calendar (this device only)";
+    let pop = null;
+    const closePop = () => { if (pop) { pop.remove(); pop = null; calBtn.focus(); } };
+    const pad2 = (n) => String(n).padStart(2, "0");
+    calBtn.addEventListener("click", () => {
+      if (pop) { closePop(); return; }
+      const d = new Date();
+      const todayStr = d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+      pop = document.createElement("div");
+      pop.className = "cal-pop no-print";
+      pop.setAttribute("role", "dialog");
+      pop.setAttribute("aria-label", "Add to meal calendar");
+      pop.innerHTML = '<label for="cal-pop-date">Day</label><input id="cal-pop-date" type="date">' +
+        '<label for="cal-pop-slot">Meal</label><select id="cal-pop-slot"><option>Breakfast</option><option>Lunch</option><option selected>Dinner</option><option>Other</option></select>' +
+        '<div class="cal-pop-actions"><button type="button" class="toolbar-btn" data-cal-save>Add</button><button type="button" class="toolbar-btn" data-cal-close>Cancel</button></div>' +
+        '<p class="cal-pop-done" hidden></p>';
+      pop.querySelector("#cal-pop-date").value = todayStr;
+      pop.addEventListener("keydown", (e) => { if (e.key === "Escape") closePop(); });
+      pop.querySelector("[data-cal-close]").addEventListener("click", closePop);
+      pop.querySelector("[data-cal-save]").addEventListener("click", () => {
+        const date = pop.querySelector("#cal-pop-date").value;
+        const slot = pop.querySelector("#cal-pop-slot").value;
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { pop.querySelector("#cal-pop-date").focus(); return; }
+        const h1 = document.querySelector("h1");
+        const title = (h1 ? h1.textContent : document.title.split(" — ")[0]).trim();
+        const cur = store.get(CAL_KEY);
+        const entries = cur && Array.isArray(cur.entries) ? cur.entries : [];
+        entries.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8), date, slot, slug, title });
+        if (!store.set(CAL_KEY, { v: 1, entries })) { announceStatus("The calendar isn't available in this browser mode"); return; }
+        const nice = new Date(date + "T12:00:00").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+        const done = pop.querySelector(".cal-pop-done");
+        done.textContent = "Added to " + slot.toLowerCase() + " on " + nice + ". ";
+        const a = document.createElement("a"); a.href = "calendar.html"; a.textContent = "Open calendar \u2192";
+        done.appendChild(a); done.hidden = false;
+        pop.querySelector("[data-cal-save]").hidden = true;
+        pop.querySelector("[data-cal-close]").textContent = "Close";
+        announceStatus("Added to your meal calendar");
+      });
+      document.body.appendChild(pop);
+      pop.querySelector("#cal-pop-date").focus();
+    });
+    const mealRef = toolbar.querySelector("[data-action='add-to-meal']");
+    if (mealRef && mealRef.nextSibling) toolbar.insertBefore(calBtn, mealRef.nextSibling);
+    else toolbar.appendChild(calBtn);
+  }
+
   // Progress is keyed by list position, not text, so the servings scaler
   // rewriting quantities never orphans a check.
   if (slug && (ingredients.length || steps.length)) {

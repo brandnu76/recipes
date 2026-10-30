@@ -2213,3 +2213,59 @@ html { scroll-behavior: smooth; }
 .more-recipes-all { margin: 0.9rem 0 0; text-align: right; }
 body.cook-mode .more-recipes { display: none; }
 @media print { .more-recipes { display: none !important; } }
+
+/* ---- Meal calendar (calendar.html) + Add to calendar picker (v51) ---- */
+.cal-device-note { font-size: 0.95rem; color: var(--cream-muted); border-left: 3px solid var(--fire-soft); padding-left: 0.7rem; }
+.cal-nav { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+.cal-nav h2 { flex: 1; text-align: center; margin: 0; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.cal-wd { text-align: center; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--cream-muted); padding: 0.2rem 0; }
+.cal-day { display: flex; flex-direction: column; align-items: stretch; gap: 2px; min-height: 5.6rem; padding: 0.3rem; text-align: left; background: var(--bg-inset); color: var(--cream); border: 1px solid var(--line); border-radius: 8px; font: inherit; cursor: pointer; overflow: hidden; }
+.cal-day:hover, .cal-day:focus-visible { border-color: var(--fire-soft); }
+.cal-day.is-out { opacity: 0.45; }
+.cal-day.is-today .cal-num { background: var(--fire); color: var(--cream); border-radius: 999px; padding: 0 0.4rem; }
+.cal-day.is-selected { border-color: var(--fire-soft); box-shadow: inset 0 0 0 1px var(--fire-soft); }
+.cal-num { align-self: flex-start; font-weight: 700; font-size: 0.85rem; }
+.cal-chip { display: block; font-size: 0.72rem; line-height: 1.25; padding: 1px 4px; border-radius: 4px; background: var(--ember); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cal-chip-breakfast { background: #6b5a2e; }
+.cal-chip-lunch { background: #2e5a5a; }
+.cal-chip-dinner { background: var(--ember); }
+.cal-chip-other { background: #4a3a4a; }
+.cal-more { font-size: 0.7rem; color: var(--cream-muted); }
+.cal-dot { display: none; }
+.cal-moving { background: var(--ember); padding: 0.5rem 0.7rem; border-radius: 8px; }
+.cal-app.is-moving .cal-day { border-style: dashed; }
+.cal-list { list-style: none; padding: 0; margin: 0 0 1rem; }
+.cal-entry { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; padding: 0.55rem 0; border-bottom: 1px solid var(--line); }
+.cal-slot { font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; min-width: 4.8rem; text-align: center; }
+.cal-entry-body { flex: 1 1 12rem; display: flex; flex-direction: column; }
+.cal-entry-date { font-size: 0.8rem; color: var(--cream-muted); }
+.cal-entry-link { color: var(--cream); font-weight: 600; }
+.cal-entry-actions { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
+.cal-move-date { max-width: 9.5rem; }
+.cal-empty { color: var(--cream-muted); padding: 0.4rem 0; }
+.cal-results .cal-result { width: 100%; text-align: left; background: none; border: 0; color: var(--cream); font: inherit; padding: 0.45rem 0.3rem; cursor: pointer; }
+.cal-results .cal-result:hover { background: var(--bg-inset); }
+.cal-note-form { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: end; margin-top: 0.75rem; }
+.cal-note-form label { flex-basis: 100%; }
+.cal-note-form input { flex: 1 1 12rem; }
+@media (max-width: 600px) {
+  .cal-day { min-height: 2.9rem; align-items: center; padding: 0.25rem 0.1rem; }
+  .cal-chip, .cal-more { display: none; }
+  .cal-dot { display: block; width: 6px; height: 6px; border-radius: 999px; background: var(--fire-soft); }
+  .cal-num { align-self: center; }
+}
+.cal-pop { position: fixed; z-index: 60; left: 50%; bottom: 1rem; transform: translateX(-50%); width: min(22rem, calc(100vw - 2rem)); background: var(--bg-raised); color: var(--cream); border: 1px solid var(--line-strong); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1rem; }
+.cal-pop label { display: block; margin: 0.4rem 0 0.2rem; }
+.cal-pop input, .cal-pop select { width: 100%; }
+.cal-pop-actions { display: flex; gap: 0.5rem; margin-top: 0.8rem; flex-wrap: wrap; }
+.cal-pop-done a { color: var(--cream); font-weight: 600; }
+body.cook-mode .cal-pop { display: none; }
+@media print { .cal-pop, .cal-btn, .cal-entry-actions, .cal-note-form, .cal-nav button { display: none !important; } }
+.cal-app input[type="text"], .cal-app input[type="date"], .cal-app select, .cal-pop input, .cal-pop select {
+  min-height: 2.5rem; padding: 0.4rem 0.7rem; font: inherit; color: var(--cream); color-scheme: dark;
+  background: var(--bg-inset); border: 1px solid var(--line-strong); border-radius: 10px;
+}
+.cal-app input[type="text"] { max-width: 28rem; }
+.cal-app select { min-width: 9rem; }
+.cal-app .cal-move-date { min-height: 2rem; padding: 0.2rem 0.4rem; font-size: 0.85rem; }
