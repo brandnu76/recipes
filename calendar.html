@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'self';">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <title>Meal calendar — Carroll Lowcountry Table</title>
+  <meta name="description" content="Put recipes and notes on the days you plan to cook them. Your meal calendar is saved on this device only.">
+  <meta property="og:title" content="Meal calendar — Carroll Lowcountry Table">
+  <meta property="og:description" content="A meal calendar saved on this device only.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://brandnu76.github.io/recipes/logo.jpg">
+  <meta name="theme-color" content="#120f0d">
+  <meta name="color-scheme" content="dark">
+  <meta name="copyright" content="© 2026 Brandon Carroll">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="canonical" href="https://brandnu76.github.io/recipes/calendar.html">
+</head>
+<body class="meal-page cal-page">
+  <header class="site-header">
+    <a class="site-brand" href="index.html"><img class="site-logo" src="logo-mark.webp" width="46" height="46" alt="" decoding="async"><span class="site-brand-text"><span class="site-brand-name">Carroll</span><span class="site-brand-sub">Lowcountry Table</span></span></a>
+    <a class="site-nav" href="recipes.html">All recipes</a>
+  </header>
+  <main class="page meal-planner cal-app" id="main" data-cal-app>
+    <div class="meal-hero">
+      <h1>Meal calendar</h1>
+      <p>Pick a day, then add a recipe or a quick note like &ldquo;Leftovers.&rdquo; Tap <strong>Add to calendar</strong> on any recipe page to drop it on a date.</p>
+      <p class="cal-device-note"><strong>Your calendar is saved on this device only.</strong> It doesn't sync between your phone, tablet and computer, and nothing is sent anywhere.</p>
+    </div>
+    <p class="visually-hidden" role="status" aria-live="polite" data-cal-status></p>
+    <section class="meal-card cal-month" aria-labelledby="cal-title">
+      <div class="cal-nav">
+        <button type="button" class="toolbar-btn" data-cal-prev aria-label="Previous month">&larr;</button>
+        <h2 id="cal-title" data-cal-title></h2>
+        <button type="button" class="toolbar-btn" data-cal-next aria-label="Next month">&rarr;</button>
+        <button type="button" class="toolbar-btn" data-cal-today>Today</button>
+      </div>
+      <p class="cal-moving" data-cal-moving hidden>Tap a day to move the meal there. <button type="button" class="toolbar-btn" data-cal-cancel-move>Cancel</button></p>
+      <div class="cal-grid" data-cal-grid></div>
+    </section>
+    <section class="meal-card cal-day-card" aria-labelledby="cal-day-h">
+      <h2 id="cal-day-h" data-cal-day-title></h2>
+      <ul class="cal-list" data-cal-day-list></ul>
+      <label for="cal-slot">Meal</label>
+      <select id="cal-slot" data-cal-slot>
+        <option>Breakfast</option><option>Lunch</option><option selected>Dinner</option><option>Other</option>
+      </select>
+      <label for="cal-search">Add a recipe</label>
+      <input id="cal-search" type="search" placeholder="Try chicken, ribs, cornbread…" autocomplete="off" data-cal-search>
+      <ul class="meal-results cal-results" data-cal-results aria-label="Matching recipes"></ul>
+      <form class="cal-note-form" data-cal-note-form>
+        <label for="cal-note">Or add a note</label>
+        <input id="cal-note" type="text" maxlength="140" placeholder="Leftovers, eating out…" data-cal-note>
+        <button type="submit" class="toolbar-btn">Add note</button>
+      </form>
+    </section>
+    <section class="meal-card cal-agenda-card" aria-labelledby="cal-agenda-h">
+      <h2 id="cal-agenda-h">Coming up</h2>
+      <ul class="cal-list" data-cal-agenda></ul>
+      <p class="meal-note"><button type="button" class="toolbar-btn" data-cal-ics>Download .ics</button> Saves a copy of your calendar you can open in another calendar app.</p>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <p class="footer-copy">© 2026 Brandon Carroll. All rights reserved.</p>
+    <p class="footer-links"><a href="copyright.html">Copyright &amp; use</a> · Carroll Lowcountry Table</p>
+  </footer>
+  <script src="site.js" defer></script>
+  <script src="meal-calendar.js" defer></script>
+</body>
+</html>
