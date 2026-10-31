@@ -15,6 +15,7 @@ Import URL pattern after GitHub Pages:
 ## Weekend dinners
 
 - [Red Wine Braised Short Ribs](red-wine-braised-short-ribs.html)
+- [Braised Chuck Roast with Red Wine Gravy](braised-chuck-roast.html)
 - [Smoked Spatchcock Chicken with Carolina Gold Sauce and Smashed Red Potatoes](smoked-spatchcock-chicken-carolina-gold.html)
 - [Pellet-Grill Smoked Meatloaf with Buttered Corn](smoked-meatloaf-buttered-corn.html)
 - [Jamaican Oxtail Stew](jamaican-oxtail-stew.html)
@@ -42,6 +43,7 @@ Import URL pattern after GitHub Pages:
 
 - [Thai Red Curry Chicken over Jasmine Rice](thai-red-curry-chicken.html)
 - [Savannah Red Rice with Crispy Chicken Thighs](savannah-red-rice-crispy-chicken-thighs.html)
+- [Cajun Shrimp Skillet over Rice](cajun-shrimp-skillet-over-rice.html)
 - [Smothered Pork Chops with Onion Gravy](smothered-pork-chops-onion-gravy.html)
 - [Cottage Pie with Cheddar Mashed Potato Top](cheddar-cottage-pie.html)
 - [Sheet-Pan Greek Chicken Thighs with Potatoes and Tzatziki](sheet-pan-greek-chicken-thighs.html)
