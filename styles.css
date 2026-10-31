@@ -2282,3 +2282,42 @@ body.cook-mode .footer-visitors { display: none; }
 @media print {
   .footer-visitors { display: none !important; }
 }
+
+/* Shopping list from the Meal calendar (shopping-list.js) */
+.shop-card h3 { margin: 1.1rem 0 0.4rem; font-size: 1rem; color: var(--fire-soft, #9db07f); letter-spacing: 0.04em; text-transform: uppercase; }
+.shop-range, .shop-actions, .shop-custom { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.6rem 0; align-items: center; }
+.shop-range .toolbar-btn[aria-pressed="true"] { background: var(--fire, #4f643c); border-color: var(--fire, #4f643c); color: #fff; }
+.shop-custom label { display: flex; gap: 0.4rem; align-items: center; }
+.shop-custom input[type="date"] { min-height: 2.5rem; padding: 0.3rem 0.6rem; font: inherit; color: var(--cream); color-scheme: dark; background: var(--bg-inset); border: 1px solid var(--line-strong); border-radius: 10px; }
+.shop-toggle { display: flex; gap: 0.5rem; align-items: flex-start; margin: 0.4rem 0; font-size: 0.92rem; }
+.shop-summary { margin: 0.5rem 0 0; opacity: 0.85; }
+.shop-items, .shop-recipe-list { list-style: none; margin: 0; padding: 0; }
+.shop-item { display: grid; grid-template-columns: 1fr auto; gap: 0.15rem 0.6rem; padding: 0.55rem 0; border-bottom: 1px solid var(--line, rgba(255,255,255,0.08)); }
+.shop-check { display: flex; gap: 0.6rem; align-items: flex-start; cursor: pointer; }
+.shop-check input { width: 1.25rem; height: 1.25rem; margin-top: 0.15rem; accent-color: var(--fire, #4f643c); flex: none; }
+.shop-src { grid-column: 1; padding-left: 1.85rem; font-size: 0.8rem; opacity: 0.72; }
+.shop-have { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-size: 0.8rem; }
+.shop-item.is-done .shop-text { text-decoration: line-through; opacity: 0.55; }
+.shop-recipe-list li { display: flex; flex-wrap: wrap; gap: 0.2rem 0.6rem; align-items: baseline; padding: 0.35rem 0; }
+.shop-hint { font-size: 0.78rem; opacity: 0.6; }
+.shop-pantry { margin-top: 1rem; }
+.shop-pantry li { display: flex; justify-content: space-between; gap: 0.5rem; align-items: center; padding: 0.3rem 0; }
+@media (max-width: 600px) {
+  .shop-range .toolbar-btn, .shop-actions .toolbar-btn { flex: 1 1 auto; }
+  .shop-custom label { flex: 1 1 45%; }
+  .shop-custom input[type="date"] { width: 100%; }
+  .shop-item { grid-template-columns: 1fr; }
+  .shop-have { grid-column: 1; grid-row: auto; justify-self: start; margin-left: 1.85rem; }
+  .shop-hint { display: none; }
+}
+@media print {
+  body.print-shoplist .site-header, body.print-shoplist .site-footer, body.print-shoplist .meal-hero,
+  body.print-shoplist .cal-month, body.print-shoplist .cal-day-card, body.print-shoplist .cal-agenda-card,
+  body.print-shoplist .shop-range, body.print-shoplist .shop-custom, body.print-shoplist .shop-toggle, body.print-shoplist .shop-actions,
+  body.print-shoplist .shop-have, body.print-shoplist .shop-hint, body.print-shoplist .shop-pantry, body.print-shoplist .shop-card > .meal-note { display: none !important; }
+  body.print-shoplist, body.print-shoplist .shop-card { background: #fff !important; color: #000 !important; box-shadow: none !important; border: 0 !important; }
+  body.print-shoplist .shop-card h3 { color: #000; }
+  body.print-shoplist .shop-card a { color: #000; text-decoration: none; }
+  body.print-shoplist .shop-item { break-inside: avoid; border-color: #ccc; }
+  body.print-shoplist .shop-check input { accent-color: #000; }
+}

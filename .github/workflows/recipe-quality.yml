@@ -18,5 +18,7 @@ jobs:
         run: python3 tools/check_recipe_catalog.py
       - name: Link-preview and canonical tags
         run: python3 tools/build_share_meta.py --check
-      - name: Plan a Meal regression tests
+      - name: Shopping list ingredients data
+        run: python3 tools/build_ingredients.py --check
+      - name: Plan a Meal, Meal calendar and Shopping list tests
         run: node --test tests/

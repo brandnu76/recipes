@@ -40,6 +40,7 @@
         <h2 id="cal-title" data-cal-title></h2>
         <button type="button" class="toolbar-btn" data-cal-next aria-label="Next month">&rarr;</button>
         <button type="button" class="toolbar-btn" data-cal-today>Today</button>
+        <button type="button" class="toolbar-btn shop-open" data-shop-open>Shopping list</button>
       </div>
       <p class="cal-moving" data-cal-moving hidden>Tap a day to move the meal there. <button type="button" class="toolbar-btn" data-cal-cancel-move>Cancel</button></p>
       <div class="cal-grid" data-cal-grid></div>
@@ -60,6 +61,32 @@
         <button type="submit" class="toolbar-btn">Add note</button>
       </form>
     </section>
+    <section class="meal-card shop-card" aria-labelledby="shop-h" data-shop-card hidden>
+      <h2 id="shop-h">Shopping list</h2>
+      <p class="meal-note">Built from the recipes on your calendar. Notes and leftovers are skipped. Your pantry staples and check marks are saved on this device only.</p>
+      <div class="shop-range" role="group" aria-label="Dates">
+        <button type="button" class="toolbar-btn" data-shop-preset="next7" aria-pressed="true">Next 7 days</button>
+        <button type="button" class="toolbar-btn" data-shop-preset="week" aria-pressed="false">This week</button>
+        <button type="button" class="toolbar-btn" data-shop-preset="two" aria-pressed="false">Next 2 weeks</button>
+      </div>
+      <div class="shop-custom">
+        <label>From <input type="date" data-shop-from></label>
+        <label>To <input type="date" data-shop-to></label>
+      </div>
+      <label class="shop-toggle"><input type="checkbox" data-shop-hide checked> Hide pantry staples (salt, pepper, oils, flour, sugar, dried spices, water, cooking spray)</label>
+      <div class="shop-actions">
+        <button type="button" class="toolbar-btn" data-shop-copy>Copy list</button>
+        <button type="button" class="toolbar-btn" data-shop-print>Print</button>
+        <button type="button" class="toolbar-btn" data-shop-share hidden>Share</button>
+      </div>
+      <p class="shop-summary" data-shop-summary></p>
+      <p class="visually-hidden" role="status" aria-live="polite" data-shop-status></p>
+      <div class="shop-out" data-shop-out></div>
+      <details class="shop-pantry">
+        <summary>My pantry staples (this device)</summary>
+        <ul class="cal-list" data-shop-pantry></ul>
+      </details>
+    </section>
     <section class="meal-card cal-agenda-card" aria-labelledby="cal-agenda-h">
       <h2 id="cal-agenda-h">Coming up</h2>
       <ul class="cal-list" data-cal-agenda></ul>
@@ -72,6 +99,7 @@
   </footer>
   <script src="site.js" defer></script>
   <script src="meal-calendar.js" defer></script>
+  <script src="shopping-list.js" defer></script>
   <script src="visitor-counter.js" defer></script>
 </body>
 </html>
