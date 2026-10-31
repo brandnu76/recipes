@@ -3,3 +3,5 @@ Allow: /
 
 # Site content © 2026 Brandon Carroll. All rights reserved.
 # See /recipes/copyright.html
+
+Sitemap: https://brandnu76.github.io/recipes/sitemap.xml

@@ -2,6 +2,7 @@
   "name": "Carroll Lowcountry Table",
   "short_name": "Lowcountry",
   "description": "Coastal Georgia kitchen recipes from Brandon Carroll.",
+  "id": "./index.html",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -20,6 +21,64 @@
       "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Meal calendar",
+      "url": "./calendar.html",
+      "icons": [
+        {
+          "src": "logo-mark.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "All recipes",
+      "url": "./recipes.html",
+      "icons": [
+        {
+          "src": "logo-mark.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Saved recipes",
+      "url": "./recipes.html#saved",
+      "icons": [
+        {
+          "src": "logo-mark.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Plan a Meal",
+      "url": "./meal-planner.html",
+      "icons": [
+        {
+          "src": "logo-mark.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }
