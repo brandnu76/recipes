@@ -44,6 +44,7 @@ Import URL pattern after GitHub Pages:
 - [Thai Red Curry Chicken over Jasmine Rice](thai-red-curry-chicken.html)
 - [Savannah Red Rice with Crispy Chicken Thighs](savannah-red-rice-crispy-chicken-thighs.html)
 - [Cajun Shrimp Skillet over Rice](cajun-shrimp-skillet-over-rice.html)
+- [Kung Pao Shrimp](kung-pao-shrimp.html)
 - [Smothered Pork Chops with Onion Gravy](smothered-pork-chops-onion-gravy.html)
 - [Cottage Pie with Cheddar Mashed Potato Top](cheddar-cottage-pie.html)
 - [Sheet-Pan Greek Chicken Thighs with Potatoes and Tzatziki](sheet-pan-greek-chicken-thighs.html)
