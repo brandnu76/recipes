@@ -2321,3 +2321,6 @@ body.cook-mode .footer-visitors { display: none; }
   body.print-shoplist .shop-item { break-inside: avoid; border-color: #ccc; }
   body.print-shoplist .shop-check input { accent-color: #000; }
 }
+
+/* Meatless filter chip (recipes.html) */
+.meatless-chip { margin-left: 0.35rem; }

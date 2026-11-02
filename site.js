@@ -139,8 +139,27 @@ const cltSaved = (function () {
       b.textContent = label;
       timeRow.appendChild(b);
     });
+    // Meatless toggle (no meat, poultry, seafood or meat-based broth/fat),
+    // flagged "m":1 in recipe-meta.json by tools/meatless.py.
+    const mb = document.createElement("button");
+    mb.type = "button";
+    mb.className = "filter-chip meatless-chip";
+    mb.setAttribute("data-filter-meatless", "1");
+    mb.setAttribute("aria-pressed", "false");
+    mb.textContent = "Meatless";
+    timeRow.appendChild(mb);
     filterRow.parentNode.insertBefore(timeRow, filterRow.nextSibling);
   }
+  const meatlessChip = timeRow ? timeRow.querySelector("[data-filter-meatless]") : null;
+  let meatlessOn = false;
+  const setMeatless = (on) => {
+    meatlessOn = !!on;
+    if (meatlessChip) {
+      meatlessChip.classList.toggle("is-active", meatlessOn);
+      meatlessChip.setAttribute("aria-pressed", meatlessOn ? "true" : "false");
+    }
+  };
+  const meatlessOk = (a) => !meatlessOn || a.dataset.meatless === "1";
   const setTime = (v) => {
     const chip = timeChips.find((c) => c.getAttribute("data-filter-time") === v);
     if (!chip) return false;
@@ -228,7 +247,7 @@ const cltSaved = (function () {
       const matchQ = !words.length || (phrase ? hay.includes(q) : words.every((w) => hay.includes(w)));
       const matchC =
         activeCat === "all" || (activeCat === "saved" ? savedSet.has(cltSaved.slugOf(a)) : cat === activeCat);
-      const match = matchQ && matchC && timeOk(a);
+      const match = matchQ && matchC && timeOk(a) && meatlessOk(a);
       a.parentElement.hidden = !match;
       if (match) shown += 1;
     });
@@ -244,6 +263,10 @@ const cltSaved = (function () {
       );
     } else if (!shown && activeTime !== "any" && !timesLoaded) {
       showEmpty("");
+    } else if (!shown && meatlessOn && !timesLoaded) {
+      showEmpty("");
+    } else if (!shown && meatlessOn && activeTime === "any") {
+      showEmpty("No meatless recipes match these filters. Try fewer words or turn off Meatless.", true);
     } else if (!shown && activeTime !== "any") {
       showEmpty("No recipes fit that time with these filters. Try a longer time or Any time.", true);
     } else if (!shown) {
@@ -258,6 +281,7 @@ const cltSaved = (function () {
         const tc = timeChips.find((c) => c.getAttribute("data-filter-time") === activeTime);
         if (tc) bits.push(tc.textContent.trim());
       }
+      if (meatlessOn) bits.push("Meatless");
       if (q) bits.push("\u201c" + (input?.value || "").trim() + "\u201d");
       meta.textContent = bits.length
         ? shown + " recipe" + (shown === 1 ? "" : "s") + " \u00b7 " + bits.join(" \u00b7 ")
@@ -288,6 +312,7 @@ const cltSaved = (function () {
         if (!meta) return;
         cards.forEach((a) => {
           const m = meta[cltSaved.slugOf(a)];
+          if (m && m.m) a.dataset.meatless = "1";
           if (!m || !m.t) return;
           a.dataset.time = String(m.t);
           if (!a.querySelector(".card-time")) {
@@ -312,6 +337,13 @@ const cltSaved = (function () {
         update();
       });
     });
+    if (meatlessChip) {
+      meatlessChip.addEventListener("click", () => {
+        setMeatless(!meatlessOn);
+        syncUrl();
+        update();
+      });
+    }
   }
 
   // Keep ?q= / ?time= / ?cat= in the address bar so a filtered view can be
@@ -324,6 +356,7 @@ const cltSaved = (function () {
       const qv = (input?.value || "").trim();
       if (qv) sp.set("q", qv); else sp.delete("q");
       if (activeTime !== "any") sp.set("time", activeTime); else sp.delete("time");
+      if (meatlessOn) sp.set("meatless", "1"); else sp.delete("meatless");
       if (activeCat !== "all" && activeCat !== "saved") sp.set("cat", slugCat(activeCat)); else sp.delete("cat");
       const qs = sp.toString();
       history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "") + (activeCat === "saved" ? "#saved" : ""));
@@ -356,11 +389,12 @@ const cltSaved = (function () {
   clearAll = () => {
     if (input) input.value = "";
     setTime("any");
+    setMeatless(false);
     const allChip = chips.find((c) => c.getAttribute("data-filter-cat") === "all");
     if (allChip) selectChip(allChip); else update();
     syncUrl();
   };
-  // Apply URL params on load: ?q=, ?time= (any|30|45|60|slow), ?cat=.
+  // Apply URL params on load: ?q=, ?time= (any|30|45|60|slow), ?meatless=1, ?cat=.
   let params = null;
   try { params = new URLSearchParams(location.search); } catch (_) {}
   if (params) {
@@ -368,6 +402,7 @@ const cltSaved = (function () {
     if (input && qp) input.value = qp;
     const tp = (params.get("time") || "").toLowerCase();
     if (tp) setTime(tp);
+    if (params.get("meatless") === "1") setMeatless(true);
     const cp = params.get("cat");
     if (cp) {
       const want = slugCat(cp);
