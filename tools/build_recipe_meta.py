@@ -2,11 +2,15 @@
 """Build recipe-meta.json for the All Recipes quick filters.
 
 Reads each recipe page's Schema.org JSON-LD (the same block AnyList imports)
-and writes slug -> {"t": total minutes}.
+and writes slug -> {"t": total minutes, "m": 1 if meatless}.
+Meatless comes from tools/meatless.py (recipeIngredient keyword check).
+CI runs --check to confirm the committed file is current.
 Run from the repo root after publishing or editing a recipe:
     python3 tools/build_recipe_meta.py
 """
-import glob, json, os, re
+import glob, json, os, re, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from meatless import is_meatless
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SKIP = {"index", "recipes", "meal-planner", "copyright", "shop", "shop-order"}
@@ -42,11 +46,21 @@ def main():
         t = minutes(r.get("totalTime")) or (
             (minutes(r.get("prepTime")) or 0) + (minutes(r.get("cookTime")) or 0)) or None
         entry = {"t": t} if t else {}
+        if is_meatless(r.get("recipeIngredient") or []):
+            entry["m"] = 1
         meta[slug] = entry
-    with open(os.path.join(ROOT, "recipe-meta.json"), "w", encoding="utf-8") as f:
-        json.dump(meta, f, separators=(",", ":"), sort_keys=True)
-        f.write("\n")
-    print(len(meta), "recipes")
+    out = json.dumps(meta, separators=(",", ":"), sort_keys=True) + "\n"
+    path = os.path.join(ROOT, "recipe-meta.json")
+    if "--check" in sys.argv:
+        cur = open(path, encoding="utf-8").read() if os.path.exists(path) else ""
+        if cur != out:
+            print("recipe-meta.json is out of date; run python3 tools/build_recipe_meta.py")
+            sys.exit(1)
+        print("recipe-meta.json ok,", len(meta), "recipes,", sum(1 for v in meta.values() if v.get("m")), "meatless")
+        return
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(out)
+    print(len(meta), "recipes,", sum(1 for v in meta.values() if v.get("m")), "meatless")
 
 if __name__ == "__main__":
     main()

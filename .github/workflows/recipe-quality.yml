@@ -21,6 +21,10 @@ jobs:
         run: python3 tools/check_recipe_catalog.py
       - name: Link-preview and canonical tags
         run: python3 tools/build_share_meta.py --check
+      - name: Recipe times and Meatless flags
+        run: |
+          python3 tools/meatless.py --test
+          python3 tools/build_recipe_meta.py --check
       - name: Shopping list ingredients data
         run: python3 tools/build_ingredients.py --check
       - name: Sitemap
