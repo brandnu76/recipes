@@ -97,6 +97,7 @@ Import URL pattern after GitHub Pages:
 - [Apple Swim Biscuits](apple-swim-biscuits.html)
 - [Christmas Cranberry Butter](christmas-cranberry-butter.html)
 - [Baked Cinnamon Apple Butter French Toast](baked-cinnamon-apple-butter-french-toast.html)
+- [Egg & Veggie Muffins](egg-veggie-muffins.html)
 
 ## Game day
 
