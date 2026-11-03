@@ -45,6 +45,7 @@ Import URL pattern after GitHub Pages:
 - [Savannah Red Rice with Crispy Chicken Thighs](savannah-red-rice-crispy-chicken-thighs.html)
 - [Cajun Shrimp Skillet over Rice](cajun-shrimp-skillet-over-rice.html)
 - [Kung Pao Shrimp](kung-pao-shrimp.html)
+- [Crispy-Skin Seared Salmon with Lemon-Garlic Butter](seared-salmon-lemon-garlic-butter.html)
 - [Slow Cooker Sausage, Kale & Tortellini Soup](sausage-kale-tortellini-soup.html)
 - [Smothered Pork Chops with Onion Gravy](smothered-pork-chops-onion-gravy.html)
 - [Cottage Pie with Cheddar Mashed Potato Top](cheddar-cottage-pie.html)
