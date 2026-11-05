@@ -1,4 +1,4 @@
-// Welcome tip: dismiss once per device; help.html marks seen.
+// Welcome tip: dismiss once per device; help.html marks seen; Help chrome helper exists.
 const test = require("node:test");
 const assert = require("node:assert");
 const fs = require("node:fs");
@@ -15,46 +15,68 @@ function run(pathname, storageSeed) {
     removeItem: (k) => { delete store[k]; },
   };
   let inserted = null;
+  const navKids = [];
+  const row = {
+    className: "",
+    children: navKids,
+    querySelector: () => null,
+    appendChild(child) { navKids.push(child); return child; },
+  };
   const header = {
     parentNode: {},
+    querySelector: (sel) => {
+      if (sel === ".site-nav-row") return row;
+      if (sel === 'a[href="help.html"]') return navKids.find((c) => c.href === "help.html") || null;
+      if (sel === "a.site-nav") return null;
+      return null;
+    },
     insertAdjacentElement: (_where, el) => { inserted = el; },
+    appendChild() {},
+  };
+  const footKids = [];
+  const foot = {
+    firstChild: null,
+    querySelector: (sel) => (sel === 'a[href="help.html"]' ? footKids.find((c) => c.href === "help.html") : null),
+    insertBefore(node) { footKids.push(node); if (!this.firstChild) this.firstChild = node; return node; },
   };
   const body = { classList: { contains: () => false }, insertBefore: () => {}, firstChild: null };
   const document = {
     body,
     readyState: "complete",
     getElementById: () => null,
-    querySelector: (sel) => (sel === ".site-header" ? header : null),
+    querySelector: (sel) => {
+      if (sel === ".site-header") return header;
+      if (sel === ".footer-links") return foot;
+      return null;
+    },
+    createTextNode: (s) => ({ nodeType: 3, textContent: s }),
     createElement: (tag) => {
       const el = {
         tagName: tag.toUpperCase(),
         style: {},
-        classList: { add() {}, toggle() {} },
+        classList: { add() {}, toggle() {}, contains() { return false; } },
         setAttribute() {},
         addEventListener(type, fn) { this._click = fn; },
         appendChild(child) { (this.children || (this.children = [])).push(child); return child; },
+        replaceWith() {},
       };
-      Object.defineProperty(el, "innerHTML", {
-        set(v) { this._html = v; },
-        get() { return this._html || ""; },
-      });
-      Object.defineProperty(el, "textContent", {
-        set(v) { this._text = v; },
-        get() { return this._text || ""; },
-      });
+      Object.defineProperty(el, "innerHTML", { set(v) { this._html = v; }, get() { return this._html || ""; } });
+      Object.defineProperty(el, "textContent", { set(v) { this._text = v; }, get() { return this._text || ""; } });
+      Object.defineProperty(el, "href", { set(v) { this._href = v; }, get() { return this._href || ""; } });
       return el;
     },
     addEventListener() {},
   };
   const location = { pathname, href: "https://brandnu76.github.io/recipes" + pathname };
   vm.runInNewContext(SRC, { window: { localStorage }, document, location, setTimeout });
-  return { store, inserted };
+  return { store, inserted, navKids, footKids };
 }
 
-test("welcome-tip.js exists and uses a stable localStorage key", () => {
+test("welcome-tip.js uses a stable localStorage key and help chrome helper", () => {
   assert.match(SRC, /clt:welcome-tip-seen/);
   assert.match(SRC, /help\.html/);
   assert.match(SRC, /aria-label/);
+  assert.match(SRC, /ensureHelpChrome|site-nav-row/);
 });
 
 test("tip renders for a first visit on a normal page", () => {
@@ -75,12 +97,13 @@ test("a dismissed tip does not show again", () => {
   assert.equal(inserted, null);
 });
 
-test("help.html is linked from the splash footer and loads the tip script", () => {
+test("help chrome and tip script are linked from the splash and help page", () => {
   const index = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
   assert.match(index, /href="help\.html"/);
-  assert.match(index, /welcome-tip\.js/);
   const help = fs.readFileSync(path.join(ROOT, "help.html"), "utf8");
   assert.match(help, /How to use this site/);
   assert.match(help, /Stays on this device/);
   assert.doesNotMatch(help, /shop\.html|bakery/i);
+  const vc = fs.readFileSync(path.join(ROOT, "visitor-counter.js"), "utf8");
+  assert.match(vc, /welcome-tip\.js/);
 });

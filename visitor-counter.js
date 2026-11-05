@@ -27,3 +27,12 @@
     })
     .catch(function () { clearTimeout(timer); });
 })();
+
+// Load the welcome tip / Help chrome helper when the page did not include it.
+(function () {
+  if (document.querySelector('script[src="welcome-tip.js"]')) return;
+  var s = document.createElement("script");
+  s.src = "welcome-tip.js";
+  s.defer = true;
+  document.head.appendChild(s);
+})();
