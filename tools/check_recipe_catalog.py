@@ -6,6 +6,7 @@ Checks recipes.html cards against the recipe pages and the JSON indexes:
   - every catalog slug is in search-index.json and recipe-meta.json (with t > 0)
   - every catalog page has a schema.org Recipe with name, recipeIngredient,
     recipeInstructions, recipeYield, image and totalTime
+  - every recipe page has exactly one <main> and an og:image (share preview)
   - recipe pages on disk that carry a Recipe but are missing from the catalog
     (warning; hidden drafts like the shop are skipped)
 Missing canonical links are reported as info only and never fail the run.
@@ -48,6 +49,55 @@ class Catalog(HTMLParser):
 
 
 LD_RE = re.compile(r'<script[^>]*application/ld\+json[^>]*>(.*?)</script>', re.S | re.I)
+MAIN_OPEN = re.compile(r"<main\b", re.I)
+OG_IMAGE = re.compile(r'<meta\b[^>]*\bproperty=["\']og:image["\'][^>]*>', re.I)
+HERO_SRC = re.compile(
+    r'<figure class="recipe-hero"[^>]*>\s*<img\b[^>]*\bsrc="(images/[^"]+)"',
+    re.I | re.S,
+)
+TWITTER_CARD = re.compile(
+    r'<meta\b[^>]*\bname=["\']twitter:card["\'][^>]*\bcontent=["\']([^"\']+)["\']',
+    re.I,
+)
+TWITTER_CARD_REV = re.compile(
+    r'<meta\b[^>]*\bcontent=["\']([^"\']+)["\'][^>]*\bname=["\']twitter:card["\']',
+    re.I,
+)
+REFRESH = re.compile(r'<meta[^>]+http-equiv=["\']refresh["\']', re.I)
+
+
+def is_redirect(html: str) -> bool:
+    return bool(REFRESH.search(html))
+
+
+def landmark_problems(slug: str, html: str) -> list[str]:
+    """Share-preview and landmark errors for one recipe page.
+
+    Fails when og:image is missing (or does not point at the hero file) or
+    when the page opens <main> more than once. A hero also requires
+    twitter:card=summary_large_image. Redirect stubs are skipped.
+    """
+    if is_redirect(html):
+        return []
+    problems = []
+    mains = len(MAIN_OPEN.findall(html))
+    if mains > 1:
+        problems.append(f"{slug}: {mains} <main> elements (expected one)")
+    og = OG_IMAGE.search(html)
+    if not og:
+        problems.append(f"{slug}: missing og:image")
+    else:
+        hero = HERO_SRC.search(html)
+        content = re.search(r'\bcontent=["\']([^"\']+)["\']', og.group(0))
+        if hero and (not content or hero.group(1) not in content.group(1)):
+            problems.append(f"{slug}: og:image does not point at {hero.group(1)}")
+    has_hero = bool(re.search(r'class=["\'][^"\']*recipe-hero', html)) or bool(og)
+    if has_hero:
+        card = TWITTER_CARD.search(html) or TWITTER_CARD_REV.search(html)
+        if not card or card.group(1) != "summary_large_image":
+            got = card.group(1) if card else "missing"
+            problems.append(f"{slug}: twitter:card is {got} (expected summary_large_image)")
+    return problems
 
 
 def find_recipe(node):
@@ -121,6 +171,7 @@ def main() -> int:
         if not page.is_file():
             continue
         html = page.read_text(encoding="utf-8")
+        errors.extend(landmark_problems(slug, html))
         r = recipe_of(html)
         if not r:
             errors.append(f"{slug}: no schema.org Recipe JSON-LD")
@@ -145,8 +196,10 @@ def main() -> int:
     for page in sorted(ROOT.glob("*.html")):
         if page.name in NON_RECIPE or page.stem in slugs:
             continue
-        if recipe_of(page.read_text(encoding="utf-8")):
+        html = page.read_text(encoding="utf-8")
+        if recipe_of(html):
             warnings.append(f"{page.stem}: has a Recipe but is not in the catalog")
+            errors.extend(landmark_problems(page.stem, html))
 
     for k in sorted(index):
         if k not in slugs:
@@ -164,7 +217,7 @@ def main() -> int:
     if errors:
         print(f"FAILED: {len(errors)} error(s)")
         return 1
-    print("OK: catalog, indexes, JSON-LD, images and links all check out")
+    print("OK: catalog, indexes, JSON-LD, images, links, og:image and main landmarks all check out")
     return 0
 
 
