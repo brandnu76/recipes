@@ -1,9 +1,19 @@
 #!/usr/bin/env python3
-"""Insert hero and card photos into Carroll Lowcountry Table recipe pages."""
+"""Insert hero and card photos into Carroll Lowcountry Table recipe pages.
+
+Share-image tags and a duplicated opening <main class="page"> are normalized
+with the same helpers as tools/build_share_meta.py, so running this on a
+recipe that already has a shell landmark does not nest a second <main> and
+does not leave twitter:card at summary.
+"""
 from __future__ import annotations
 
 import re
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from build_share_meta import collapse_duplicate_mains, ensure_recipe_share_image  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 IMAGES = ROOT / "images"
@@ -52,6 +62,7 @@ SKIP = {
 
 
 def patch_recipe(text: str, slug: str, alt: str) -> str:
+    text = collapse_duplicate_mains(text)
     img_url = f"{BASE}/{slug}.webp"
     rel = f"images/{slug}.webp"
     if "class=\"recipe-hero\"" not in text:
@@ -69,18 +80,7 @@ def patch_recipe(text: str, slug: str, alt: str) -> str:
         )
         if n != 1:
             raise SystemExit(f"could not insert hero on {slug}")
-    if 'property="og:image"' not in text:
-        og = (
-            f'  <meta property="og:image" content="{img_url}">\n'
-            f'  <meta property="og:image:width" content="1200">\n'
-            f'  <meta property="og:image:height" content="800">\n'
-            f'  <meta name="twitter:card" content="summary_large_image">\n'
-        )
-        text = text.replace(
-            '  <link rel="stylesheet" href="styles.css">',
-            og + '  <link rel="stylesheet" href="styles.css">',
-            1,
-        )
+    text = ensure_recipe_share_image(text, rel)
     if '"@type":"Recipe"' in text and f'"image":"{img_url}"' not in text:
         text = text.replace(
             '"@type":"Recipe"',
