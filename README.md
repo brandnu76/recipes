@@ -146,6 +146,7 @@ Import URL pattern after GitHub Pages:
 - [Sourdough Croissants](sourdough-croissants.html)
 
 ## Dessert
+- [Mexican Wedding Cookies](mexican-wedding-cookies.html)
 - [Southern Carrot Pie](southern-carrot-pie.html)
 - [Apple Crumble](apple-crumble.html)
 - [Peach Crumble](peach-crumble.html)
