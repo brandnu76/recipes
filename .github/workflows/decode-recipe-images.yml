@@ -56,7 +56,8 @@ jobs:
           set -euo pipefail
           git config user.name "brandnu76"
           git config user.email "bccarroll30@gmail.com"
-          git add 'images/**/*.webp' 'images/**/*.png' images/*.webp images/*.png || true
+          git add -- 'images/logo-crest-320.webp' 'images/logo-crest-640.webp' 'images/logo-crest-320.png' 'images/logo-crest-640.png' || true
+          git add -- images/*.webp images/*.png || true
           if git diff --cached --quiet; then
             echo "No changes"
             exit 0
