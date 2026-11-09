@@ -2464,3 +2464,155 @@ body.cook-mode .footer-visitors { display: none; }
   gap: 0.55rem 0.9rem;
   align-items: center;
 }
+
+
+/* Marsh dusk splash (v67): dark hero matching .splash-below, circular crest */
+html:has(body.splash-page) { color-scheme: dark; }
+
+.splash-page {
+  background: var(--bg);
+  color: var(--cream);
+}
+
+.splash-page .site-header {
+  border-bottom-color: rgba(246, 239, 230, 0.08);
+  background: rgba(18, 15, 13, 0.92);
+}
+.splash-page .site-brand-name { color: var(--cream); }
+.splash-page .site-brand-sub,
+.splash-page .site-nav { color: var(--cream-muted); }
+.splash-page .site-nav:hover { color: var(--cream); background: rgba(246, 239, 230, 0.04); }
+.splash-page .site-brand:hover .site-brand-name { color: var(--fire-soft); }
+.splash-page .site-logo { box-shadow: 0 0 0 1px rgba(246, 239, 230, 0.18); }
+
+.splash-page .site-header.is-solid {
+  border-bottom-color: var(--line);
+  background: rgba(18, 15, 13, 0.96);
+}
+
+.logo-splash.marsh-dusk {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: calc(100svh - var(--header-h));
+  padding: 1rem 1.1rem 1.6rem;
+  overflow: hidden;
+  text-align: center;
+  background:
+    radial-gradient(ellipse at 50% 28%, rgba(79, 100, 60, 0.22), transparent 55%),
+    var(--bg);
+}
+.logo-splash.marsh-dusk::before { display: none; }
+
+.splash-crest {
+  position: relative;
+  z-index: 1;
+  width: min(46vw, 168px);
+  margin: 0.15rem 0 0.2rem;
+}
+@media (min-width: 900px) {
+  .splash-crest { width: min(18vw, 180px); }
+}
+.splash-crest img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 50%;
+  background: #1a1713;
+}
+
+.logo-splash.marsh-dusk .splash-kicker-visible {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #a8bf8a;
+}
+.logo-splash.marsh-dusk .splash-title-visible {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  max-width: 18ch;
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 5.5vw, 2.55rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: #f6efe6;
+}
+.logo-splash.marsh-dusk .splash-lead {
+  position: relative;
+  z-index: 1;
+  margin: 0.15rem auto 0.45rem;
+  max-width: 26rem;
+  color: rgba(243, 234, 215, 0.82);
+  font-size: 1.02rem;
+  line-height: 1.4;
+}
+.logo-splash.marsh-dusk .splash-actions {
+  position: relative;
+  z-index: 1;
+  margin-top: 0.15rem;
+}
+.logo-splash.marsh-dusk .splash-btn {
+  color: var(--cream);
+  background: transparent;
+  border-color: rgba(246, 239, 230, 0.22);
+}
+.logo-splash.marsh-dusk .splash-btn:hover {
+  color: var(--cream);
+  border-color: rgba(168, 191, 138, 0.7);
+  background: rgba(246, 239, 230, 0.04);
+}
+.logo-splash.marsh-dusk .splash-btn:focus-visible {
+  outline: 2px solid #a8bf8a;
+  outline-offset: 3px;
+}
+.logo-splash.marsh-dusk .splash-btn-primary {
+  color: #1a120c;
+  background: linear-gradient(145deg, #7a9160, #4f643c);
+  border-color: transparent;
+}
+.logo-splash.marsh-dusk .splash-btn-primary:hover {
+  color: #1a120c;
+  filter: brightness(1.08);
+}
+.logo-splash.marsh-dusk .splash-secondary-links {
+  position: relative;
+  z-index: 1;
+  margin: 0.45rem 0 0;
+  font-size: 0.92rem;
+  color: rgba(243, 234, 215, 0.62);
+}
+.logo-splash.marsh-dusk .splash-secondary-links a {
+  color: #c5d6a8;
+  font-weight: 600;
+  text-underline-offset: 0.12em;
+}
+.logo-splash.marsh-dusk .splash-secondary-links a:hover,
+.logo-splash.marsh-dusk .splash-secondary-links a:focus-visible {
+  color: #e4efd0;
+}
+.splash-below {
+  border-top: 1px solid rgba(246, 239, 230, 0.06);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .logo-splash.marsh-dusk .splash-kicker-visible,
+  .logo-splash.marsh-dusk .splash-title-visible,
+  .logo-splash.marsh-dusk .splash-crest,
+  .logo-splash.marsh-dusk .splash-lead,
+  .logo-splash.marsh-dusk .splash-actions,
+  .logo-splash.marsh-dusk .splash-secondary-links {
+    animation: splash-in 0.65s var(--ease) both;
+  }
+  .logo-splash.marsh-dusk .splash-title-visible { animation-delay: 0.05s; }
+  .logo-splash.marsh-dusk .splash-crest { animation-delay: 0.1s; }
+  .logo-splash.marsh-dusk .splash-lead { animation-delay: 0.16s; }
+  .logo-splash.marsh-dusk .splash-actions { animation-delay: 0.22s; }
+  .logo-splash.marsh-dusk .splash-secondary-links { animation-delay: 0.28s; }
+}

@@ -22,7 +22,7 @@
   <meta name="copyright" content="© 2026 Brandon Carroll">
   <link rel="icon" href="favicon.png" type="image/png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <link rel="preload" as="image" href="logo.webp" type="image/webp">
+  <link rel="preload" as="image" href="images/logo-crest-640.webp" type="image/webp">
   <link rel="stylesheet" href="styles.css">
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -36,25 +36,26 @@
     </nav>
   </header>
   <main>
-    <section class="logo-splash" aria-labelledby="splash-title">
-      <h1 id="splash-title" class="visually-hidden">Carroll Lowcountry Table</h1>
-      <div class="logo-lockup">
-        <img class="logo-layer logo-scene" src="logo.webp" width="935" height="1284" alt="Carroll Lowcountry Table. Recipes from our Lowcountry table." decoding="async">
-        <img class="logo-layer logo-food" src="logo.webp" width="935" height="1284" alt="" aria-hidden="true" decoding="async">
-        <img class="logo-layer logo-type" src="logo.webp" width="935" height="1284" alt="" aria-hidden="true" decoding="async">
-        <svg class="logo-ring" viewBox="0 0 935 1284" aria-hidden="true">
-          <ellipse cx="465" cy="355" rx="299" ry="299" pathLength="100"></ellipse>
-        </svg>
-        <div class="sun-glow" aria-hidden="true"></div>
-        <div class="water-glint" aria-hidden="true"></div>
+    <section class="logo-splash marsh-dusk" aria-labelledby="splash-title">
+      <p class="splash-kicker splash-kicker-visible">Brandon Carroll</p>
+      <h1 id="splash-title" class="splash-title splash-title-visible">Carroll Lowcountry Table</h1>
+      <div class="splash-crest">
+        <img
+          src="images/logo-crest-640.webp"
+          srcset="images/logo-crest-320.webp 320w, images/logo-crest-640.webp 640w"
+          sizes="(max-width: 480px) 168px, 180px"
+          width="640"
+          height="640"
+          alt="Circular crest: Lowcountry marsh with herons and palms above a bowl of shrimp and rice"
+          decoding="async"
+          fetchpriority="high">
       </div>
-      <p class="splash-lead">Coastal Georgia kitchen — cast iron, weeknight plates, and weekend cooks.</p>
+      <p class="splash-lead">Recipes from our Lowcountry table — weeknight plates and weekend cooks.</p>
       <div class="splash-actions">
         <a class="splash-btn splash-btn-primary" href="recipes.html">Browse all recipes</a>
-        <a class="splash-btn splash-btn-meal" href="meal-planner.html">Plan a Meal</a>
-        <a class="splash-btn" href="#categories">Categories</a>
+        <a class="splash-btn" href="#discover">Find a recipe</a>
       </div>
-      <a class="splash-cue" href="#discover">Find a recipe <span aria-hidden="true">&darr;</span></a>
+      <p class="splash-secondary-links"><a href="meal-planner.html">Plan a Meal</a> · <a href="#categories">Categories</a></p>
     </section>
     <div class="splash-below">
       <section class="discover" id="discover" aria-labelledby="discover-title">
@@ -91,14 +92,14 @@
       <section class="splash-categories" id="categories" aria-label="Recipe categories">
         <h2>Categories</h2>
         <ul class="book-list splash-cat-list">
-          <li><a class="splash-cat" href="category-weekend-dinners.html"><span class="card-cat">Weekend dinners</span><span class="card-title">21 recipes</span></a></li>
-          <li><a class="splash-cat" href="category-weekday-dinners.html"><span class="card-cat">Weekday dinners</span><span class="card-title">40 recipes</span></a></li>
+          <li><a class="splash-cat" href="category-weekend-dinners.html"><span class="card-cat">Weekend dinners</span><span class="card-title">25 recipes</span></a></li>
+          <li><a class="splash-cat" href="category-weekday-dinners.html"><span class="card-cat">Weekday dinners</span><span class="card-title">51 recipes</span></a></li>
           <li><a class="splash-cat" href="category-breakfast.html"><span class="card-cat">Breakfast & brunch</span><span class="card-title">9 recipes</span></a></li>
-          <li><a class="splash-cat" href="category-game-day.html"><span class="card-cat">Game day</span><span class="card-title">4 recipes</span></a></li>
+          <li><a class="splash-cat" href="category-game-day.html"><span class="card-cat">Game day</span><span class="card-title">5 recipes</span></a></li>
           <li><a class="splash-cat" href="category-sides-salads.html"><span class="card-cat">Sides & salads</span><span class="card-title">24 recipes</span></a></li>
           <li><a class="splash-cat" href="category-breads.html"><span class="card-cat">Breads</span><span class="card-title">8 recipes</span></a></li>
           <li><a class="splash-cat" href="category-healthy-snacks.html"><span class="card-cat">Healthy snacks</span><span class="card-title">2 recipes</span></a></li>
-          <li><a class="splash-cat" href="category-dessert.html"><span class="card-cat">Dessert</span><span class="card-title">21 recipes</span></a></li>
+          <li><a class="splash-cat" href="category-dessert.html"><span class="card-cat">Dessert</span><span class="card-title">23 recipes</span></a></li>
         </ul>
       </section>
       <footer class="site-footer">

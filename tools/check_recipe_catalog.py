@@ -9,6 +9,7 @@ Checks recipes.html cards against the recipe pages and the JSON indexes:
   - every recipe page has exactly one <main> and an og:image (share preview)
   - recipe pages on disk that carry a Recipe but are missing from the catalog
     (warning; hidden drafts like the shop are skipped)
+  - splash category counts on index.html match the catalog
 Missing canonical links are reported as info only and never fail the run.
 Exit code 1 on any error.
 """
@@ -204,6 +205,34 @@ def main() -> int:
     for k in sorted(index):
         if k not in slugs:
             warnings.append(f"{k}: in search-index.json but not in the catalog")
+
+
+    # Splash category counts on index.html must match the catalog tallies.
+    splash = (ROOT / "index.html").read_text(encoding="utf-8")
+    splash_map = {
+        "Weekend dinners": "weekend dinners",
+        "Weekday dinners": "weekday dinners",
+        "Breakfast & brunch": "breakfast & brunch",
+        "Game day": "game day",
+        "Sides & salads": "sides & salads",
+        "Breads": "breads",
+        "Healthy snacks": "healthy snacks",
+        "Dessert": "dessert",
+    }
+    for label, key in splash_map.items():
+        m = re.search(
+            rf'<span class="card-cat">{re.escape(label)}</span><span class="card-title">(\d+) recipes</span>',
+            splash,
+        )
+        if not m:
+            errors.append(f"index.html: missing splash count for {label}")
+            continue
+        shown = int(m.group(1))
+        expected = counts.get(key, 0)
+        if shown != expected:
+            errors.append(
+                f"index.html: {label} shows {shown} recipes but catalog has {expected}"
+            )
 
     print(f"Catalog: {len(slugs)} unique recipes in {sum(counts.values())} card placements")
     for c in sorted(counts):
