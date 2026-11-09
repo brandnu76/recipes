@@ -17,37 +17,36 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p images
-          python3 - <<'PY'
+          python3 <<'PY'
           from pathlib import Path
           import base64
           pack_dir = Path('images/_packs')
           if not pack_dir.exists():
               print('no packs')
               raise SystemExit(0)
-          for p in sorted(pack_dir.rglob('*.b64')):
+          PNG = bytes([137, 80, 78, 71, 13, 10, 26, 10])
+          for p in sorted(pack_dir.glob('*.b64')):
               name = p.name[:-4]
-              rel = p.parent.relative_to(pack_dir)
               raw = ''.join(p.read_text().split())
               if not raw or raw.startswith('PLACEHOLDER'):
-                  print('skip', p)
+                  print('skip', p.name)
                   continue
               pad = (-len(raw)) % 4
               if pad:
                   raw += '=' * pad
-                  print('padded', p, pad)
+                  print('padded', p.name, pad)
               data = base64.b64decode(raw)
               is_webp = len(data) >= 12 and data[:4] == b'RIFF' and data[8:12] == b'WEBP'
-              is_png = len(data) >= 8 and data[:8] == b'\x89PNG\r\n\x1a\n'
+              is_png = data.startswith(PNG)
               if is_webp:
                   expected = int.from_bytes(data[4:8], 'little') + 8
                   if expected != len(data):
-                      print(f'skip truncated {p}: {len(data)} vs {expected}')
+                      print(f'skip truncated {p.name}: {len(data)} vs {expected}')
                       continue
               elif not is_png:
-                  print('skip unsupported', p)
+                  print('skip unsupported', p.name)
                   continue
-              out = (Path('images') / rel / name) if str(rel) != '.' else (Path('images') / name)
-              out.parent.mkdir(parents=True, exist_ok=True)
+              out = Path('images') / name
               out.write_bytes(data)
               print('decoded', out, len(data))
           PY
@@ -56,8 +55,9 @@ jobs:
           set -euo pipefail
           git config user.name "brandnu76"
           git config user.email "bccarroll30@gmail.com"
-          git add -- 'images/logo-crest-320.webp' 'images/logo-crest-640.webp' 'images/logo-crest-320.png' 'images/logo-crest-640.png' || true
-          git add -- images/*.webp images/*.png || true
+          shopt -s nullglob
+          files=(images/logo-crest-*.webp images/logo-crest-*.png)
+          if [ ${#files[@]} -gt 0 ]; then git add -- "${files[@]}"; fi
           if git diff --cached --quiet; then
             echo "No changes"
             exit 0
