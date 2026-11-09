@@ -43,6 +43,7 @@ Import URL pattern after GitHub Pages:
 
 - [Thai Red Curry Chicken over Jasmine Rice](thai-red-curry-chicken.html)
 - [Savannah Red Rice with Crispy Chicken Thighs](savannah-red-rice-crispy-chicken-thighs.html)
+- [Savannah Red Rice with Ground Beef](savannah-red-rice-ground-beef.html)
 - [Cajun Shrimp Skillet over Rice](cajun-shrimp-skillet-over-rice.html)
 - [Kung Pao Shrimp](kung-pao-shrimp.html)
 - [Crispy-Skin Seared Salmon with Lemon-Garlic Butter](seared-salmon-lemon-garlic-butter.html)
