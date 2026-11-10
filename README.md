@@ -151,6 +151,7 @@ Import URL pattern after GitHub Pages:
 - [Mexican Wedding Cookies](mexican-wedding-cookies.html)
 - [Southern Carrot Pie](southern-carrot-pie.html)
 - [Apple Crumble](apple-crumble.html)
+- [Shortcut Apple Crumble with Canned Pie Filling](shortcut-apple-crumble-pie-filling.html)
 - [Peach Crumble](peach-crumble.html)
 - [Blueberry Crumble](blueberry-crumble.html)
 
