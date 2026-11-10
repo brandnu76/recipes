@@ -3,6 +3,9 @@ name: decode-recipe-images
 # Run only when complete packs are ready. The image check will still gate the result.
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['images/_packs/**']
 permissions:
   contents: write
 jobs:
