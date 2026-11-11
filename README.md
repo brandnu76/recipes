@@ -154,6 +154,7 @@ Import URL pattern after GitHub Pages:
 - [Shortcut Apple Crumble with Canned Pie Filling](shortcut-apple-crumble-pie-filling.html)
 - [Peach Crumble](peach-crumble.html)
 - [Blueberry Crumble](blueberry-crumble.html)
+- [Sweet Potato–Style Pumpkin Crumble](sweet-potato-style-pumpkin-crumble.html)
 
 - [Caramel Apple Pie Poke Cake](caramel-apple-pie-poke-cake.html)
 - [Sugar-Free Apple Pie Protein Burritos](sugar-free-apple-pie-protein-burritos.html)
