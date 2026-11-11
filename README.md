@@ -34,6 +34,8 @@ Import URL pattern after GitHub Pages:
 - [Sheet-Pan Salmon with Sweet Potatoes and Green Beans (10-lb Fillet)](sheet-pan-salmon-sweet-potato-10lb.html)
 - [Smoked Chicken Thighs with Alabama White Sauce](smoked-chicken-thighs-alabama-white-sauce.html)
 - [Lowcountry Shrimp and Grits](lowcountry-shrimp-and-grits.html)
+- [Savannah Red Rice with Crispy Chicken Thighs](savannah-red-rice-crispy-chicken-thighs.html)
+- [Savannah Red Rice with Ground Beef](savannah-red-rice-ground-beef.html)
 - [Sunday Chuck Roast with Vegetables](sunday-chuck-roast.html)
 - [Sunday Chuck Roast (PossibleCooker Pro)](sunday-chuck-roast-possiblecooker.html)
 - [Peach-Bourbon Cast-Iron Pork Chops](peach-bourbon-cast-iron-pork-chops.html)
@@ -43,8 +45,6 @@ Import URL pattern after GitHub Pages:
 ## Weekday dinners
 
 - [Thai Red Curry Chicken over Jasmine Rice](thai-red-curry-chicken.html)
-- [Savannah Red Rice with Crispy Chicken Thighs](savannah-red-rice-crispy-chicken-thighs.html)
-- [Savannah Red Rice with Ground Beef](savannah-red-rice-ground-beef.html)
 - [Cajun Shrimp Skillet over Rice](cajun-shrimp-skillet-over-rice.html)
 - [Kung Pao Shrimp](kung-pao-shrimp.html)
 - [Crispy-Skin Seared Salmon with Lemon-Garlic Butter](seared-salmon-lemon-garlic-butter.html)
