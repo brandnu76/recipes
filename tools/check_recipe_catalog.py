@@ -67,6 +67,28 @@ TWITTER_CARD_REV = re.compile(
 REFRESH = re.compile(r'<meta[^>]+http-equiv=["\']refresh["\']', re.I)
 
 
+
+def goatcounter_problems(name: str, html: str) -> list[str]:
+    """Every public HTML page must load GoatCounter and must not call Abacus."""
+    errors = []
+    if 'data-goatcounter="https://carrolllowcountry.goatcounter.com/count"' not in html:
+        errors.append(f"{name}: missing GoatCounter data-goatcounter snippet")
+    if 'src="https://gc.zgo.at/count.js"' not in html:
+        errors.append(f"{name}: missing GoatCounter script src")
+    if "abacus.jasoncameron.dev" in html or "visitor-counter.js" in html:
+        errors.append(f"{name}: still references Abacus or visitor-counter.js")
+    if "Content-Security-Policy" in html:
+        if "https://gc.zgo.at" not in html:
+            errors.append(f"{name}: CSP script-src missing https://gc.zgo.at")
+        if "https://carrolllowcountry.goatcounter.com" not in html:
+            errors.append(f"{name}: CSP connect-src missing GoatCounter origin")
+        if "abacus.jasoncameron.dev" in html:
+            errors.append(f"{name}: CSP still allows Abacus")
+    else:
+        errors.append(f"{name}: missing Content-Security-Policy meta tag")
+    return errors
+
+
 def is_redirect(html: str) -> bool:
     return bool(REFRESH.search(html))
 
@@ -206,6 +228,10 @@ def main() -> int:
         if k not in slugs:
             warnings.append(f"{k}: in search-index.json but not in the catalog")
 
+
+    # GoatCounter snippet and CSP on every HTML page (no Abacus).
+    for page in sorted(ROOT.glob("*.html")):
+        errors.extend(goatcounter_problems(page.name, page.read_text(encoding="utf-8")))
 
     # Splash category counts on index.html must match the catalog tallies.
     splash = (ROOT / "index.html").read_text(encoding="utf-8")

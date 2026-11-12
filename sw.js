@@ -1,5 +1,5 @@
 /* Carroll Lowcountry Table — offline cache for kitchen use on GitHub Pages */
-const CACHE = "carroll-lowcountry-v72";
+const CACHE = "carroll-lowcountry-v73";
 const SHELL = [
   "./",
   "./index.html",
@@ -100,6 +100,8 @@ self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
+  // Never cache or intercept GoatCounter (or any other third-party) requests.
+  if (url.hostname === "gc.zgo.at" || /(?:^|\.)goatcounter\.com$/.test(url.hostname)) return;
   if (url.origin !== self.location.origin) return;
 
   const isAsset = /\.(?:css|js|webp|png|jpg|jpeg|svg|woff2?)$/i.test(url.pathname);
