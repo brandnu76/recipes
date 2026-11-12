@@ -1,0 +1,28 @@
+name: apply-goatcounter
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "tools/migrate_to_goatcounter.py"
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply GoatCounter migration
+        run: python3 tools/migrate_to_goatcounter.py
+      - name: Commit
+        run: |
+          set -euo pipefail
+          git config user.name "brandnu76"
+          git config user.email "bccarroll30@gmail.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git commit -m "Replace Abacus visitor counter with GoatCounter; cache v73"
+          git push
