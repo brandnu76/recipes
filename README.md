@@ -44,6 +44,7 @@ Import URL pattern after GitHub Pages:
 
 ## Weekday dinners
 
+- [Italian Wedding Soup (Minestra Maritata-Style)](italian-wedding-soup.html)
 - [Thai Red Curry Chicken over Jasmine Rice](thai-red-curry-chicken.html)
 - [Cajun Shrimp Skillet over Rice](cajun-shrimp-skillet-over-rice.html)
 - [Kung Pao Shrimp](kung-pao-shrimp.html)
