@@ -153,6 +153,7 @@ Import URL pattern after GitHub Pages:
 - [Southern Carrot Pie](southern-carrot-pie.html)
 - [Apple Crumble](apple-crumble.html)
 - [Shortcut Apple Crumble with Canned Pie Filling](shortcut-apple-crumble-pie-filling.html)
+- [Southern Peach Cobbler (from a #10 can)](southern-peach-cobbler.html)
 - [Peach Crumble](peach-crumble.html)
 - [Blueberry Crumble](blueberry-crumble.html)
 - [Sweet Potato–Style Pumpkin Crumble](sweet-potato-style-pumpkin-crumble.html)
