@@ -1,0 +1,35 @@
+name: apply-peach-cobbler
+# Temporary. Unpacks the publish bundle, commits the recipe, and removes itself.
+on:
+  push:
+    paths:
+      - 'tmp-peach-cobbler-publish-bundle.json'
+      - '.github/workflows/apply-peach-cobbler.yml'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply bundle, commit, and clean up
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          bundle = json.loads(Path('tmp-peach-cobbler-publish-bundle.json').read_text())
+          for path, content in bundle.items():
+              p = Path(path)
+              p.parent.mkdir(parents=True, exist_ok=True)
+              p.write_text(content)
+              print('wrote', path, len(content))
+          PY
+          git config user.name "brandnu76"
+          git config user.email "bccarroll30@gmail.com"
+          git add southern-peach-cobbler.html sw.js index.html README.md \
+            category-dessert.html recipes.html search-index.json \
+            recipe-meta.json related.json ingredients.json
+          git rm -f tmp-peach-cobbler-publish-bundle.json .github/workflows/apply-peach-cobbler.yml
+          git commit -m "Publish Southern Peach Cobbler; cache v75"
+          git push
