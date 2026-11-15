@@ -112,6 +112,7 @@ Import URL pattern after GitHub Pages:
 
 ## Sides & salads
 
+- [Cranberry-Orange Sauce](cranberry-orange-sauce.html)
 - [The Best Coleslaw](best-coleslaw.html)
 - [Southern Fried Cabbage with Bacon](southern-fried-cabbage.html)
 - [Garlic Butter Mixed Vegetables](garlic-butter-mixed-vegetables.html)
