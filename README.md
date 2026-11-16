@@ -14,6 +14,7 @@ Import URL pattern after GitHub Pages:
 
 ## Weekend dinners
 
+- [Texas-Style Smoked Beef Dino Ribs](texas-beef-dino-ribs.html)
 - [Red Wine Braised Short Ribs](red-wine-braised-short-ribs.html)
 - [Braised Chuck Roast with Red Wine Gravy](braised-chuck-roast.html)
 - [Smoked Spatchcock Chicken with Carolina Gold Sauce and Smashed Red Potatoes](smoked-spatchcock-chicken-carolina-gold.html)
