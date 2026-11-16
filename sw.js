@@ -1,5 +1,5 @@
 /* Carroll Lowcountry Table — offline cache for kitchen use on GitHub Pages */
-const CACHE = "carroll-lowcountry-v76";
+const CACHE = "carroll-lowcountry-v77";
 const SHELL = [
   "./",
   "./index.html",
@@ -12,6 +12,8 @@ const SHELL = [
   "./calendar.html",
   "./meal-calendar.js",
   "./shopping-list.js",
+  "./what-can-i-make.html",
+  "./have-finder.js",
   "./ingredients.json",
   "./search-index.json",
   "./recipe-meta.json",

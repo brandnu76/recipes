@@ -58,6 +58,7 @@ SKIP = {
     "index.html",
     "recipes.html",
     "copyright.html",
+    "what-can-i-make.html",
 }
 
 

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://gc.zgo.at; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://carrolllowcountry.goatcounter.com; base-uri 'self'; form-action 'self';">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <title>Cook from what I have — Carroll Lowcountry Table</title>
+  <meta name="description" content="Type ingredients you have. Carroll Lowcountry Table ranks recipes by how many of them you can use and how little else you would need to buy.">
+  <meta property="og:title" content="Cook from what I have — Carroll Lowcountry Table">
+  <meta property="og:description" content="Type ingredients you have. Recipes are ranked by what you can cook with the least extra shopping.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://brandnu76.github.io/recipes/logo.jpg">
+  <meta name="theme-color" content="#120f0d">
+  <meta name="color-scheme" content="dark">
+  <meta name="copyright" content="© 2026 Brandon Carroll">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="canonical" href="https://brandnu76.github.io/recipes/what-can-i-make.html">
+</head>
+<body class="meal-page have-page">
+  <header class="site-header">
+    <a class="site-brand" href="index.html"><img class="site-logo" src="logo-mark.webp" width="46" height="46" alt="" decoding="async"><span class="site-brand-text"><span class="site-brand-name">Carroll</span><span class="site-brand-sub">Lowcountry Table</span></span></a>
+    <nav class="site-nav-row" aria-label="Site">
+      <a class="site-nav" href="recipes.html">All recipes</a>
+      <a class="site-nav" href="help.html">Help</a>
+    </nav>
+  </header>
+  <main class="page meal-planner have-app" id="main" data-have-app>
+    <div class="meal-hero">
+      <h1>Cook from what I have</h1>
+      <p>Type two or three ingredients you already have. Recipes that use more of them, and need fewer other things from the store, come first.</p>
+      <p class="cal-device-note"><strong>Your list is saved on this device only.</strong> It doesn't sync between your phone, tablet and computer, and nothing is sent anywhere.</p>
+      <p class="meal-note have-staples" id="have-staples">Staples assumed: salt, pepper, oils, flour, sugar, dried spices, water, and cooking spray.</p>
+    </div>
+    <section class="meal-card" aria-labelledby="have-h">
+      <h2 id="have-h">Ingredients I have</h2>
+      <form id="have-form" class="have-form" autocomplete="off">
+        <label for="have-input">Add an ingredient</label>
+        <div class="have-add">
+          <input id="have-input" type="text" autocomplete="off" autocapitalize="none" enterkeyhint="enter" aria-describedby="have-staples" placeholder="chicken, rice, spinach">
+          <button type="submit" class="toolbar-btn">Add</button>
+        </div>
+      </form>
+      <ul class="have-chips" id="have-chips" aria-label="Ingredients you have"></ul>
+      <p class="have-label" id="have-quick-label">Quick add</p>
+      <div class="have-quick" role="group" aria-labelledby="have-quick-label">
+        <button type="button" class="filter-chip have-quick-btn" data-quick="chicken" aria-pressed="false">chicken</button>
+        <button type="button" class="filter-chip have-quick-btn" data-quick="ground beef" aria-pressed="false">ground beef</button>
+        <button type="button" class="filter-chip have-quick-btn" data-quick="pork" aria-pressed="false">pork</button>
+        <button type="button" class="filter-chip have-quick-btn" data-quick="shrimp" aria-pressed="false">shrimp</button>
+        <button type="button" class="filter-chip have-quick-btn" data-quick="sausage" aria-pressed="false">sausage</button>
+        <button type="button" class="filter-chip have-quick-btn" data-quick="rice" aria-pressed="false">rice</button>
+        <button type="button" class="filter-chip have-quick-btn" data-quick="pasta" aria-pressed="false">pasta</button>
+        <button type="button" class="filter-chip have-quick-btn" data-quick="potatoes" aria-pressed="false">potatoes</button>
+        <button type="button" class="filter-chip have-quick-btn" data-quick="tomatoes" aria-pressed="false">tomatoes</button>
+        <button type="button" class="filter-chip have-quick-btn" data-quick="spinach" aria-pressed="false">spinach</button>
+        <button type="button" class="filter-chip have-quick-btn" data-quick="cheese" aria-pressed="false">cheese</button>
+        <button type="button" class="filter-chip have-quick-btn" data-quick="eggs" aria-pressed="false">eggs</button>
+      </div>
+      <h2 id="omit-h">Leave out</h2>
+      <p class="meal-note" id="omit-hint">Optional. Recipes that use these ingredients are hidden.</p>
+      <form id="omit-form" class="have-form" autocomplete="off">
+        <label for="omit-input">Ingredient to leave out</label>
+        <div class="have-add">
+          <input id="omit-input" type="text" autocomplete="off" autocapitalize="none" enterkeyhint="enter" aria-describedby="omit-hint" placeholder="mushrooms">
+          <button type="submit" class="toolbar-btn">Add</button>
+        </div>
+      </form>
+      <ul class="have-chips" id="omit-chips" aria-label="Ingredients to leave out"></ul>
+    </section>
+    <section class="meal-card" aria-labelledby="have-filters-h">
+      <h2 id="have-filters-h">Filters</h2>
+      <div class="have-time-row" role="toolbar" aria-label="Filter by total time">
+        <button type="button" class="filter-chip time-chip is-active" data-have-time="any" aria-pressed="true">Any</button>
+        <button type="button" class="filter-chip time-chip" data-have-time="45" aria-pressed="false">45 min or less</button>
+        <button type="button" class="filter-chip time-chip" data-have-time="75" aria-pressed="false">75 min or less (weeknight)</button>
+        <button type="button" class="filter-chip time-chip" data-have-time="slow" aria-pressed="false" aria-label="Low and slow, 3 hours or more">Low &amp; slow</button>
+      </div>
+      <label class="have-check" for="have-hide-dessert">
+        <input id="have-hide-dessert" type="checkbox" checked>
+        Hide desserts
+      </label>
+      <p class="have-actions"><button type="button" class="toolbar-btn" id="have-clear">Clear</button></p>
+    </section>
+    <h2 id="have-results-h">What you can make</h2>
+    <p id="have-count" class="have-count" role="status" aria-live="polite" aria-atomic="true">Loading recipes…</p>
+    <div id="have-results" role="region" aria-labelledby="have-results-h"></div>
+  </main>
+  <footer class="site-footer">
+    <p class="footer-copy">© 2026 Brandon Carroll. All rights reserved.</p>
+    <p class="footer-links"><a href="help.html">How to use this site</a> · <a href="copyright.html">Copyright &amp; use</a> · Carroll Lowcountry Table</p>
+  </footer>
+  <script src="site.js" defer></script>
+  <script src="shopping-list.js" defer></script>
+  <script src="have-finder.js" defer></script>
+  <script src="welcome-tip.js" defer></script>
+  <script data-goatcounter="https://carrolllowcountry.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>

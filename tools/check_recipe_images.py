@@ -24,6 +24,7 @@ NON_RECIPE = {
     "calendar.html",
     "shop.html",
     "shop-order.html",
+    "what-can-i-make.html",
     "robots.txt",
 }
 

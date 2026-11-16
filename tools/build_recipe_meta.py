@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from meatless import is_meatless
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SKIP = {"index", "recipes", "meal-planner", "copyright", "shop", "shop-order"}
+SKIP = {"index", "recipes", "meal-planner", "copyright", "shop", "shop-order", "what-can-i-make"}
 
 def minutes(iso):
     m = re.fullmatch(r"P(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?", (iso or "").strip())

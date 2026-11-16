@@ -22,7 +22,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-NON_RECIPE = {"index.html", "recipes.html", "copyright.html", "meal-planner.html", "calendar.html", "shop.html", "shop-order.html"}
+NON_RECIPE = {"index.html", "recipes.html", "copyright.html", "meal-planner.html", "calendar.html", "shop.html", "shop-order.html", "what-can-i-make.html"}
 REQUIRED = ["name", "recipeIngredient", "recipeInstructions", "recipeYield", "image", "totalTime"]
 
 

@@ -10,7 +10,7 @@ Run from the repo root after publishing or editing a recipe:
 import html, json, os, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SKIP = {"index.html", "recipes.html", "copyright.html", "meal-planner.html", "calendar.html", "shop.html", "shop-order.html"}
+SKIP = {"index.html", "recipes.html", "copyright.html", "meal-planner.html", "calendar.html", "shop.html", "shop-order.html", "what-can-i-make.html"}
 LD_RE = re.compile(r'<script[^>]*application/ld\+json[^>]*>(.*?)</script>', re.S | re.I)
 
 def find_recipe(node):
