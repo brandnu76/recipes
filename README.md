@@ -49,7 +49,7 @@ Import URL pattern after GitHub Pages:
 - [Thai Red Curry Chicken over Jasmine Rice](thai-red-curry-chicken.html)
 - [Cajun Shrimp Skillet over Rice](cajun-shrimp-skillet-over-rice.html)
 - [Kung Pao Shrimp](kung-pao-shrimp.html)
-- [Crispy-Skin Seared Salmon with Lemon-Garlic Butter](seared-salmon-lemon-garlic-butter.html)
+- [Sheet-Pan Roasted Salmon Side with Lemon-Garlic Butter](sheet-pan-roasted-salmon-side.html)
 - [Slow Cooker Sausage, Kale & Tortellini Soup](sausage-kale-tortellini-soup.html)
 - [Smothered Pork Chops with Onion Gravy](smothered-pork-chops-onion-gravy.html)
 - [Cottage Pie with Cheddar Mashed Potato Top](cheddar-cottage-pie.html)
