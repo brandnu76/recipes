@@ -1,0 +1,35 @@
+name: apply-dino-ribs
+# Temporary. Unpacks the publish bundle, commits the recipe, and removes itself.
+on:
+  push:
+    paths:
+      - 'tmp-dino-ribs-publish-bundle.json'
+      - '.github/workflows/apply-dino-ribs.yml'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply bundle, commit, and clean up
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          bundle = json.loads(Path('tmp-dino-ribs-publish-bundle.json').read_text())
+          for path, content in bundle.items():
+              p = Path(path)
+              p.parent.mkdir(parents=True, exist_ok=True)
+              p.write_text(content)
+              print('wrote', path, len(content))
+          PY
+          git config user.name "brandnu76"
+          git config user.email "bccarroll30@gmail.com"
+          git add texas-beef-dino-ribs.html sw.js index.html README.md \
+            category-weekend-dinners.html recipes.html search-index.json \
+            recipe-meta.json related.json ingredients.json
+          git rm -f tmp-dino-ribs-publish-bundle.json .github/workflows/apply-dino-ribs.yml
+          git commit -m "Publish Texas-Style Smoked Beef Dino Ribs; cache v78"
+          git push
