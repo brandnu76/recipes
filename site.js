@@ -414,3 +414,38 @@ const cltSaved = (function () {
   if (savedChipEl && location.hash === "#saved") selectChip(savedChipEl);
   else update();
 })();
+
+(function () {
+  const panel = document.querySelector(".install-app");
+  if (!panel) return;
+
+  const standalone = window.matchMedia("(display-mode: standalone)").matches
+    || window.navigator.standalone === true;
+  if (standalone) {
+    panel.hidden = true;
+    return;
+  }
+
+  const btn = panel.querySelector("[data-action=\"install-app\"]");
+  if (!btn) return;
+  let deferred = null;
+
+  window.addEventListener("beforeinstallprompt", function (event) {
+    event.preventDefault();
+    deferred = event;
+    btn.hidden = false;
+  });
+
+  btn.addEventListener("click", function () {
+    if (!deferred) return;
+    const promptEvent = deferred;
+    deferred = null;
+    btn.hidden = true;
+    promptEvent.prompt();
+  });
+
+  window.addEventListener("appinstalled", function () {
+    deferred = null;
+    btn.hidden = true;
+  });
+})();

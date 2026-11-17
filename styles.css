@@ -2742,3 +2742,61 @@ html:has(body.splash-page) { color-scheme: dark; }
   .have-result { padding: 0.8rem 0.85rem 0.9rem; }
   .have-add .toolbar-btn { flex-basis: 100%; }
 }
+
+/* Install as an app (homepage). Append-only. */
+.splash-below .install-app {
+  width: min(100% - 2rem, 40rem);
+  margin: 0 auto 1.6rem;
+  padding: 0.65rem 0.95rem 0.7rem;
+  border: 1px solid rgba(122, 145, 96, 0.35);
+  border-radius: 12px;
+  background: rgba(79, 100, 60, 0.1);
+}
+.splash-below .install-app[hidden] { display: none; }
+.splash-below .install-app > summary {
+  cursor: pointer;
+  color: var(--fire-soft);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.splash-below .install-app[open] > summary { margin-bottom: 0.4rem; }
+.splash-below .install-app > summary:focus-visible {
+  outline: 2px solid var(--fire-soft);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.splash-below .install-app p,
+.splash-below .install-app li {
+  margin: 0.35rem 0;
+  color: var(--cream-muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+.splash-below .install-app ul {
+  margin: 0.25rem 0 0.1rem;
+  padding-left: 1.15rem;
+}
+.splash-below .install-app .install-app-prompt {
+  margin: 0.45rem 0 0.15rem;
+}
+.splash-below .install-app .install-app-prompt:not(:has(button:not([hidden]))) {
+  display: none;
+}
+.splash-below .install-app .install-app-btn {
+  margin: 0;
+  padding: 0.45rem 0.95rem;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #f6f1e6;
+  background: var(--fire);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.splash-below .install-app .install-app-btn:hover { filter: brightness(1.1); }
+.splash-below .install-app .install-app-btn:focus-visible {
+  outline: 2px solid var(--fire-soft);
+  outline-offset: 3px;
+}
+.splash-below .install-app .install-app-btn[hidden] { display: none; }
