@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # Full history so sitemap lastmod dates match the committed file.
+          # Full history so sitemap lastmod dates are real commit dates.
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
