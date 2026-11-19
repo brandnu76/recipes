@@ -2800,3 +2800,57 @@ html:has(body.splash-page) { color-scheme: dark; }
   outline-offset: 3px;
 }
 .splash-below .install-app .install-app-btn[hidden] { display: none; }
+
+/* Stovetop alternate method on a recipe page. Append-only. */
+.recipe-alt-cue {
+  margin: 0.35rem 0 0.9rem;
+  color: var(--cream-muted);
+  font-size: 0.95rem;
+}
+.recipe-alt-cue a {
+  color: var(--fire-soft);
+  font-weight: 600;
+  text-underline-offset: 0.12em;
+}
+.recipe-alt-cue a:hover,
+.recipe-alt-cue a:focus-visible { color: #e4efd0; }
+.stovetop-version {
+  margin: 1.6rem 0 0.4rem;
+  padding: 1rem 1.1rem 1.15rem;
+  border: 1px solid rgba(122, 145, 96, 0.35);
+  border-radius: 12px;
+  background: rgba(79, 100, 60, 0.1);
+  scroll-margin-top: calc(var(--header-h, 4.5rem) + 0.75rem);
+}
+.stovetop-version h2 {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+}
+.stovetop-version p {
+  margin: 0.35rem 0;
+  color: var(--cream-muted);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+.stovetop-steps {
+  margin: 0.55rem 0 0.35rem;
+  padding-left: 1.25rem;
+}
+.stovetop-steps li {
+  margin: 0.4rem 0;
+  line-height: 1.45;
+}
+body.cook-mode .stovetop-version,
+body.cook-mode .recipe-alt-cue { display: none; }
+@media print {
+  .stovetop-version {
+    background: none;
+    border: 1px solid #ccc;
+    color: #000;
+    break-inside: avoid;
+  }
+  .stovetop-version p,
+  .recipe-alt-cue { color: #000; }
+  .recipe-alt-cue a { color: #000; }
+}

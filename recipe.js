@@ -35,7 +35,7 @@
   }
 
   const ingredients = Array.from(article.querySelectorAll("ul li"));
-  const steps = Array.from(article.querySelectorAll("ol li"));
+  const steps = Array.from(article.querySelectorAll("ol.instructions li, ol.e-instructions li"));
 
   ingredients.forEach((li) => {
     if (!li.dataset.original) li.dataset.original = li.textContent.trim();
