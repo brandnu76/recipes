@@ -13,7 +13,6 @@ Import URL pattern after GitHub Pages:
 `https://brandnu76.github.io/recipes/<slug>.html`
 
 ## Weekend dinners
-
 - [Texas-Style Smoked Beef Dino Ribs](texas-beef-dino-ribs.html)
 - [Red Wine Braised Short Ribs](red-wine-braised-short-ribs.html)
 - [Braised Chuck Roast with Red Wine Gravy](braised-chuck-roast.html)
@@ -30,9 +29,10 @@ Import URL pattern after GitHub Pages:
 - [3-2-1 Smoked Ribs with Apple Spritz](3-2-1-smoked-ribs.html)
 - [Easy Seafood Boil Sauce](easy-seafood-boil-sauce.html)
 - [Low-Country Boil](low-country-boil.html)
+- [Pellet-Grill Reverse-Sear Top Sirloin Steaks](pellet-grill-reverse-sear-top-sirloin.html)
 - [Seared Ribeye on the Pellet Grill](seared-ribeye-pellet-grill.html)
 - [Texas Smoked Brisket](texas-smoked-brisket.html)
-- [Sheet-Pan Salmon with Sweet Potatoes and Green Beans (10-lb Fillet)](sheet-pan-salmon-sweet-potato-10lb.html)
+- [Sheet-Pan Salmon with Sweet Potatoes and Green Beans (10-lb Side)](sheet-pan-salmon-sweet-potato-10lb.html)
 - [Smoked Chicken Thighs with Alabama White Sauce](smoked-chicken-thighs-alabama-white-sauce.html)
 - [Lowcountry Shrimp and Grits](lowcountry-shrimp-and-grits.html)
 - [Savannah Red Rice with Crispy Chicken Thighs](savannah-red-rice-crispy-chicken-thighs.html)
@@ -42,15 +42,13 @@ Import URL pattern after GitHub Pages:
 - [Peach-Bourbon Cast-Iron Pork Chops](peach-bourbon-cast-iron-pork-chops.html)
 - [Peach-Bourbon Pork Chops on the Pellet Grill](peach-bourbon-pork-chops-pellet-grill.html)
 - [Cast-Iron Flank Steak with Herb Chimichurri & Roasted Fingerlings](cast-iron-flank-steak-chimichurri.html)
-
 ## Weekday dinners
-
 - [Italian Wedding Soup (Minestra Maritata-Style)](italian-wedding-soup.html)
 - [Thai Red Curry Chicken over Jasmine Rice](thai-red-curry-chicken.html)
 - [Cajun Shrimp Skillet over Rice](cajun-shrimp-skillet-over-rice.html)
 - [Kung Pao Shrimp](kung-pao-shrimp.html)
 - [Sheet-Pan Roasted Salmon Side with Lemon-Garlic Butter](sheet-pan-roasted-salmon-side.html)
-- [Slow Cooker Sausage, Kale & Tortellini Soup](sausage-kale-tortellini-soup.html)
+- [Sausage, Kale & Tortellini Soup](sausage-kale-tortellini-soup.html)
 - [Smothered Pork Chops with Onion Gravy](smothered-pork-chops-onion-gravy.html)
 - [Cottage Pie with Cheddar Mashed Potato Top](cheddar-cottage-pie.html)
 - [Sheet-Pan Greek Chicken Thighs with Potatoes and Tzatziki](sheet-pan-greek-chicken-thighs.html)
@@ -83,6 +81,9 @@ Import URL pattern after GitHub Pages:
 - [Cajun Sausage and Rice Skillet](cajun-sausage-rice-skillet.html)
 - [Sheet-Pan Sausage with Potatoes and Green Beans](sheet-pan-sausage-potatoes-green-beans.html)
 - [Crispy Skillet Chicken Alfredo with Ziti](crispy-skillet-chicken-alfredo-ziti.html)
+- [Keto Sheet Pan Burgers with Bacon & Jalapeño](keto-sheet-pan-burgers-bacon-jalapeno-frozen.html)
+- [Blackened Shrimp Tacos](blackened-shrimp-tacos.html)
+- [Skillet Beef Stroganoff](skillet-beef-stroganoff.html)
 - [Sheet-Pan Lemon-Garlic Chicken and Vegetables](sheet-pan-lemon-garlic-chicken.html)
 - [Skillet Creamy Tuscan Chicken](skillet-creamy-tuscan-chicken.html)
 - [One-Pot Sausage, Peppers, and Rice](one-pot-sausage-peppers-rice.html)
@@ -92,27 +93,26 @@ Import URL pattern after GitHub Pages:
 - [Mongolian Beef and Noodles](mongolian-beef-noodles.html)
 - [High-Protein Mongolian Beef Noodles](high-protein-mongolian-beef-noodles.html)
 - [The Supreme Pacific Jasmine Musubi](supreme-pacific-jasmine-musubi.html)
-- [Keto Sheet Pan Burgers with Bacon & Jalapeño (Frozen Patties)](keto-sheet-pan-burgers-bacon-jalapeno-frozen.html)
-
 ## Breakfast & brunch
-
 - [Member's Mark Protein Power-Up Pancakes](protein-power-up-pancakes.html)
 - [Member's Mark Pancakes Upgrade](members-mark-pancakes-upgrade.html)
+- [High-Protein Apple and Berry Crumble](high-protein-apple-berry-crumble.html)
+- [High-Protein Cottage Cheese Pancakes](high-protein-cottage-cheese-pancakes.html)
+- [Egg & Veggie Muffins](egg-veggie-muffins.html)
+- [Baked Cinnamon Apple Butter French Toast](baked-cinnamon-apple-butter-french-toast.html)
 - [Homemade Grape Jelly](homemade-grape-jelly.html)
 - [Apple Swim Biscuits](apple-swim-biscuits.html)
 - [Christmas Cranberry Butter](christmas-cranberry-butter.html)
-- [Baked Cinnamon Apple Butter French Toast](baked-cinnamon-apple-butter-french-toast.html)
-- [Egg & Veggie Muffins](egg-veggie-muffins.html)
-
 ## Game day
-
 - [Sheet-Pan Beef Nacho Bake](sheet-pan-beef-nacho-bake.html)
 - [Simple, Perfect Chili](simple-perfect-chili.html)
 - [Chili Cheese Dogs](chili-dogs-with-cheese.html)
 - [Ain't No Thing Butta Chicken Wings](aint-no-thing-butta-chicken-wings.html)
-
+- [Air-Fried Parmesan Egg-White Cheese Balls](air-fried-parmesan-egg-white-cheese-balls.html)
+## Healthy snacks
+- [Air-Fried Parmesan Egg-White Cheese Balls](air-fried-parmesan-egg-white-cheese-balls.html)
+- [Strawberry Cheesecake Protein Fluff Cups](strawberry-cheesecake-protein-fluff-cups.html)
 ## Sides & salads
-
 - [Cranberry-Orange Sauce](cranberry-orange-sauce.html)
 - [The Best Coleslaw](best-coleslaw.html)
 - [Southern Fried Cabbage with Bacon](southern-fried-cabbage.html)
@@ -138,18 +138,15 @@ Import URL pattern after GitHub Pages:
 - [Antipasto Pasta Salad](antipasto-pasta-salad.html)
 - [Seared Steak Salad](seared-steak-salad.html)
 - [Southern Baked Beans](southern-baked-beans.html)
-
 ## Breads
-
 - [Grandmother's Cornbread](grandmothers-cornbread.html)
-- [Popeye's-Style Honey Biscuits](popeyes-style-honey-biscuits.html)
 - [Cuisinart CBK-100 Basic White Bread](cuisinart-cbk-100-basic-white-bread.html)
 - [Pumpkin-Shaped Sourdough](pumpkin-shaped-sourdough.html)
 - [Country Sourdough Boule](country-sourdough-boule.html)
-- [Pan Focaccia (Savory or Sweet)](pan-focaccia.html)
+- [Popeye's-Style Honey Biscuits](popeyes-style-honey-biscuits.html)
 - [Sweet Potato Cornbread](sweet-potato-cornbread.html)
+- [Pan Focaccia (Savory or Sweet)](pan-focaccia.html)
 - [Sourdough Croissants](sourdough-croissants.html)
-
 ## Dessert
 - [Mexican Wedding Cookies](mexican-wedding-cookies.html)
 - [Southern Carrot Pie](southern-carrot-pie.html)
@@ -159,11 +156,11 @@ Import URL pattern after GitHub Pages:
 - [Peach Crumble](peach-crumble.html)
 - [Blueberry Crumble](blueberry-crumble.html)
 - [Sweet Potato–Style Pumpkin Crumble](sweet-potato-style-pumpkin-crumble.html)
-
-- [Caramel Apple Pie Poke Cake](caramel-apple-pie-poke-cake.html)
-- [Sugar-Free Apple Pie Protein Burritos](sugar-free-apple-pie-protein-burritos.html)
 - [Orange Dreamsicle Poke Cake](orange-dreamsicle-poke-cake.html)
 - [High-Protein Chocolate Peanut Butter Brookie](high-protein-chocolate-peanut-butter-brookie.html)
+- [High-Protein Apple Pie Burritos](high-protein-apple-pie-burritos.html)
+- [Caramel Apple Pie Poke Cake](caramel-apple-pie-poke-cake.html)
+- [Sugar-Free Apple Pie Protein Burritos](sugar-free-apple-pie-protein-burritos.html)
 - [Blueberry Lemon Pound Cake](blueberry-lemon-pound-cake.html)
 - [Apple Fritter Popcorn](apple-fritter-popcorn.html)
 - [Strawberry Strudel Skillet Cookie](strawberry-strudel-skillet-cookie.html)
@@ -173,8 +170,10 @@ Import URL pattern after GitHub Pages:
 - [No-Bake White Chocolate Pumpkin Cheesecake](no-bake-white-chocolate-pumpkin-cheesecake.html)
 - [White Chocolate & Gingersnap Cheesecake](white-chocolate-gingersnap-cheesecake.html)
 - [Reese's Peanut Butter Cup Skillet Cookie](reeses-peanut-butter-cup-skillet-cookie.html)
-
-
+- [Apple Pie Mini Cakes](apple-pie-mini-cakes.html)
+- [High-Protein Banana Pudding](high-protein-banana-pudding.html)
+- [High-Protein Strawberry Shortcake](high-protein-strawberry-shortcake.html)
+- [Strawberry Cheesecake Protein Fluff Cups](strawberry-cheesecake-protein-fluff-cups.html)
 ## Legal
 
 © 2026 Brandon Carroll. All rights reserved. See [copyright.html](copyright.html) and [COPYRIGHT.md](COPYRIGHT.md).

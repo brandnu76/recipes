@@ -1,10 +1,18 @@
 /* Carroll Lowcountry Table — offline cache for kitchen use on GitHub Pages */
-const CACHE = "carroll-lowcountry-v82";
+const CACHE = "carroll-lowcountry-v83";
 const SHELL = [
   "./",
   "./index.html",
   "./recipes.html",
   "./styles.css",
+  "./fonts/cormorant-garamond-600-latin-ext.woff2",
+  "./fonts/cormorant-garamond-600-latin.woff2",
+  "./fonts/fraunces-500-latin-ext.woff2",
+  "./fonts/fraunces-500-latin.woff2",
+  "./fonts/pinyon-script-400-latin-ext.woff2",
+  "./fonts/pinyon-script-400-latin.woff2",
+  "./fonts/source-sans-3-400-latin-ext.woff2",
+  "./fonts/source-sans-3-400-latin.woff2",
   "./recipe.js",
   "./site.js",
   "./meal-planner.html",
