@@ -95,6 +95,7 @@ Import URL pattern after GitHub Pages:
 - [High-Protein Mongolian Beef Noodles](high-protein-mongolian-beef-noodles.html)
 - [The Supreme Pacific Jasmine Musubi](supreme-pacific-jasmine-musubi.html)
 ## Breakfast & brunch
+- [Doctored Buttermilk Pancakes](doctored-buttermilk-pancakes.html)
 - [Member's Mark Protein Power-Up Pancakes](protein-power-up-pancakes.html)
 - [Member's Mark Pancakes Upgrade](members-mark-pancakes-upgrade.html)
 - [High-Protein Apple and Berry Crumble](high-protein-apple-berry-crumble.html)
