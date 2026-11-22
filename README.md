@@ -13,6 +13,7 @@ Import URL pattern after GitHub Pages:
 `https://brandnu76.github.io/recipes/<slug>.html`
 
 ## Weekend dinners
+- [Beef Birria Tacos](birria-tacos.html)
 - [Texas-Style Smoked Beef Dino Ribs](texas-beef-dino-ribs.html)
 - [Red Wine Braised Short Ribs](red-wine-braised-short-ribs.html)
 - [Braised Chuck Roast with Red Wine Gravy](braised-chuck-roast.html)
