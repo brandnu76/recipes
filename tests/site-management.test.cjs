@@ -73,9 +73,10 @@ test("legacy one-shot write workflows are gone", () => {
   assert.ok(names.includes("check-recipe-images.yml"));
 });
 
-test("service worker cache is v86 and precaches self-hosted fonts", () => {
+test("service worker cache is v87 and precaches self-hosted fonts", () => {
   const sw = fs.readFileSync(path.join(ROOT, "sw.js"), "utf8");
-  assert.match(sw, /CACHE = "carroll-lowcountry-v86"/);
+  assert.match(sw, /CACHE = "carroll-lowcountry-v87"/);
+  assert.match(sw, /\.\/week-template\.js/);
   assert.match(sw, /\.\/fonts\/source-sans-3-400-latin\.woff2/);
 });
 

@@ -32,7 +32,7 @@
   <main class="page meal-planner cal-app" id="main" data-cal-app>
     <div class="meal-hero">
       <h1>Meal calendar</h1>
-      <p>Pick a day, then add a recipe or a quick note like &ldquo;Leftovers.&rdquo; Tap <strong>Add to calendar</strong> on any recipe page to drop it on a date.</p>
+      <p>Pick a day, then add a recipe or a quick note like &ldquo;Leftovers.&rdquo; Tap <strong>Add to calendar</strong> on any recipe page to drop it on a date, or use the <strong>Week template</strong> to plan double batches and leftover nights in one go.</p>
       <p class="cal-device-note"><strong>Your calendar is saved on this device only.</strong> It doesn't sync between your phone, tablet and computer, and nothing is sent anywhere.</p>
     </div>
     <p class="visually-hidden" role="status" aria-live="polite" data-cal-status></p>
@@ -46,6 +46,16 @@
       </div>
       <p class="cal-moving" data-cal-moving hidden>Tap a day to move the meal there. <button type="button" class="toolbar-btn" data-cal-cancel-move>Cancel</button></p>
       <div class="cal-grid" data-cal-grid></div>
+    </section>
+    <section class="meal-card wk-card" aria-labelledby="wk-h" data-wk-card>
+      <h2 id="wk-h">Week template</h2>
+      <p class="meal-note">One tap sets up a cook-twice week: <strong>Tuesday and Thursday</strong> get a double-batch dinner that takes about 75 minutes or less, and <strong>Wednesday and Friday</strong> become leftover nights. You can swap either dinner before adding. Nothing already on your calendar is replaced.</p>
+      <div class="wk-start-row">
+        <button type="button" class="toolbar-btn wk-start" data-wk-start>Use week template</button>
+        <span class="wk-week" data-wk-week></span>
+      </div>
+      <div class="wk-preview" data-wk-preview hidden></div>
+      <p class="visually-hidden" role="status" aria-live="polite" data-wk-status></p>
     </section>
     <section class="meal-card cal-day-card" aria-labelledby="cal-day-h">
       <h2 id="cal-day-h" data-cal-day-title></h2>
@@ -102,6 +112,7 @@
   <script src="site.js" defer></script>
   <script src="meal-calendar.js" defer></script>
   <script src="shopping-list.js" defer></script>
+  <script src="week-template.js" defer></script>
   <script src="welcome-tip.js" defer></script>
   <script data-goatcounter="https://carrolllowcountry.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
