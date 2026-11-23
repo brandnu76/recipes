@@ -188,9 +188,11 @@
     const items = {}; const recipes = [];
     entries.forEach((e) => {
       const r = data[e.slug]; if (!r) return;
-      recipes.push({ slug: e.slug, title: r.n || e.title, date: e.date });
+      const x = Number(e.x) === 2 ? 2 : 1; // Week template double batch
+      recipes.push({ slug: e.slug, title: r.n || e.title, date: e.date, x });
       r.i.forEach((line) => {
-        const p = parseLine(line); if (!p.key) return;
+        let p = parseLine(line); if (!p.key) return;
+        if (x !== 1 && p.qty != null) p = Object.assign({}, p, { qty: p.qty * x });
         const it = items[p.key] || (items[p.key] = { key: p.key, label: p.label, parts: [], sources: [], section: sectionOf(p.key, p.raw) });
         it.parts.push(p);
         const src = { slug: e.slug, title: r.n || e.title, date: e.date };
@@ -264,7 +266,7 @@
     if (!entries.length) { out.appendChild(el("p", "cal-empty", "No recipes on the calendar for these dates. Notes and leftovers don't add anything.")); renderPantry(pantry); return; }
     const rec = el("div", "shop-recipes"); rec.appendChild(el("h3", null, "Recipes"));
     const rul = el("ul", "shop-recipe-list");
-    last.recipes.forEach((r) => { const li = el("li"); li.appendChild(el("span", "cal-entry-date", short(r.date))); const a = el("a", "cal-entry-link", r.title); a.href = r.slug + ".html"; li.appendChild(a); li.appendChild(el("span", "shop-hint", "Add to AnyList from the recipe page")); rul.appendChild(li); });
+    last.recipes.forEach((r) => { const li = el("li"); li.appendChild(el("span", "cal-entry-date", short(r.date))); const a = el("a", "cal-entry-link", r.title); a.href = r.slug + ".html"; li.appendChild(a); if (r.x === 2) li.appendChild(el("span", "cal-batch-tag", "Double batch (amounts doubled)")); li.appendChild(el("span", "shop-hint", "Add to AnyList from the recipe page")); rul.appendChild(li); });
     rec.appendChild(rul); out.appendChild(rec);
     last.sections.forEach((s) => {
       const sec = el("section", "shop-sec"); sec.appendChild(el("h3", null, s.name));

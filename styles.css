@@ -2966,3 +2966,28 @@ body.cook-mode .recipe-alt-cue { display: none; }
   .recipe-alt-cue { color: #000; }
   .recipe-alt-cue a { color: #000; }
 }
+
+/* Week template on the Meal calendar (week-template.js) — appended Nov 2026 */
+.wk-start-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; }
+.wk-start-row .toolbar-btn { min-height: 2.75rem; }
+.wk-week { color: var(--cream-muted); font-size: 0.9rem; flex: 1 1 14rem; }
+.wk-preview { margin-top: 0.9rem; }
+.wk-night { border-top: 1px solid var(--line); padding: 0.75rem 0 0.5rem; }
+.wk-day { font-family: var(--font-display); font-size: 1.05rem; margin: 0 0 0.4rem; }
+.wk-label { display: block; margin: 0 0 0.3rem; font-size: 0.92rem; }
+.wk-pick-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem; }
+.cal-app .wk-pick-row select { flex: 1 1 15rem; max-width: 100%; min-height: 2.75rem; }
+.wk-pick-row .toolbar-btn { min-height: 2.75rem; }
+.wk-view { color: var(--fire-soft); font-size: 0.92rem; }
+.wk-left { margin: 0.55rem 0 0; color: var(--cream); font-size: 0.95rem; }
+.wk-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+.wk-actions .toolbar-btn { min-height: 2.75rem; }
+.wk-apply:not([disabled]) { background: var(--fire); border-color: var(--fire); color: #fff; }
+.wk-apply[disabled] { opacity: 0.55; cursor: not-allowed; }
+.wk-done { margin: 0; color: var(--cream); }
+.cal-batch-tag { font-size: 0.8rem; color: var(--fire-soft); }
+.cal-batch-btn[aria-pressed="true"] { background: var(--fire); border-color: var(--fire); color: #fff; }
+@media (max-width: 520px) {
+  .wk-start-row .toolbar-btn, .wk-actions .toolbar-btn { flex: 1 1 100%; }
+}
+@media print { .wk-card { display: none !important; } }

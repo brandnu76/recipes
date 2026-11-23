@@ -16,13 +16,17 @@
     const slug = typeof e.slug === "string" && /^[a-z0-9-]+$/.test(e.slug) ? e.slug : "";
     const title = String(e.title || "").trim().slice(0, 140);
     if (!slug && !title) return null;
-    return {
+    const out = {
       id: typeof e.id === "string" && e.id ? e.id : newId(),
       date: e.date,
       slot: SLOTS.indexOf(e.slot) !== -1 ? e.slot : "Dinner",
       slug,
       title: title || slug,
     };
+    // Optional, added by the Week template: x:2 marks a recipe as a double batch.
+    // Older entries simply don't have it, so nothing is migrated.
+    if (slug && Number(e.x) === 2) out.x = 2;
+    return out;
   }
   function newId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
 
@@ -54,6 +58,12 @@
     e.date = date; if (slot && SLOTS.indexOf(slot) !== -1) e.slot = slot;
     return save(storage, list);
   }
+  function setBatch(storage, id, x) {
+    const list = load(storage); const e = list.find((y) => y.id === id);
+    if (!e || !e.slug) return false;
+    if (Number(x) === 2) e.x = 2; else delete e.x;
+    return save(storage, list);
+  }
   function forDate(entries, date) {
     return entries.filter((e) => e.date === date).sort((a, b) => SLOTS.indexOf(a.slot) - SLOTS.indexOf(b.slot));
   }
@@ -75,7 +85,7 @@
       const d = e.date.replace(/-/g, "");
       const n = parseYmd(e.date); n.setDate(n.getDate() + 1);
       lines.push("BEGIN:VEVENT", "UID:" + e.id + "@carroll-lowcountry-table", "DTSTAMP:" + new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z",
-        "DTSTART;VALUE=DATE:" + d, "DTEND;VALUE=DATE:" + ymd(n).replace(/-/g, ""), "SUMMARY:" + esc(e.slot + ": " + e.title));
+        "DTSTART;VALUE=DATE:" + d, "DTEND;VALUE=DATE:" + ymd(n).replace(/-/g, ""), "SUMMARY:" + esc(e.slot + ": " + e.title + (e.x === 2 ? " (double batch)" : "")));
       if (e.slug && base) lines.push("URL:" + base + e.slug + ".html");
       lines.push("END:VEVENT");
     });
@@ -83,7 +93,7 @@
     return lines.join("\r\n") + "\r\n";
   }
 
-  const core = { KEY, SLOTS, ymd, parseYmd, clean, load, save, add, remove, move, forDate, monthGrid, toIcs };
+  const core = { KEY, SLOTS, ymd, parseYmd, clean, load, save, add, remove, move, setBatch, forDate, monthGrid, toIcs };
   if (typeof module !== "undefined" && module.exports) { module.exports = core; return; }
   root.CLTMealCalendar = core;
 
@@ -119,7 +129,7 @@
       const list = forDate(entries, d.date);
       b.setAttribute("aria-label", nice(d.date) + (list.length ? ", " + list.length + " meal" + (list.length > 1 ? "s" : "") : ""));
       b.appendChild(el("span", "cal-num", String(d.day)));
-      list.slice(0, 3).forEach((e) => b.appendChild(el("span", "cal-chip cal-chip-" + e.slot.toLowerCase(), e.title)));
+      list.slice(0, 3).forEach((e) => b.appendChild(el("span", "cal-chip cal-chip-" + e.slot.toLowerCase(), e.title + (e.x === 2 ? " ×2" : ""))));
       if (list.length > 3) b.appendChild(el("span", "cal-more", "+" + (list.length - 3) + " more"));
       if (list.length) b.appendChild(el("span", "cal-dot", ""));
       b.addEventListener("click", () => {
@@ -132,6 +142,7 @@
     renderAgenda(entries);
     app.classList.toggle("is-moving", !!moving);
     $("[data-cal-moving]").hidden = !moving;
+    app.dispatchEvent(new CustomEvent("cal:render", { detail: { selected } }));
   }
 
   function entryRow(e, withDate) {
@@ -141,9 +152,15 @@
     if (withDate) body.appendChild(el("span", "cal-entry-date", parseYmd(e.date).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })));
     if (e.slug) { const a = el("a", "cal-entry-link", e.title); a.href = e.slug + ".html"; body.appendChild(a); }
     else body.appendChild(el("span", "cal-entry-note", e.title));
+    if (e.x === 2) body.appendChild(el("span", "cal-batch-tag", "Double batch — shopping list buys twice"));
     li.appendChild(body);
     const acts = el("span", "cal-entry-actions");
     if (e.slug) {
+      const dbl = el("button", "toolbar-btn cal-batch-btn", "Double batch"); dbl.type = "button";
+      dbl.setAttribute("aria-pressed", e.x === 2 ? "true" : "false");
+      dbl.setAttribute("aria-label", "Double batch of " + e.title);
+      dbl.addEventListener("click", () => { const on = e.x !== 2; setBatch(ls, e.id, on ? 2 : 1); say((on ? "Double batch: " : "Single batch: ") + e.title); render(); });
+      acts.appendChild(dbl);
       const plan = el("button", "toolbar-btn", "Plan this meal"); plan.type = "button";
       plan.addEventListener("click", () => {
         let cur = []; try { cur = JSON.parse(ls.getItem("clt:meal") || "[]"); } catch (_) {}
@@ -220,6 +237,12 @@
     setTimeout(() => URL.revokeObjectURL(url), 2000);
   });
   window.addEventListener("storage", (e) => { if (e.key === KEY) render(); });
+  // Small hook for the Week template card (week-template.js) on this page.
+  core.ui = {
+    selected: () => selected,
+    refresh: render,
+    show(date) { if (DATE_RE.test(date || "")) { selected = date; const d = parseYmd(date); view = new Date(d.getFullYear(), d.getMonth(), 1); } render(); },
+  };
 
   // Never carry state in the address bar.
   if (location.search || location.hash) history.replaceState(null, "", location.pathname);
