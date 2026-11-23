@@ -50,6 +50,7 @@ Import URL pattern after GitHub Pages:
 - [Kung Pao Shrimp](kung-pao-shrimp.html)
 - [Sheet-Pan Roasted Salmon Side with Lemon-Garlic Butter](sheet-pan-roasted-salmon-side.html)
 - [Sausage, Kale & Tortellini Soup](sausage-kale-tortellini-soup.html)
+- [Lasagna Soup](lasagna-soup.html)
 - [Smothered Pork Chops with Onion Gravy](smothered-pork-chops-onion-gravy.html)
 - [Cottage Pie with Cheddar Mashed Potato Top](cheddar-cottage-pie.html)
 - [Sheet-Pan Greek Chicken Thighs with Potatoes and Tzatziki](sheet-pan-greek-chicken-thighs.html)
@@ -142,6 +143,7 @@ Import URL pattern after GitHub Pages:
 - [Southern Baked Beans](southern-baked-beans.html)
 ## Breads
 - [Grandmother's Cornbread](grandmothers-cornbread.html)
+- [Cheesy Garlic Bread](cheesy-garlic-bread.html)
 - [Cuisinart CBK-100 Basic White Bread](cuisinart-cbk-100-basic-white-bread.html)
 - [Pumpkin-Shaped Sourdough](pumpkin-shaped-sourdough.html)
 - [Country Sourdough Boule](country-sourdough-boule.html)
