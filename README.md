@@ -13,6 +13,8 @@ Import URL pattern after GitHub Pages:
 `https://brandnu76.github.io/recipes/<slug>.html`
 
 ## Weekend dinners
+- [Southern Chicken-Fried Steak with Cream Gravy](southern-chicken-fried-steak.html)
+- [Pellet-Grill Smoked Beef Short Ribs](pellet-grill-smoked-beef-short-ribs.html)
 - [Beef Birria Tacos](birria-tacos.html)
 - [Texas-Style Smoked Beef Dino Ribs](texas-beef-dino-ribs.html)
 - [Red Wine Braised Short Ribs](red-wine-braised-short-ribs.html)
@@ -116,6 +118,7 @@ Import URL pattern after GitHub Pages:
 - [Air-Fried Parmesan Egg-White Cheese Balls](air-fried-parmesan-egg-white-cheese-balls.html)
 - [Strawberry Cheesecake Protein Fluff Cups](strawberry-cheesecake-protein-fluff-cups.html)
 ## Sides & salads
+- [Creamy Polenta](creamy-polenta.html)
 - [Cranberry-Orange Sauce](cranberry-orange-sauce.html)
 - [The Best Coleslaw](best-coleslaw.html)
 - [Southern Fried Cabbage with Bacon](southern-fried-cabbage.html)
