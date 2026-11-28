@@ -46,6 +46,9 @@ Import URL pattern after GitHub Pages:
 - [Peach-Bourbon Pork Chops on the Pellet Grill](peach-bourbon-pork-chops-pellet-grill.html)
 - [Cast-Iron Flank Steak with Herb Chimichurri & Roasted Fingerlings](cast-iron-flank-steak-chimichurri.html)
 ## Weekday dinners
+- [Italian Sausage Stuffed Peppers with Rice](italian-sausage-stuffed-peppers.html)
+- [Green Chile Chicken Enchiladas](green-chile-chicken-enchiladas.html)
+- [Korean Ground Beef Bulgogi Bowls with Jasmine Rice](korean-ground-beef-bulgogi-bowls.html)
 - [Italian Wedding Soup (Minestra Maritata-Style)](italian-wedding-soup.html)
 - [Thai Red Curry Chicken over Jasmine Rice](thai-red-curry-chicken.html)
 - [Cajun Shrimp Skillet over Rice](cajun-shrimp-skillet-over-rice.html)
@@ -118,6 +121,7 @@ Import URL pattern after GitHub Pages:
 - [Air-Fried Parmesan Egg-White Cheese Balls](air-fried-parmesan-egg-white-cheese-balls.html)
 - [Strawberry Cheesecake Protein Fluff Cups](strawberry-cheesecake-protein-fluff-cups.html)
 ## Sides & salads
+- [Sesame Broccoli](sesame-broccoli.html)
 - [Creamy Polenta](creamy-polenta.html)
 - [Cranberry-Orange Sauce](cranberry-orange-sauce.html)
 - [The Best Coleslaw](best-coleslaw.html)
